@@ -2,8 +2,9 @@
 // Date: 09/13/2022
 // CS 3350
 
+#include <iostream>
 
 void print_name()
 {
-  cout << "Axel\n";
+  std::cout << "Axel\n";
 }
