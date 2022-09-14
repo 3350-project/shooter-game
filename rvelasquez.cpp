@@ -1,6 +1,16 @@
+//Rudy Velasquez 
 #include <iostream>
-int main() 
+
+namespace rvelasquez
 {
-    std::cout<<"hello World" << std::endl;
-    return 0;
+	void world()
+	{
+		std::cout << "Hello World" << std::endl;
+
+	}
 }
+
+
+
+
+
