@@ -1,8 +1,12 @@
 // Ryan Gordon
+// 9/14/22
+// 
 
 #include <iostream>
-
-int main() {
-    std::cout << "Ryan Gordon";
-    return 0;
+namespace rgordon
+{
+    void print_name()
+    {
+        std::cout << "Ryan" << std::endl;
+    }
 }
