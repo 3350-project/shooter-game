@@ -1,3 +1,4 @@
 /asteroids
 .ccls
 .ccls-cache/
+*.x
