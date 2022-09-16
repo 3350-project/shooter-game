@@ -6,7 +6,7 @@ namespace snez
 {
     void file_changes()
     {
-    std::cout << "Hello, this is Steven's Source file\n";
+    std::cout << "Hello, this is Steven's Source file\n" << std::endl;
     }
 }
 
