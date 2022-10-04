@@ -1,13 +1,11 @@
 //Source file by: Steven Nez
 //Date: October 3, 2022
-//thinking of taking over the movement for the project program
+//
 
 #include <iostream>
-namespace snez 
+    
+unsigned int manage_stateF1(unsigned int F1)
 {
-    void file_changes()
-    {
-    std::cout << "Hello, this is Steven's Source file\n" << std::endl;
-    }
+    F1 = F1 ^ 1;
+    return F1;
 }
-
