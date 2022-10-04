@@ -8,3 +8,15 @@ void print_name()
 {
   std::cout << "Axel\n";
 }
+
+unsigned int manage_state(unsigned int s)
+{
+  s = s ^ 1;
+  return s;
+}
+
+bool finish_game (bool s)
+{
+  s = true;
+  return s;
+}
