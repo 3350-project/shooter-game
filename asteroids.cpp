@@ -386,8 +386,9 @@ void normalize2d(Vec v)
 
 void check_mouse(XEvent *e)
 {
-    if (gl.paused)
+    if (gl.paused) {
         return;
+    }
     //Did the mouse move?
     //Was a mouse button clicked?
     static int savex = 0;
@@ -586,8 +587,9 @@ void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
 
 void physics()
 {
-    if (gl.paused)
+    if (gl.paused) {
         return;
+    }
 
     Flt d0,d1,dist;
     //Update ship position
