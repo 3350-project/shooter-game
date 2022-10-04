@@ -23,6 +23,7 @@
 
 //Personal file functions
 #include "rwyatt.h"
+#include "snez.h"
 
 //defined types
 typedef float Flt;
@@ -61,13 +62,14 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 class Global {
 public:
-    int xres, yres;
+    int xres, yres, HelpScr;
     char keys[65536];
     bool paused{false};
     Global() {
         xres = 640;
         yres = 480;
         memset(keys, 0, 65536);
+        HelpScr = 0;
     }
 } gl;
 
@@ -523,6 +525,9 @@ int check_keys(XEvent *e)
             break;
         case XK_r:
             break;
+        case XK_F1:
+            gl.HelpScr = snez::manage_stateF1(gl.HelpScr);
+            break;
         case XK_p:
             rwyatt::pause_screen(gl.paused);
             // unlocks and shows cursor
@@ -795,6 +800,26 @@ void physics()
             g.mouseThrustOn = false;
     }
 }
+void Show_HelpScr()
+{
+    Rect r;
+    int xcent = gl.xres;
+    int ycent = gl.yres;
+    int w = gl.xres;
+    glColor3f(0.0, 1.0, 0.0);
+    glBegin(GL_QUADS);
+        glVertex2f(xcent-w, ycent-w);
+        glVertex2f(xcent-w, ycent+w);
+        glVertex2f(xcent+w, ycent+w);
+        glVertex2f(xcent+w, ycent-w);
+        glEnd();
+    r.bot = gl.yres - 20;
+    r.left = 10;
+    r.center = 0;
+    ggprint8b(&r, 16, 0x00ff0000, "HELP SCREEN");
+    ggprint8b(&r, 16, 0x00ff0000, "Controls: W: Up, D: Right, A: Left, S: Down ");
+}
+
 
 void render()
 {
@@ -897,6 +922,10 @@ void render()
         glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
         glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
         glEnd();
+    }
+    if(gl.HelpScr){
+        Show_HelpScr();
+        return;
     }
 }
 
