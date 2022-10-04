@@ -24,6 +24,7 @@
 //Personal file functions
 #include "rwyatt.h"
 #include "snez.h"
+#include "axel.h"
 
 //defined types
 typedef float Flt;
@@ -65,11 +66,13 @@ public:
     int xres, yres, HelpScr;
     char keys[65536];
     bool paused{false};
+    bool dead;
     Global() {
         xres = 640;
         yres = 480;
         memset(keys, 0, 65536);
         HelpScr = 0;
+        dead = false;
     }
 } gl;
 
@@ -533,6 +536,12 @@ int check_keys(XEvent *e)
             // unlocks and shows cursor
             x11.show_mouse_cursor(gl.paused);
             break;
+      case XK_g:
+        gl.dead = finish_game(gl.dead);
+        break;
+      case XK_y:
+        gl.dead = false;
+        break;
     }
     return 0;
 }
@@ -806,7 +815,7 @@ void Show_HelpScr()
     int xcent = gl.xres;
     int ycent = gl.yres;
     int w = gl.xres;
-    glColor3f(0.0, 0.0, 0.0);
+    glColor3f(0.0, 1.0, 0.0);
     glBegin(GL_QUADS);
         glVertex2f(xcent-w, ycent-w);
         glVertex2f(xcent-w, ycent+w);
@@ -816,10 +825,32 @@ void Show_HelpScr()
     r.bot = gl.yres - 20;
     r.left = 10;
     r.center = 0;
-    ggprint8b(&r, 16, 0xffffff, "HELP SCREEN");
-    ggprint8b(&r, 16, 0xffffff, "Controls: W: Up, D: Right, A: Left, S: Down ");
+    ggprint8b(&r, 16, 0x00ff0000, "HELP SCREEN");
+    ggprint8b(&r, 16, 0x00ff0000, "Controls: W: Up, D: Right, A: Left, S: Down ");
 }
 
+void game_over()
+{
+   Rect r;
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    glVertex2f(-12.0f, -10.0f);
+    glVertex2f(  0.0f,  20.0f);
+    glVertex2f(  0.0f,  -6.0f);
+    glVertex2f(  0.0f,  -6.0f);
+    glVertex2f(  0.0f,  20.0f);
+    glVertex2f( 12.0f, -10.0f);
+    glEnd();
+
+    r.bot = gl.yres - 20;
+    r.left = 10;
+    r.center = 0;
+    ggprint8b(&r, 16, 0x00ff0000, "GAME OVER");
+    ggprint8b(&r, 16, 0x00ff0000, "Press Escape to stop the game");
+    ggprint8b(&r, 16, 0x00ff0000, "Play Again (Y/N)");
+
+}
 
 void render()
 {
@@ -927,6 +958,11 @@ void render()
         Show_HelpScr();
         return;
     }
+   if (gl.dead == true)
+    {
+        game_over();
+    }
+
 }
 
 
