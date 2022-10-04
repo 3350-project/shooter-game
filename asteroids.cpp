@@ -25,6 +25,7 @@
 #include "rwyatt.h"
 #include "snez.h"
 #include "axel.h"
+#include "rvelasquez.h"
 
 //defined types
 typedef float Flt;
@@ -63,16 +64,17 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 class Global {
 public:
-    int xres, yres, HelpScr;
+    int xres, yres, HelpScr, credits;
     char keys[65536];
     bool paused{false};
-    bool dead;
+    bool dead;	
     Global() {
         xres = 640;
         yres = 480;
         memset(keys, 0, 65536);
         HelpScr = 0;
         dead = false;
+		credits = 0;
     }
 } gl;
 
@@ -520,6 +522,9 @@ int check_keys(XEvent *e)
             break;
         case XK_s:
             break;
+		case XK_c:
+			gl.credits = managed_state(gl.credits);
+			break;
         case XK_Down:
             break;
         case XK_equal:
@@ -536,12 +541,12 @@ int check_keys(XEvent *e)
             // unlocks and shows cursor
             x11.show_mouse_cursor(gl.paused);
             break;
-      case XK_g:
-        gl.dead = finish_game(gl.dead);
-        break;
-      case XK_y:
-        gl.dead = false;
-        break;
+      	case XK_g:
+        	gl.dead = finish_game(gl.dead);
+	        break;
+      	case XK_y:
+        	gl.dead = false;
+        	break;
     }
     return 0;
 }
@@ -958,11 +963,13 @@ void render()
         Show_HelpScr();
         return;
     }
-   if (gl.dead == true)
-    {
+	if(gl.dead == true){    
         game_over();
     }
-
+	if(gl.credits){
+		show_credits(gl.xres, gl.yres);
+		return;
+	}
 }
 
 
