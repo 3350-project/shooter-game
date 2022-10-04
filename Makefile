@@ -1,7 +1,7 @@
 CFLAGS = -I ./include
 ##LIB    = ./libggfonts.so
 LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm #-lXrandr
-USERS = rwyatt.cpp snez.cpp rgordon.cpp axel.cpp rvelasquez.cpp
+USERS = 
 
 all: asteroids
 
