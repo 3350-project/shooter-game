@@ -21,6 +21,9 @@
 #include "log.h"
 #include "fonts.h"
 
+//Personal file functions
+#include "rwyatt.h"
+
 //defined types
 typedef float Flt;
 typedef float Vec[3];
@@ -55,12 +58,12 @@ extern double timeSpan;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 //-----------------------------------------------------------------------------
-//Personal file functions
 
 class Global {
 public:
     int xres, yres;
     char keys[65536];
+    bool paused{false};
     Global() {
         xres = 640;
         yres = 480;
@@ -383,6 +386,8 @@ void normalize2d(Vec v)
 
 void check_mouse(XEvent *e)
 {
+    if (gl.paused)
+        return;
     //Did the mouse move?
     //Was a mouse button clicked?
     static int savex = 0;
@@ -517,6 +522,9 @@ int check_keys(XEvent *e)
             break;
         case XK_r:
             break;
+        case XK_p:
+            rwyatt::pause_screen(gl.paused);
+            break;
     }
     return 0;
 }
@@ -576,6 +584,9 @@ void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
 
 void physics()
 {
+    if (gl.paused)
+        return;
+
     Flt d0,d1,dist;
     //Update ship position
     g.ship.pos[0] += g.ship.vel[0];
