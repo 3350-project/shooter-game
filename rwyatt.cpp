@@ -3,8 +3,7 @@
 
 namespace rwyatt
 {
-    void print_name()
-    {
-        std::cout << "Reid" << std::endl;
+    void pause_screen(bool &paused) {
+        paused = !paused;
     }
 }
