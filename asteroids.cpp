@@ -536,7 +536,7 @@ int check_keys(XEvent *e)
         case XK_r:
             break;
         case XK_i:
-            gl.intro = manage_state(gl.intro);
+            gl.intro = rgordon::manage_state(gl.intro);
             break;
         case XK_F1:
             gl.HelpScr = snez::manage_stateF1(gl.HelpScr);
