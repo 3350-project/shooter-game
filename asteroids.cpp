@@ -522,9 +522,9 @@ int check_keys(XEvent *e)
             break;
         case XK_s:
             break;
-		case XK_c:
-			gl.credits = managed_state(gl.credits);
-			break;
+	case XK_c:
+	    gl.credits = managed_state(gl.credits);
+	    break;
         case XK_Down:
             break;
         case XK_equal:
@@ -608,6 +608,9 @@ void physics()
 {
     if (gl.paused) {
         return;
+    }
+    if (gl.HelpScr){
+	return;
     }
 
     Flt d0,d1,dist;
@@ -814,25 +817,6 @@ void physics()
             g.mouseThrustOn = false;
     }
 }
-void Show_HelpScr()
-{
-    Rect r;
-    int xcent = gl.xres;
-    int ycent = gl.yres;
-    int w = gl.xres;
-    glColor3f(0.0, 0.0, 0.0);
-    glBegin(GL_QUADS);
-        glVertex2f(xcent-w, ycent-w);
-        glVertex2f(xcent-w, ycent+w);
-        glVertex2f(xcent+w, ycent+w);
-        glVertex2f(xcent+w, ycent-w);
-        glEnd();
-    r.bot = gl.yres - 20;
-    r.left = 10;
-    r.center = 0;
-    ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
-    ggprint8b(&r, 16, 0xffffffff, "Controls: W: Up, D: Right, A: Left, S: Down ");
-}
 
 void game_over()
 {
@@ -855,6 +839,25 @@ void game_over()
     ggprint8b(&r, 16, 0x00ff0000, "Press Escape to stop the game");
     ggprint8b(&r, 16, 0x00ff0000, "Play Again (Y/N)");
 
+}
+void Show_HelpScr()
+{
+    Rect r;
+    int xcent = gl.xres;
+    int ycent = gl.yres;
+    int w = gl.xres;
+    glColor3f(0.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+        glVertex2f(xcent-w, ycent-w);
+        glVertex2f(xcent-w, ycent+w);
+        glVertex2f(xcent+w, ycent+w);
+        glVertex2f(xcent+w, ycent-w);
+        glEnd();
+    r.bot = gl.yres - 20;
+    r.left = 10;
+    r.center = 0;
+    ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
+    ggprint8b(&r, 16, 0xffffffff, "Controls: W: Up, D: Right, A: Left, S: Down ");
 }
 
 void render()
@@ -960,7 +963,7 @@ void render()
         glEnd();
     }
     if(gl.HelpScr){
-        Show_HelpScr();
+	Show_HelpScr();
         return;
     }
 	if(gl.dead == true){    
