@@ -606,13 +606,9 @@ void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
 
 void physics()
 {
-    if (gl.paused) {
+    if (gl.paused|| gl.HelpScr || gl.dead) {
         return;
     }
-    if (gl.HelpScr){
-	return;
-    }
-
     Flt d0,d1,dist;
     //Update ship position
     g.ship.pos[0] += g.ship.vel[0];
@@ -968,8 +964,11 @@ void render()
 	gl.dead = false;
         return;
     }
-	if(gl.dead == true){    
-        game_over();
+	if(gl.dead == true){
+	    game_over();
+	    gl.credits = 0;
+	    gl.HelpScr = 0;
+	    return;
     }
 	if(gl.credits){
 	    show_credits(gl.xres, gl.yres);
