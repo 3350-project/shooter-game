@@ -4,11 +4,7 @@
 // 
 #include <iostream>
 namespace rgordon{
-
-
-
-   ////////////////////////////////////////
-   
+	
 unsigned int manage_state(unsigned int i)
 {
 	i = i ^ 1;
