@@ -966,8 +966,6 @@ void render()
     }
 	if(gl.dead == true){
 	    game_over();
-	    gl.credits = 0;
-	    gl.HelpScr = 0;
 	    return;
     }
 	if(gl.credits){
