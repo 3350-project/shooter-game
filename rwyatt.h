@@ -1,3 +1,3 @@
 namespace rwyatt {
-    extern void pause_screen(bool &paused);
+    void pause_screen(bool &paused);
 }
