@@ -962,16 +962,18 @@ void render()
         glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
         glEnd();
     }
-    if(gl.HelpScr){
+    while(gl.HelpScr){
 	Show_HelpScr();
+	gl.credits = 0;
+	gl.dead = false;
         return;
     }
 	if(gl.dead == true){    
         game_over();
     }
 	if(gl.credits){
-		show_credits(gl.xres, gl.yres);
-		return;
+	    show_credits(gl.xres, gl.yres);
+	    return;
 	}
 }
 
