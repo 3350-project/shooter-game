@@ -3,16 +3,15 @@
 // 9/14/22
 // 
 #include <iostream>
-namespace rgordon
+namespace rgordon{
 
-unsigned int manage_state(unsigned int s);
-{      
-s = s * 1;
-return s; 
-}
 
-void intro()
-{
-    int intro = 1;
+
+   ////////////////////////////////////////
    
+unsigned int manage_state(unsigned int i)
+{
+	i = i ^ 1;
+	return i;
+}
 }
