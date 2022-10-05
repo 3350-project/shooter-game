@@ -26,6 +26,7 @@
 #include "snez.h"
 #include "aarcosavalos.h"
 #include "rvelasquez.h"
+#include "rgordon.h"
 
 //defined types
 typedef float Flt;
@@ -64,7 +65,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 class Global {
 public:
-    int xres, yres, HelpScr, credits;
+    int xres, yres, HelpScr, credits, intro;
     char keys[65536];
     bool paused{false};
     bool dead;	
@@ -75,6 +76,7 @@ public:
         HelpScr = 0;
         dead = false;
 		credits = 0;
+        intro = 0;
     }
 } gl;
 
@@ -533,6 +535,9 @@ int check_keys(XEvent *e)
             break;
         case XK_r:
             break;
+        case XK_i:
+            gl.intro = manage_state(gl.intro);
+            break;
         case XK_F1:
             gl.HelpScr = snez::manage_stateF1(gl.HelpScr);
             break;
@@ -856,6 +861,28 @@ void Show_HelpScr()
     ggprint8b(&r, 16, 0xffffffff, "Controls: W: Up, D: Right, A: Left, S: Down ");
 }
 
+void intro()
+{
+    Rect r;
+	//clear the screen 
+	glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+        glVertex2f(-12.0f, -10.0f);
+        glVertex2f(  0.0f,  20.0f);
+        glVertex2f(  0.0f,  -6.0f);
+        glVertex2f(  0.0f,  -6.0f);
+        glVertex2f(  0.0f,  20.0f);
+        glVertex2f( 12.0f, -10.0f);
+        glEnd();
+    r.bot = gl.yres - 20;
+    r.left = 10;
+    r.center = 0;
+	//print welcome
+	ggprint8b(&r, 16, 0x00ff0000, "Welcome");
+	
+}
+
 void render()
 {
     Rect r;
@@ -972,7 +999,10 @@ void render()
 	    show_credits(gl.xres, gl.yres);
 	    return;
 	}
+    if(gl.intro){
+        intro();
+        return;
+
+    }
+
 }
-
-
-
