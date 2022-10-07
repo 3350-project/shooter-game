@@ -858,7 +858,7 @@ void Show_HelpScr()
     r.left = 10;
     r.center = 0;
     ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
-    ggprint8b(&r, 16, 0xffffffff, "Controls: W: Up, D: Right, A: Left, S: Down ");
+    ggprint8b(&r, 16, 0xffffffff, "Controls: W: Turn on Thrusters, D: Turn Right, A: Turn Left");
 }
 
 void intro()
