@@ -841,26 +841,6 @@ void game_over()
     ggprint8b(&r, 16, 0x00ff0000, "Play Again (Y/N)");
 
 }
-void Show_HelpScr()
-{
-    Rect r;
-    int xcent = gl.xres;
-    int ycent = gl.yres;
-    int w = gl.xres;
-    glColor3f(0.0, 0.0, 0.0);
-    glBegin(GL_QUADS);
-        glVertex2f(xcent-w, ycent-w);
-        glVertex2f(xcent-w, ycent+w);
-        glVertex2f(xcent+w, ycent+w);
-        glVertex2f(xcent+w, ycent-w);
-        glEnd();
-    r.bot = gl.yres - 20;
-    r.left = 10;
-    r.center = 0;
-    ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
-    ggprint8b(&r, 16, 0xffffffff, "Controls: W: Turn on Thrusters, D: Turn Right, A: Turn Left");
-}
-
 void intro()
 {
     Rect r;
@@ -986,9 +966,9 @@ void render()
         glEnd();
     }
     while(gl.HelpScr){
-	Show_HelpScr();
-	gl.credits = 0;
-	gl.dead = false;
+        snez::Show_HelpScr(gl.xres, gl.yres);
+        gl.credits = 0;
+        gl.dead = false;
         return;
     }
 	if(gl.dead == true){
