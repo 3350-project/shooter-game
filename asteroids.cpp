@@ -841,27 +841,6 @@ void game_over()
     ggprint8b(&r, 16, 0x00ff0000, "Play Again (Y/N)");
 
 }
-void intro()
-{
-    Rect r;
-	//clear the screen 
-	glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0, 0.0, 0.0);
-    glBegin(GL_QUADS);
-        glVertex2f(-12.0f, -10.0f);
-        glVertex2f(  0.0f,  20.0f);
-        glVertex2f(  0.0f,  -6.0f);
-        glVertex2f(  0.0f,  -6.0f);
-        glVertex2f(  0.0f,  20.0f);
-        glVertex2f( 12.0f, -10.0f);
-        glEnd();
-    r.bot = gl.yres - 20;
-    r.left = 10;
-    r.center = 0;
-	//print welcome
-	ggprint8b(&r, 16, 0x00ff0000, "Welcome");
-	
-}
 
 void render()
 {
@@ -980,8 +959,8 @@ void render()
 	    return;
 	}
     if(gl.intro){
-        intro();
-        return;
+	    rgordon::intro(gl.xres, gl.yres);
+	    return;
 
     }
 
