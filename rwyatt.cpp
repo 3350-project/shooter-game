@@ -1,9 +1,18 @@
 // Reid Wyatt
 #include <iostream>
+#include "rwyatt.h"
 
-namespace rwyatt
+void rwyatt::flip_state(bool &state)
 {
-    void pause_screen(bool &paused) {
-        paused = !paused;
-    }
+    state = !state;
+}
+
+void rwyatt::pause_screen(bool &paused) 
+{
+    flip_state(paused);
+}
+
+void rwyatt::network_mode(bool &networked) 
+{
+    flip_state(networked);
 }
