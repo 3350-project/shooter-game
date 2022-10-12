@@ -6,10 +6,10 @@ class RWyatt
 {
 private:
     static void flip_state(bool &state);
-    static void draw_border(int xres, int yres);
     bool network_state;
 public:
     static void pause_screen(bool &paused);
+    static void draw_border(int xres, int yres);
     bool startNetworking();
     bool stopNetworking();
     bool networked();
