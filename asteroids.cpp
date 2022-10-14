@@ -948,6 +948,7 @@ void render()
         snez::Show_HelpScr(gl.xres, gl.yres);
         gl.credits = 0;
         gl.dead = false;
+	gl.paused = false;
         return;
     }
 	if(gl.dead == true){

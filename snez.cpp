@@ -31,5 +31,7 @@ void Show_HelpScr(int xres, int yres)
     ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
     ggprint8b(&r, 16, 0xffffffff, "Controls: W: Turn on Thrusters, D: Turn Right, A: Turn Left");
 }
-
+//void feature_mode() {
+//	speed = 10.0;
+//}
 }
