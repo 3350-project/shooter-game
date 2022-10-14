@@ -542,7 +542,7 @@ int check_keys(XEvent *e)
             gl.HelpScr = snez::manage_stateF1(gl.HelpScr);
             break;
         case XK_p:
-            rwyatt::pause_screen(gl.paused);
+            RWyatt::pause_screen(gl.paused);
             // unlocks and shows cursor
             x11.show_mouse_cursor(gl.paused);
             break;
