@@ -316,6 +316,9 @@ public:
 } x11(gl.xres, gl.yres);
 // ---> for fullscreen x11(0, 0);
 
+// personal class instance for state management
+RWyatt rw;
+
 //function prototypes
 void init_opengl(void);
 void check_mouse(XEvent *e);
@@ -545,6 +548,9 @@ int check_keys(XEvent *e)
             RWyatt::pause_screen(gl.paused);
             // unlocks and shows cursor
             x11.show_mouse_cursor(gl.paused);
+            break;
+        case XK_F7:
+            !rw.networked() ? rw.startNetworking() : rw.stopNetworking();
             break;
       	case XK_g:
         	gl.dead = finish_game(gl.dead);
@@ -962,6 +968,9 @@ void render()
 	    rgordon::intro(gl.xres, gl.yres);
 	    return;
 
+    }
+    if (rw.networked()) {
+        RWyatt::draw_border(gl.xres, gl.yres);
     }
 
 }
