@@ -68,13 +68,13 @@ public:
     int xres, yres, HelpScr, credits, intro;
     char keys[65536];
     bool paused{false};
-    bool dead;	
+    unsigned int dead;	
     Global() {
         xres = 640;
         yres = 480;
         memset(keys, 0, 65536);
         HelpScr = 0;
-        dead = false;
+        dead = 0;
 		credits = 0;
         intro = 0;
     }
@@ -316,6 +316,9 @@ public:
 } x11(gl.xres, gl.yres);
 // ---> for fullscreen x11(0, 0);
 
+// personal class instance for state management
+RWyatt rw;
+
 //function prototypes
 void init_opengl(void);
 void check_mouse(XEvent *e);
@@ -546,11 +549,15 @@ int check_keys(XEvent *e)
             // unlocks and shows cursor
             x11.show_mouse_cursor(gl.paused);
             break;
+        case XK_F7:
+            !rw.networked() ? rw.startNetworking() : rw.stopNetworking();
+            break;
       	case XK_g:
-        	gl.dead = finish_game(gl.dead);
+            gl.dead = 1;
 	        break;
       	case XK_y:
-        	gl.dead = false;
+            // if player chose to play again make it 0 (false)
+        	gl.dead = 0;
         	break;
     }
     return 0;
@@ -819,29 +826,6 @@ void physics()
     }
 }
 
-void game_over()
-{
-   Rect r;
-    glClear(GL_COLOR_BUFFER_BIT);
-    glColor3f(1.0, 0.0, 0.0);
-    glBegin(GL_QUADS);
-    glVertex2f(-12.0f, -10.0f);
-    glVertex2f(  0.0f,  20.0f);
-    glVertex2f(  0.0f,  -6.0f);
-    glVertex2f(  0.0f,  -6.0f);
-    glVertex2f(  0.0f,  20.0f);
-    glVertex2f( 12.0f, -10.0f);
-    glEnd();
-
-    r.bot = gl.yres - 20;
-    r.left = 10;
-    r.center = 0;
-    ggprint8b(&r, 16, 0x00ff0000, "GAME OVER");
-    ggprint8b(&r, 16, 0x00ff0000, "Press Escape to stop the game");
-    ggprint8b(&r, 16, 0x00ff0000, "Play Again (Y/N)");
-
-}
-
 void render()
 {
     Rect r;
@@ -951,8 +935,8 @@ void render()
 	gl.paused = false;
         return;
     }
-	if(gl.dead == true){
-	    game_over();
+	if(gl.dead == 1){
+        aarcosavalos::finish_game(gl.xres, gl.yres);
 	    return;
     }
 	if(gl.credits){
@@ -963,6 +947,9 @@ void render()
 	    rgordon::intro(gl.xres, gl.yres);
 	    return;
 
+    }
+    if (rw.networked()) {
+        RWyatt::draw_border(gl.xres, gl.yres);
     }
 
 }
