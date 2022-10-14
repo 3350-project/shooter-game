@@ -1,3 +1,5 @@
-void print_name();
+
+namespace aarcosavalos {
 int manage_state(unsigned int s);
-bool finish_game(bool s);
+void finish_game(int xres, int yres);
+}
