@@ -70,8 +70,8 @@ public:
     bool paused{false};
     unsigned int dead;	
     Global() {
-        xres = 640;
-        yres = 480;
+        xres = 1280;
+        yres = 720;
         memset(keys, 0, 65536);
         HelpScr = 0;
         dead = 0;
@@ -755,17 +755,17 @@ void physics()
     }
     //---------------------------------------------------
     //check keys pressed now
-    if (gl.keys[XK_Left]) {
+    if (gl.keys[XK_a]) {
         g.ship.angle += 4.0;
         if (g.ship.angle >= 360.0f)
             g.ship.angle -= 360.0f;
     }
-    if (gl.keys[XK_Right]) {
+    if (gl.keys[XK_d]) {
         g.ship.angle -= 4.0;
         if (g.ship.angle < 0.0f)
             g.ship.angle += 360.0f;
     }
-    if (gl.keys[XK_Up]) {
+    if (gl.keys[XK_w]) {
         //apply thrust
         //convert ship angle to radians
         Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
