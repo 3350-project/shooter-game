@@ -5,8 +5,16 @@
 #include <GL/glx.h>
 #include "fonts.h"
 
-namespace snez{
-    
+namespace snez
+{
+
+Rect r;
+unsigned int manage_stateF2(unsigned int F2)
+{
+    F2 = F2 ^ 1;
+    return F2;
+}
+
 unsigned int manage_stateF1(unsigned int F1)
 {
     F1 = F1 ^ 1;
@@ -14,7 +22,6 @@ unsigned int manage_stateF1(unsigned int F1)
 }
 void Show_HelpScr(int xres, int yres)
 {
-    Rect r;
     int xcent = xres;
     int ycent = yres;
     int w = xres;
@@ -32,9 +39,13 @@ void Show_HelpScr(int xres, int yres)
     ggprint8b(&r, 16, 0xffffffff, "Controls: W: Turn on Thrusters and go forwards, D: Turn Right, A: Turn Left");
 }
 //This will be my Function that will detect collision and will coincide with taking damage aswell
-//void collision_detection() {
-//
-//}
+void collision_detection(int xres, int yres) 
+{
+    r.bot = yres - 20;
+    r.left = 10;
+    r.center = 0;
+    ggprint8b(&r, 16, 0xffffffff, "Collision Detection Test");
+}
 //This will be my Ai function that allows the enemies to follow the location of player
 //void Ai(){
 //
