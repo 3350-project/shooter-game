@@ -9,6 +9,7 @@ namespace snez
 {
 
 Rect r;
+float PI;
 unsigned int manage_stateF2(unsigned int F2)
 {
     F2 = F2 ^ 1;
@@ -41,6 +42,7 @@ void Show_HelpScr(int xres, int yres)
 //This will be my Function that will detect collision and will coincide with taking damage aswell
 void collision_detection(int xres, int yres) 
 {
+    PI = 3.1415;
     r.bot = yres - 20;
     r.left = 10;
     r.center = 0;

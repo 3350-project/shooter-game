@@ -837,6 +837,9 @@ void render()
 	r.bot = gl.yres - 20;
 	r.left = 10;
 	r.center = 0;
+	//if(gl.Collision == 1) {
+	//    return;
+	//   }
 	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
 	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
 	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
@@ -889,10 +892,7 @@ void render()
 	{
 		Asteroid *a = g.ahead;
 		if (gl.Collision == 1){
-		//	glPushMatrix();
-		//	glColor3fv(a->color);
-		//	glPushMatrix();
-		//	glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
+			snez::collision_detection(gl.xres, gl.yres);
 		} else {
 			while (a) {
 				//Log("draw asteroid...\n");
@@ -943,10 +943,6 @@ void render()
 		gl.credits = 0;
 		gl.dead = false;
 		gl.paused = false;
-		return;
-	}
-	if (gl.Collision == 1) {
-		snez::collision_detection(gl.xres, gl.yres);
 		return;
 	}
 	if(gl.dead == 1){
