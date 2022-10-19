@@ -775,12 +775,12 @@ void physics()
 		//convert angle to a vector
 		Flt xdir = cos(rad);
 		Flt ydir = sin(rad);
-		g.ship.vel[0] += xdir*0.02f;
-		g.ship.vel[1] += ydir*0.02f;
+		g.ship.vel[0] += xdir*0.1f;
+		g.ship.vel[1] += ydir*0.1f;
 		Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
 				g.ship.vel[1]*g.ship.vel[1]);
-		if (speed > 10.0f) {
-			speed = 10.0f;
+		if (speed > 5.0f) {
+			speed = 5.0f;
 			normalize2d(g.ship.vel);
 			g.ship.vel[0] *= speed;
 			g.ship.vel[1] *= speed;
@@ -840,9 +840,14 @@ void render()
 	//if(gl.Collision == 1) {
 	//    return;
 	//   }
+	if(gl.Collision == 0) {
 	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
 	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
 	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+	}
+	else {
+	    snez::collision_detection(gl.xres, gl.yres);
+	}
 	//-------------------------------------------------------------------------
 	//Draw the ship
 	glColor3fv(g.ship.color);
