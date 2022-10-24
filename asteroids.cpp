@@ -18,6 +18,7 @@
 //#include <GL/glu.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
+#include <math.h>
 #include "log.h"
 #include "fonts.h"
 
@@ -896,21 +897,26 @@ void render()
 	//Draw the asteroids
 	{
 		Asteroid *a = g.ahead;
-		if (gl.Collision == 1){
-			snez::collision_detection(gl.xres, gl.yres);
-		} else {
 			while (a) {
 				//Log("draw asteroid...\n");
 				glColor3fv(a->color);
 				glPushMatrix();
 				glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
 				glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
-				glBegin(GL_LINE_LOOP);
+			    snez::collision_detection(gl.xres, gl.yres);
+                //float theta;
+				//glBegin(GL_POLYGON);
 				//Log("%i verts\n",a->nverts);
-				for (int j=0; j<a->nverts; j++) {
-					glVertex2f(a->vert[j][0], a->vert[j][1]);
-				}
-				glEnd();
+			    //for (int j=0; j<a->nverts; j++) {
+				//    glVertex2f(a->vert[j][0], a->vert[j][1]);
+				//}
+                //Made the asteroids into circles that could later be
+                //changed into an image for now.
+                //for(int i = 0; i < 360; i++) {
+                    //theta = i*3.142/180;
+                    //glVertex2f(10*cos(theta), 10*sin(theta));
+                //}
+				//glEnd();
 				//glBegin(GL_LINES);
 				//  glVertex2f(0,   0);
 				//  glVertex2f(a->radius, 0);
@@ -921,9 +927,8 @@ void render()
 				glVertex2f(a->pos[0], a->pos[1]);
 				glEnd();
 				a = a->next;
-			}
-		}
-	}
+            }
+    }
 	//-------------------------------------------------------------------------
 	//Draw the bullets
 	for (int i=0; i<g.nbullets; i++) {

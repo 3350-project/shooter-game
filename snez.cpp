@@ -47,17 +47,20 @@ void collision_detection(int xres, int yres)
     } 
     if (yres == 100) { 
     }
-
-    float PI = 3.14159; 
-    glBegin(GL_POINTS); 
-    for (int i = 0; i < 1000; i++) { 
-	glVertex3f(cos(2 * PI * i/1000.0), sin(2 * PI * i/1000.0),0); 
-    } 
-    glEnd(); 
-    r.bot = yres - 20; 
-    r.left = 10; 
-    r.center = 0; 
-    ggprint8b(&r, 16, 0xffffffff, "Collision Detection Test");
+    float theta;
+    glBegin(GL_POLYGON);
+                //Log("%i verts\n",a->nverts);
+                //for (int j=0; j<a->nverts; j++) {
+                //    glVertex2f(a->vert[j][0], a->vert[j][1]);
+                //}
+                //Made the asteroids into circles that could later be
+                //changed into an image for now.
+        for(int i = 0; i < 360; i++) {
+            theta = i*3.142/180;
+            glVertex2f(10*cos(theta), 10*sin(theta));
+        }
+    glEnd();
+    //ggprint8b(&r, 16, 0xffffffff, "Collision Detection Test");
 }
 //This will be my Ai function that allows the enemies to follow the location of player
 //void Ai(){
