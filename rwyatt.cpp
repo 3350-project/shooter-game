@@ -46,14 +46,14 @@ RWyatt::RWyatt() {
     network_state = false;
 }
 
-bool RWyatt::startNetworking() 
+bool RWyatt::start_networking() 
 {
     this->network_state = true;
     // TODO: network client
     return EXIT_FAILURE;
 }
 
-bool RWyatt::stopNetworking() 
+bool RWyatt::stop_networking() 
 {
     this->network_state = false;
     // TODO: network client

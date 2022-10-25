@@ -551,7 +551,7 @@ int check_keys(XEvent *e)
 			x11.show_mouse_cursor(gl.paused);
 			break;
 		case XK_F7:
-			!rw.networked() ? rw.startNetworking() : rw.stopNetworking();
+			!rw.networked() ? rw.start_networking() : rw.stop_networking();
 			break;
 		case XK_F2:
 			gl.Collision = snez::manage_stateF2(gl.Collision);
