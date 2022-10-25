@@ -1,6 +1,7 @@
 // Reid Wyatt
 #include <iostream>
 #include <GL/glx.h>
+#include "fonts.h"
 #include "rwyatt.h"
 
 /*
