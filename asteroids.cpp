@@ -154,6 +154,9 @@ class Game {
 			for (int j=0; j<10; j++) {
 				Asteroid *a = new Asteroid;
 				a->nverts = 8;
+				if(gl.Collision ==1 ) {
+				a->radius =10.0;
+				}
 				a->radius = rnd()*80.0 + 40.0;
 				Flt r2 = a->radius / 2.0;
 				Flt angle = 0.0f;
@@ -332,7 +335,7 @@ void render();
 //==========================================================================
 // M A I N
 //==========================================================================
-int main()
+int main(int argc, char* argv[])
 {
 	logOpen();
 	init_opengl();
@@ -341,6 +344,7 @@ int main()
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	x11.set_mouse_position(100,100);
 	int done=0;
+    rw.set_network_config(argc, argv);
 	while (!done) {
 		while (x11.getXPending()) {
 			XEvent e = x11.getXNextEvent();
@@ -559,7 +563,7 @@ int check_keys(XEvent *e)
 			x11.show_mouse_cursor(gl.paused);
 			break;
 		case XK_F7:
-			!rw.networked() ? rw.startNetworking() : rw.stopNetworking();
+			!rw.networked() ? rw.start_networking() : rw.stop_networking();
 			break;
 		case XK_F2:
 			gl.Collision = snez::manage_stateF2(gl.Collision);
@@ -660,7 +664,7 @@ void physics()
 		Bullet *b = &g.barr[i];
 		//How long has bullet been alive?
 		double ts = timeDiff(&b->time, &bt);
-		if (ts > 2.5) {
+		if (ts > 2.0) {
 			//time to delete the bullet.
 			memcpy(&g.barr[i], &g.barr[g.nbullets-1],
 					sizeof(Bullet));
@@ -723,26 +727,11 @@ void physics()
 			d0 = b->pos[0] - a->pos[0];
 			d1 = b->pos[1] - a->pos[1];
 			dist = (d0*d0 + d1*d1);
-			if (dist < (a->radius*a->radius)) {
-				//std::cout << "asteroid hit." << std::endl;
+			/*Testing for smaller radius collision
+			 *if (gl.Collision ==1) {
+			    if(dist < (a->radius)) {
+				std::cout << "asteroid hit." << std::endl;
 				//this asteroid is hit.
-				if (a->radius > MINIMUM_ASTEROID_SIZE) {
-					//break it into pieces.
-					Asteroid *ta = a;
-					buildAsteroidFragment(ta, a);
-					int r = rand()%10+5;
-					for (int k=0; k<r; k++) {
-						//get the next asteroid position in the array
-						Asteroid *ta = new Asteroid;
-						buildAsteroidFragment(ta, a);
-						//add to front of asteroid linked list
-						ta->next = g.ahead;
-						if (g.ahead != NULL)
-							g.ahead->prev = ta;
-						g.ahead = ta;
-						g.nasteroids++;
-					}
-				} else {
 					a->color[0] = 1.0;
 					a->color[1] = 0.1;
 					a->color[2] = 0.1;
@@ -752,7 +741,26 @@ void physics()
 					deleteAsteroid(&g, a);
 					a = savea;
 					g.nasteroids--;
-				}
+				//delete the bullet...
+				memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+				g.nbullets--;
+				if (a == NULL)
+					break;
+			    }
+			}
+			*/
+			if (dist < (a->radius * a->radius)) {
+				std::cout << "asteroid hit." << std::endl;
+				//this asteroid is hit.
+					a->color[0] = 1.0;
+					a->color[1] = 0.1;
+					a->color[2] = 0.1;
+					//asteroid is too small to break up
+					//delete the asteroid and bullet
+					Asteroid *savea = a->next;
+					deleteAsteroid(&g, a);
+					a = savea;
+					g.nasteroids--;
 				//delete the bullet...
 				memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
 				g.nbullets--;
@@ -840,6 +848,9 @@ void physics()
 
 void render()
 {
+    //Steven's render stuff for chaning asteroids shapes
+    	if (gl.Collision == 1) {
+	    
 	Rect r;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//
@@ -849,14 +860,9 @@ void render()
 	//if(gl.Collision == 1) {
 	//    return;
 	//   }
-	if(gl.Collision == 0) {
-	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
-	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-	}
-	else {
-	    snez::collision_detection(gl.xres, gl.yres);
-	}
+	ggprint8b(&r, 16, 0x00ffff00, "Press F1 To Enter Help Screen");
+	ggprint8b(&r, 16, 0x00ffffff, "Welcome to my Feature Mode");
+    
 	//-------------------------------------------------------------------------
 	//Draw the ship
 	glColor3fv(g.ship.color);
@@ -911,8 +917,135 @@ void render()
 				glPushMatrix();
 				glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
 				glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
-			    	//if(
-				//snez::collision_detection(gl.xres, gl.yres);
+
+				snez::collision_detection(gl.xres, gl.yres);
+				//glBegin(GL_POLYGON);
+				//Log("%i verts\n",a->nverts);
+				//glBegin(GL_LINES);
+				 // glVertex2f(0,   0);
+				  //glVertex2f(a->radius, 0);
+				//glEnd();
+				glPopMatrix();
+				glColor3f(1.0f, 0.0f, 0.0f);
+				a = a->next;
+            }
+    }
+	//-------------------------------------------------------------------------
+	//Draw the bullets
+	for (int i=0; i<g.nbullets; i++) {
+		Bullet *b = &g.barr[i];
+		//Log("draw bullet...\n");
+		glColor3f(1.0, 1.0, 1.0);
+		glBegin(GL_POINTS);
+		glVertex2f(b->pos[0],      b->pos[1]);
+		glVertex2f(b->pos[0]-1.0f, b->pos[1]);
+		glVertex2f(b->pos[0]+1.0f, b->pos[1]);
+		glVertex2f(b->pos[0],      b->pos[1]-1.0f);
+		glVertex2f(b->pos[0],      b->pos[1]+1.0f);
+		glColor3f(0.8, 0.8, 0.8);
+		glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
+		glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
+		glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
+		glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
+		glEnd();
+	}
+	while(gl.HelpScr){
+		snez::Show_HelpScr(gl.xres, gl.yres);
+		gl.credits = 0;
+		gl.dead = false;
+		gl.paused = false;
+		return;
+	}
+	if(gl.dead == 1){
+		aarcosavalos::finish_game(gl.xres, gl.yres);
+		return;
+	}
+	if(gl.credits){
+		show_credits(gl.xres, gl.yres);
+		return;
+	}
+	if(gl.intro){
+		rgordon::intro(gl.xres, gl.yres);
+		return;
+
+	}
+	if (rw.networked()) {
+		RWyatt::draw_border(gl.xres, gl.yres);
+	}
+
+
+	} else {
+	Rect r;
+	Rect s;
+	glClear(GL_COLOR_BUFFER_BIT);
+	//
+	s.bot = gl.yres-20;
+	s.left = gl.xres/2.5;
+	s.center = 0;
+	r.bot = gl.yres - 20;
+	r.left = 10;
+	r.center = 0;
+	//if(gl.Collision == 1) {
+	//    return;
+	//   }
+	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
+	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
+	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+	ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter Help Screen");
+	//-------------------------------------------------------------------------
+	//Draw the ship
+	glColor3fv(g.ship.color);
+	glPushMatrix();
+	glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
+	//float angle = atan2(ship.dir[1], ship.dir[0]);
+	glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
+	glBegin(GL_TRIANGLES);
+	//glVertex2f(-10.0f, -10.0f);
+	//glVertex2f(  0.0f, 20.0f);
+	//glVertex2f( 10.0f, -10.0f);
+	glVertex2f(-12.0f, -10.0f);
+	glVertex2f(  0.0f,  20.0f);
+	glVertex2f(  0.0f,  -6.0f);
+	glVertex2f(  0.0f,  -6.0f);
+	glVertex2f(  0.0f,  20.0f);
+	glVertex2f( 12.0f, -10.0f);
+	glEnd();
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_POINTS);
+	glVertex2f(0.0f, 0.0f);
+	glEnd();
+	glPopMatrix();
+	if (gl.keys[XK_Up] || g.mouseThrustOn) {
+		int i;
+		//draw thrust
+		Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+		//convert angle to a vector
+		Flt xdir = cos(rad);
+		Flt ydir = sin(rad);
+		Flt xs,ys,xe,ye,r;
+		glBegin(GL_LINES);
+		for (i=0; i<16; i++) {
+			xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
+			ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
+			r = rnd()*40.0+40.0;
+			xe = -xdir * r + rnd() * 18.0 - 9.0;
+			ye = -ydir * r + rnd() * 18.0 - 9.0;
+			glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
+			glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
+			glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
+		}
+		glEnd();
+	}
+	//-------------------------------------------------------------------------
+	//Draw the asteroids
+	{
+		Asteroid *a = g.ahead;
+			while (a) {
+				//Log("draw asteroid...\n");
+				glColor3fv(a->color);
+				glPushMatrix();
+				glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
+				glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
                 //float theta;
 				//glBegin(GL_POLYGON);
 				glBegin(GL_LINE_LOOP);
@@ -927,9 +1060,6 @@ void render()
 				//glEnd();
 				glPopMatrix();
 				glColor3f(1.0f, 0.0f, 0.0f);
-				glBegin(GL_POINTS);
-				glVertex2f(a->pos[0], a->pos[1]);
-				glEnd();
 				a = a->next;
             }
     }
@@ -981,7 +1111,9 @@ void render()
 
 	}
 	if (rw.networked()) {
-		RWyatt::draw_border(gl.xres, gl.yres);
+        RWyatt::draw_border(gl.xres, gl.yres);
+        rw.draw_networking(gl.xres, gl.yres);
+	}
 	}
 
 }

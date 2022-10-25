@@ -34,33 +34,28 @@ void Show_HelpScr(int xres, int yres)
         glVertex2f(xcent+w, ycent+w);
         glVertex2f(xcent+w, ycent-w);
         glEnd();
-    r.bot = yres - 20;
-    r.left = 10;
+    r.bot = yres - 100;
+    r.left = xres/3;
     r.center = 0;
     ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
     ggprint8b(&r, 16, 0xffffffff, "Controls: W: Turn on Thrusters and go forwards, D: Turn Right, A: Turn Left");
+    ggprint8b(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
 }
 //This will be my Function that will detect collision and will coincide with taking damage aswell
 void collision_detection(int xres, int yres) 
 {
+    
     if (xres == 100) { 
     } 
     if (yres == 100) { 
     }
     float theta;
     glBegin(GL_POLYGON);
-                //Log("%i verts\n",a->nverts);
-                //for (int j=0; j<a->nverts; j++) {
-                //    glVertex2f(a->vert[j][0], a->vert[j][1]);
-                //}
-                //Made the asteroids into circles that could later be
-                //changed into an image for now.
         for(int i = 0; i < 360; i++) {
             theta = i*3.142/180;
             glVertex2f(10*cos(theta), 10*sin(theta));
         }
     glEnd();
-    //ggprint8b(&r, 16, 0xffffffff, "Collision Detection Test");
 }
 //This will be my Ai function that allows the enemies to follow the location of player
 //void Ai(){
