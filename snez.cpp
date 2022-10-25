@@ -34,8 +34,8 @@ void Show_HelpScr(int xres, int yres)
         glVertex2f(xcent+w, ycent+w);
         glVertex2f(xcent+w, ycent-w);
         glEnd();
-    r.bot = yres - 20;
-    r.left = 10;
+    r.bot = yres - 100;
+    r.left = xres/3;
     r.center = 0;
     ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
     ggprint8b(&r, 16, 0xffffffff, "Controls: W: Turn on Thrusters and go forwards, D: Turn Right, A: Turn Left");
