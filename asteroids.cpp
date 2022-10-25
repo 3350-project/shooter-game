@@ -152,7 +152,7 @@ class Game {
 			for (int j=0; j<10; j++) {
 				Asteroid *a = new Asteroid;
 				a->nverts = 8;
-				a->radius = rnd()*80.0 + 40.0;
+				a->radius = rnd()*40.0 + 40.0;
 				Flt r2 = a->radius / 2.0;
 				Flt angle = 0.0f;
 				Flt inc = (PI * 2.0) / (Flt)a->nverts;
