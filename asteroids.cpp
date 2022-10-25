@@ -66,7 +66,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 
 class Global {
 	public:
-		int xres, yres, HelpScr, credits, intro, Collision;
+		int xres, yres, HelpScr, credits, sound, soundTestMode, intro, Collision;
 		char keys[65536];
 		bool paused{false};
 		unsigned int dead;	
@@ -77,7 +77,9 @@ class Global {
 			HelpScr = 0;
 			dead = 0;
 			credits = 0;
-			intro = 0;
+			soundTestMode = 0;
+			sound = 0;
+			intro = 0;            
 		}
 } gl;
 
@@ -529,7 +531,13 @@ int check_keys(XEvent *e)
 		case XK_s:
 			break;
 		case XK_c:
-			gl.credits = managed_state(gl.credits);
+			gl.credits = managed_state_credits(gl.credits);
+			break;
+		case XK_x:
+			gl.sound = managed_state_sound(gl.sound);
+			break;
+		case XK_t:
+			gl.soundTestMode = managed_state_soundTestMode(gl.soundTestMode);		
 			break;
 		case XK_Down:
 			break;
@@ -959,6 +967,14 @@ void render()
 		show_credits(gl.xres, gl.yres);
 		return;
 	}
+	if(gl.soundTestMode) {
+		sound_test_mode(gl.xres, gl.yres);
+		return;
+	}
+	if(gl.sound) {
+		play_sound();
+		return;
+	}		
 	if(gl.intro){
 		rgordon::intro(gl.xres, gl.yres);
 		return;
