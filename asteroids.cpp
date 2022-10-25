@@ -832,6 +832,8 @@ void physics()
 
 void render()
 {
+    	if (gl.Collision == 1) {
+	    
 	Rect r;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//
@@ -841,14 +843,9 @@ void render()
 	//if(gl.Collision == 1) {
 	//    return;
 	//   }
-	if(gl.Collision == 0) {
 	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
 	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
 	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-	}
-	else {
-	    snez::collision_detection(gl.xres, gl.yres);
-	}
 	//-------------------------------------------------------------------------
 	//Draw the ship
 	glColor3fv(g.ship.color);
@@ -903,25 +900,16 @@ void render()
 				glPushMatrix();
 				glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
 				glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
-			    	//if(
-				//snez::collision_detection(gl.xres, gl.yres);
-                //float theta;
+
+				snez::collision_detection(gl.xres, gl.yres);
 				//glBegin(GL_POLYGON);
-				glBegin(GL_LINE_LOOP);
 				//Log("%i verts\n",a->nverts);
-			    	for (int j=0; j<a->nverts; j++) {
-				    glVertex2f(a->vert[j][0], a->vert[j][1]);
-				}
-				glEnd();
 				//glBegin(GL_LINES);
 				 // glVertex2f(0,   0);
 				  //glVertex2f(a->radius, 0);
 				//glEnd();
 				glPopMatrix();
 				glColor3f(1.0f, 0.0f, 0.0f);
-				glBegin(GL_POINTS);
-				glVertex2f(a->pos[0], a->pos[1]);
-				glEnd();
 				a = a->next;
             }
     }
@@ -966,6 +954,135 @@ void render()
 	}
 	if (rw.networked()) {
 		RWyatt::draw_border(gl.xres, gl.yres);
+	}
+
+
+	} else {
+	Rect r;
+	glClear(GL_COLOR_BUFFER_BIT);
+	//
+	r.bot = gl.yres - 20;
+	r.left = 10;
+	r.center = 0;
+	//if(gl.Collision == 1) {
+	//    return;
+	//   }
+	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
+	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
+	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+	//-------------------------------------------------------------------------
+	//Draw the ship
+	glColor3fv(g.ship.color);
+	glPushMatrix();
+	glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
+	//float angle = atan2(ship.dir[1], ship.dir[0]);
+	glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
+	glBegin(GL_TRIANGLES);
+	//glVertex2f(-10.0f, -10.0f);
+	//glVertex2f(  0.0f, 20.0f);
+	//glVertex2f( 10.0f, -10.0f);
+	glVertex2f(-12.0f, -10.0f);
+	glVertex2f(  0.0f,  20.0f);
+	glVertex2f(  0.0f,  -6.0f);
+	glVertex2f(  0.0f,  -6.0f);
+	glVertex2f(  0.0f,  20.0f);
+	glVertex2f( 12.0f, -10.0f);
+	glEnd();
+	glColor3f(1.0f, 0.0f, 0.0f);
+	glBegin(GL_POINTS);
+	glVertex2f(0.0f, 0.0f);
+	glEnd();
+	glPopMatrix();
+	if (gl.keys[XK_Up] || g.mouseThrustOn) {
+		int i;
+		//draw thrust
+		Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+		//convert angle to a vector
+		Flt xdir = cos(rad);
+		Flt ydir = sin(rad);
+		Flt xs,ys,xe,ye,r;
+		glBegin(GL_LINES);
+		for (i=0; i<16; i++) {
+			xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
+			ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
+			r = rnd()*40.0+40.0;
+			xe = -xdir * r + rnd() * 18.0 - 9.0;
+			ye = -ydir * r + rnd() * 18.0 - 9.0;
+			glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
+			glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
+			glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
+		}
+		glEnd();
+	}
+	//-------------------------------------------------------------------------
+	//Draw the asteroids
+	{
+		Asteroid *a = g.ahead;
+			while (a) {
+				//Log("draw asteroid...\n");
+				glColor3fv(a->color);
+				glPushMatrix();
+				glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
+				glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
+                //float theta;
+				//glBegin(GL_POLYGON);
+				glBegin(GL_LINE_LOOP);
+				//Log("%i verts\n",a->nverts);
+			    	for (int j=0; j<a->nverts; j++) {
+				    glVertex2f(a->vert[j][0], a->vert[j][1]);
+				}
+				glEnd();
+				//glBegin(GL_LINES);
+				 // glVertex2f(0,   0);
+				  //glVertex2f(a->radius, 0);
+				//glEnd();
+				glPopMatrix();
+				glColor3f(1.0f, 0.0f, 0.0f);
+				a = a->next;
+            }
+    }
+	//-------------------------------------------------------------------------
+	//Draw the bullets
+	for (int i=0; i<g.nbullets; i++) {
+		Bullet *b = &g.barr[i];
+		//Log("draw bullet...\n");
+		glColor3f(1.0, 1.0, 1.0);
+		glBegin(GL_POINTS);
+		glVertex2f(b->pos[0],      b->pos[1]);
+		glVertex2f(b->pos[0]-1.0f, b->pos[1]);
+		glVertex2f(b->pos[0]+1.0f, b->pos[1]);
+		glVertex2f(b->pos[0],      b->pos[1]-1.0f);
+		glVertex2f(b->pos[0],      b->pos[1]+1.0f);
+		glColor3f(0.8, 0.8, 0.8);
+		glVertex2f(b->pos[0]-1.0f, b->pos[1]-1.0f);
+		glVertex2f(b->pos[0]-1.0f, b->pos[1]+1.0f);
+		glVertex2f(b->pos[0]+1.0f, b->pos[1]-1.0f);
+		glVertex2f(b->pos[0]+1.0f, b->pos[1]+1.0f);
+		glEnd();
+	}
+	while(gl.HelpScr){
+		snez::Show_HelpScr(gl.xres, gl.yres);
+		gl.credits = 0;
+		gl.dead = false;
+		gl.paused = false;
+		return;
+	}
+	if(gl.dead == 1){
+		aarcosavalos::finish_game(gl.xres, gl.yres);
+		return;
+	}
+	if(gl.credits){
+		show_credits(gl.xres, gl.yres);
+		return;
+	}
+	if(gl.intro){
+		rgordon::intro(gl.xres, gl.yres);
+		return;
+
+	}
+	if (rw.networked()) {
+		RWyatt::draw_border(gl.xres, gl.yres);
+	}
 	}
 
 }
