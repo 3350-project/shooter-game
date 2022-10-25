@@ -333,7 +333,7 @@ void render();
 //==========================================================================
 // M A I N
 //==========================================================================
-int main()
+int main(int argc, char* argv[])
 {
 	logOpen();
 	init_opengl();
@@ -342,6 +342,7 @@ int main()
 	clock_gettime(CLOCK_REALTIME, &timeStart);
 	x11.set_mouse_position(100,100);
 	int done=0;
+    rw.set_network_config(argc, argv);
 	while (!done) {
 		while (x11.getXPending()) {
 			XEvent e = x11.getXNextEvent();
@@ -1094,7 +1095,8 @@ void render()
 
 	}
 	if (rw.networked()) {
-		RWyatt::draw_border(gl.xres, gl.yres);
+        RWyatt::draw_border(gl.xres, gl.yres);
+        rw.draw_networking(gl.xres, gl.yres);
 	}
 	}
 
