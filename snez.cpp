@@ -39,6 +39,7 @@ void Show_HelpScr(int xres, int yres)
     r.center = 0;
     ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
     ggprint8b(&r, 16, 0xffffffff, "Controls: W: Turn on Thrusters and go forwards, D: Turn Right, A: Turn Left");
+    ggprint8b(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
 }
 //This will be my Function that will detect collision and will coincide with taking damage aswell
 void collision_detection(int xres, int yres) 

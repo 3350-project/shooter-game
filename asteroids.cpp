@@ -652,7 +652,7 @@ void physics()
 		Bullet *b = &g.barr[i];
 		//How long has bullet been alive?
 		double ts = timeDiff(&b->time, &bt);
-		if (ts > 2.5) {
+		if (ts > 2.0) {
 			//time to delete the bullet.
 			memcpy(&g.barr[i], &g.barr[g.nbullets-1],
 					sizeof(Bullet));
@@ -716,25 +716,8 @@ void physics()
 			d1 = b->pos[1] - a->pos[1];
 			dist = (d0*d0 + d1*d1);
 			if (dist < (a->radius*a->radius)) {
-				//std::cout << "asteroid hit." << std::endl;
+				std::cout << "asteroid hit." << std::endl;
 				//this asteroid is hit.
-				if (a->radius > MINIMUM_ASTEROID_SIZE) {
-					//break it into pieces.
-					Asteroid *ta = a;
-					buildAsteroidFragment(ta, a);
-					int r = rand()%10+5;
-					for (int k=0; k<r; k++) {
-						//get the next asteroid position in the array
-						Asteroid *ta = new Asteroid;
-						buildAsteroidFragment(ta, a);
-						//add to front of asteroid linked list
-						ta->next = g.ahead;
-						if (g.ahead != NULL)
-							g.ahead->prev = ta;
-						g.ahead = ta;
-						g.nasteroids++;
-					}
-				} else {
 					a->color[0] = 1.0;
 					a->color[1] = 0.1;
 					a->color[2] = 0.1;
@@ -744,7 +727,6 @@ void physics()
 					deleteAsteroid(&g, a);
 					a = savea;
 					g.nasteroids--;
-				}
 				//delete the bullet...
 				memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
 				g.nbullets--;
@@ -846,6 +828,8 @@ void render()
 	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
 	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
 	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+	ggprint8b(&r, 16, 0x00ffff00, "Press F1 To Enter Help Screen");
+    
 	//-------------------------------------------------------------------------
 	//Draw the ship
 	glColor3fv(g.ship.color);
@@ -959,8 +943,12 @@ void render()
 
 	} else {
 	Rect r;
+	Rect s;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//
+	s.bot = gl.yres-20;
+	s.left = gl.xres/2.5;
+	s.center = 0;
 	r.bot = gl.yres - 20;
 	r.left = 10;
 	r.center = 0;
@@ -968,8 +956,7 @@ void render()
 	//    return;
 	//   }
 	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
-	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+	ggprint8b(&s, 16, 0x00ffff00, "Press F1 To Enter Help Screen");
 	//-------------------------------------------------------------------------
 	//Draw the ship
 	glColor3fv(g.ship.color);
