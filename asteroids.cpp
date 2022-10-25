@@ -839,6 +839,7 @@ void physics()
 
 void render()
 {
+    //Steven's render stuff for chaning asteroids shapes
     	if (gl.Collision == 1) {
 	    
 	Rect r;
