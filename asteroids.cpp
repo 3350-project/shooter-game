@@ -956,7 +956,9 @@ void render()
 	//    return;
 	//   }
 	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-	ggprint8b(&s, 16, 0x00ffff00, "Press F1 To Enter Help Screen");
+	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
+	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+	ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter Help Screen");
 	//-------------------------------------------------------------------------
 	//Draw the ship
 	glColor3fv(g.ship.color);
