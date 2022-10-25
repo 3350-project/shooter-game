@@ -10,8 +10,9 @@ private:
 public:
     static void pause_screen(bool &paused);
     static void draw_border(int xres, int yres);
-    bool startNetworking();
-    bool stopNetworking();
+    void draw_networking(int xres, int yres);
+    bool start_networking();
+    bool stop_networking();
     bool networked();
     RWyatt();
 };
