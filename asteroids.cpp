@@ -154,9 +154,6 @@ class Game {
             for (int j=0; j<10; j++) {
                 Asteroid *a = new Asteroid;
                 a->nverts = 8;
-                if(gl.Collision ==1 ) {
-                    a->radius =10.0;
-                }
                 a->radius = rnd()*80.0 + 40.0;
                 Flt r2 = a->radius / 2.0;
                 Flt angle = 0.0f;
@@ -727,34 +724,33 @@ void physics()
             d0 = b->pos[0] - a->pos[0];
             d1 = b->pos[1] - a->pos[1];
             dist = (d0*d0 + d1*d1);
-            /*Testing for smaller radius collision
-             *if (gl.Collision ==1) {
-             if(dist < (a->radius)) {
-             std::cout << "asteroid hit." << std::endl;
-            //this asteroid is hit.
-            a->color[0] = 1.0;
-            a->color[1] = 0.1;
-            a->color[2] = 0.1;
-            //asteroid is too small to break up
-            //delete the asteroid and bullet
-            Asteroid *savea = a->next;
-            deleteAsteroid(&g, a);
-            a = savea;
-            g.nasteroids--;
-            //delete the bullet...
-            memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
-            g.nbullets--;
-            if (a == NULL)
-            break;
-            }
-            }
-            */
-            if (dist < (a->radius * a->radius)) {
-                std::cout << "asteroid hit." << std::endl;
-                //this asteroid is hit.
-                a->color[0] = 1.0;
-                a->color[1] = 0.1;
-                a->color[2] = 0.1;
+            //Testing for smaller radius collision
+             if (gl.Collision == 0) {
+                if (dist < (a->radius * a->radius)) {
+                    std::cout << "asteroid hit." << std::endl;
+                    //this asteroid is hit.
+                    a->color[0] = 1.0;
+                    a->color[1] = 0.1;
+                    a->color[2] = 0.1;
+                    //asteroid is too small to break up
+                    //delete the asteroid and bullet
+                    Asteroid *savea = a->next;
+                    deleteAsteroid(&g, a);
+                    a = savea;
+                    g.nasteroids--;
+                    //delete the bullet...
+                    memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+                    g.nbullets--;
+                    if (a == NULL)
+                        break;
+                }
+            } else {
+                if (dist < (a->radius * 20 )) {
+                    std::cout << "asteroid hit." << std::endl;
+                    //this asteroid is hit.
+                    a->color[0] = 1.0;
+                    a->color[1] = 0.1;
+                    a->color[2] = 0.1;
                 //asteroid is too small to break up
                 //delete the asteroid and bullet
                 Asteroid *savea = a->next;
@@ -766,6 +762,7 @@ void physics()
                 g.nbullets--;
                 if (a == NULL)
                     break;
+                }
             }
             i++;
         }
@@ -859,13 +856,19 @@ void render()
     r.bot = gl.yres - 20;
     r.left = 10;
     r.center = 0;
-    //if(gl.Collision == 1) {
-    //    return;
-    //   }
+    if(gl.Collision == 1) {
+	
     ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
     ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
     ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-    ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter Help Screen");
+    ggprint16(&s, 16, 0x00ffffff, "WELCOME TO MY FEATURE");
+    } else {
+    ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
+    ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
+    ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+    ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter HelpScreen");
+    }
+
     //-------------------------------------------------------------------------
     //Draw the ship
     glColor3fv(g.ship.color);

@@ -53,7 +53,7 @@ void collision_detection(int xres, int yres)
     glBegin(GL_POLYGON);
         for(int i = 0; i < 360; i++) {
             theta = i*3.142/180;
-            glVertex2f(10*cos(theta), 10*sin(theta));
+            glVertex2f(40*cos(theta), 40*sin(theta));
         }
     glEnd();
 }
