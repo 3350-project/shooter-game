@@ -49,7 +49,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 // Game object class instances
 Global gl;
 Game g = Game(gl);
-X11_wrapper x11(gl.xres, gl.yres, gl);
+X11_wrapper x11(1280, 720, gl);
 
 // Personal class instance
 RWyatt rw;

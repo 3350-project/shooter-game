@@ -40,8 +40,9 @@ Asteroid::Asteroid()
 }
 
 /* Game Object */
-Game::Game(Global gl)
+Game::Game(Global &gl) : gl(gl)
 {
+    this->gl = gl;
     ship = new Ship(gl);
     ahead = NULL;
     barr = new Bullet[MAX_BULLETS];

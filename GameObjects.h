@@ -78,13 +78,14 @@ class Game {
         Ship *ship;
         Asteroid *ahead;
         Bullet *barr;
+        Global &gl;
         int nasteroids;
         int nbullets;
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
         bool mouseThrustOn;
     public:
-        Game(Global);
+        Game(Global&);
         ~Game();
 };
 

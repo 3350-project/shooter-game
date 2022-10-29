@@ -1,7 +1,7 @@
 #include <iostream>
 #include "Graphics.h"
 
-X11_wrapper::X11_wrapper(int w, int h, Global gl)
+X11_wrapper::X11_wrapper(int w, int h, Global &gl) : gl(gl)
 {
     this->gl = gl;
     GLint att[] = {GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None};

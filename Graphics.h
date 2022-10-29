@@ -11,10 +11,9 @@ class X11_wrapper {
         Display *dpy;
         Window win;
         GLXContext glc;
-        Global gl;
+        Global &gl;
     public:
-        X11_wrapper(Global);
-        X11_wrapper(int w, int h, Global);
+        X11_wrapper(int w, int h, Global&);
         ~X11_wrapper();
         void set_title();
         void check_resize(XEvent *e);
