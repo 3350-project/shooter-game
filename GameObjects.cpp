@@ -10,8 +10,7 @@ Global::Global()
     memset(keys, 0, 65536);
     HelpScr = 0;
     dead = 0;
-    credits = 0;
-    soundTestMode = 0;
+    credits = 0;    
     sound = 0;
     intro = 0;
 };

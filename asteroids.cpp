@@ -262,15 +262,14 @@ int check_keys(XEvent *e)
         case XK_f:
             break;
         case XK_s:
+			gl.sound = managed_state_sound(gl.sound);
             break;
         case XK_c:
             gl.credits = managed_state_credits(gl.credits);
             break;
-        case XK_x:
-            gl.sound = managed_state_sound(gl.sound);
+        case XK_x:           
             break;
         case XK_t:
-            gl.soundTestMode = managed_state_soundTestMode(gl.soundTestMode);		
             break;
         case XK_Down:
             break;
@@ -727,14 +726,10 @@ void render()
         show_credits(gl.xres, gl.yres);
         return;
     }
-    if(gl.soundTestMode) {
-        sound_test_mode(gl.xres, gl.yres);
+    if(gl.sound) {
+        sound(gl.xres, gl.yres);
         return;
     }
-    if(gl.sound) {
-        play_sound();
-        return;
-    }		
     if(gl.intro){
         rgordon::intro(gl.xres, gl.yres);
         return;
