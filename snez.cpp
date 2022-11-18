@@ -45,6 +45,7 @@ void Show_HelpScr(int xres, int yres)
 void collision_detection(int xres, int yres) 
 {
     
+    //int hp = 5;
     if (xres == 100) { 
     } 
     if (yres == 100) { 
@@ -55,6 +56,12 @@ void collision_detection(int xres, int yres)
             theta = i*3.142/180;
             glVertex2f(40*cos(theta), 40*sin(theta));
         }
+	//if ship.pos[0] == asteroid.pos[0] && ship.pos[1] == asteroid.pos[1]) {
+		//hp--;
+	//}
+	//if(hp == 0) {
+	//aarcosavalos::finish.game(gl.xres, gl.yres);
+	//} 
     glEnd();
 }
 //This will be my Ai function that allows the enemies to follow the location of player
