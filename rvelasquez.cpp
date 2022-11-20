@@ -1,4 +1,4 @@
-//name: Rodolfo Velasquez 
+//eaname: Rodolfo Velasquez 
 //file: rvelasquez.cpp
 //
 //Team 3
@@ -31,6 +31,7 @@
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include "fonts.h"
+#include "rvelasquez.h"
 
 		ALboolean enumeration;
 		const ALCchar *devices;
@@ -67,13 +68,9 @@ unsigned int managed_state_sound(unsigned int s)
 
 void show_credits(int xres, int yres)
 {	
-	Rect r; 
-	r.bot = yres - 80;
-	r.left = xres / 2;
-	r.center = 0;
-	ggprint16(&r, 20, 0x00ffffff, "CREDITS");
-	int xcent = xres / 2;
+	int xcent = xres / 2;	
 	int ycent = yres / 2;
+
 	int w = 200;
 	glColor3f(0.57, 0.82, 1.0);
 	glBegin(GL_QUADS);
@@ -82,7 +79,37 @@ void show_credits(int xres, int yres)
 		glVertex2f(xcent+w, ycent+w);
 		glVertex2f(xcent+w, ycent-w);
 	glEnd();
+
+	Rect r; 
+	r.bot = yres - 200;
+	r.left = xres / 2;
+	r.center = 10;
+	ggprint16(&r, 20, 0x00000000, "CREDITS");
+ 	
+	r.bot = yres - 240;
+    r.left = (xres / 2) - 75;
+	r.center = 60;
+    ggprint16(&r, 20, 0x00000000, "Axel Arcos");
+   
+	r.bot = yres - 280;
+    r.left = (xres / 2) - 73;
+	r.center = 61;
+    ggprint16(&r, 20, 0x00000000, "Ryan Gordon");
+
+	r.bot = yres - 320;
+    r.left = (xres / 2) - 72;
+	r.center = 60;
+    ggprint16(&r, 20, 0x00000000, "Steven Nez");
+
+	r.bot = yres - 360;
+	r.center = 63;
+    ggprint16(&r, 20, 0x00000000, "Reid Wyatt");
+
+	r.bot = yres - 400;
+	r.center = 70;
+    ggprint16(&r, 20, 0x00000000, "Rodolfo Velasquez");
 }
+
 
 void sound(int xres, int yres)
 {
@@ -114,11 +141,12 @@ void sound(int xres, int yres)
 }
 
 /*
-*	Sound framework
-*
-*/
+void play_sound() 
+{
+    //Sound framework
 
-/*
+
+
 	//Listing audio devices 
 	static void list_audio_devices(const ALCchar *devices)
 	{
@@ -136,16 +164,17 @@ void sound(int xres, int yres)
 		fprintf(stdout, "----------\n");
 	}
 
-#define TEST_ERROR(_msg)		\
+	#define TEST_ERROR(_msg)		\
 	error = alGetError();		\
 	if (error != AL_NO_ERROR) {	\
 		fprintf(stderr, _msg "\n");	\
-		return -1;		\
+		exit(1);	\
+		//RETURN -1
 	}
 
 	static inline ALenum to_al_format(short channels, short samples)
 	{
-	
+
 		bool stereo = (channels > 1);
 
 		switch (samples) {
@@ -160,31 +189,19 @@ void sound(int xres, int yres)
 				else
 					return AL_FORMAT_MONO8;
 			default:
-				return -1;
+				//return -1;
+				exit(1);
 		}
 	}
 
-void play_sound()
-{ 	
-v		ALboolean enumeration;
+		ALboolean enumeration;
 		const ALCchar *devices;
 		//const ALCchar *defaultDeviceName = argv[1];
 		int ret;
 #ifdef LIBAUDIO
 		WaveInfo *wave;
 #endif
-		char *bufferData;
-		ALCdevice *device;
-		ALvoid *data;
-		ALCcontext *context;
-		ALsizei size, freq;
-		ALenum format;
-		ALuint buffer, source;
-		ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
-		ALboolean loop = AL_FALSE;
-		ALCenum error;
-		ALint source_state;
-
+		
 		fprintf(stdout, "Using " BACKEND " as audio backend\n");
 
 		//check if OpenAL supports enumeration devices 
@@ -202,7 +219,8 @@ v		ALboolean enumeration;
 		device = alcOpenDevice(defaultDeviceName);	
 		if (!device) {
 			fprintf(stderr, "unable to open default device\n");
-			return -1;
+			//return -1;
+			exit(1);
 		}
 
 		fprintf(stdout, "Device: %s\n", alcGetString(device, ALC_DEVICE_SPECIFIER));
@@ -214,7 +232,8 @@ v		ALboolean enumeration;
 		context = alcCreateContext(device, NULL);
 		if (!alcMakeContextCurrent(context)) {
 			fprintf(stderr, "failed to make default context\n");
-			return -1;
+			//return -1;
+			exit(1);
 		}
 		TEST_ERROR("make default context");
 
@@ -249,25 +268,29 @@ v		ALboolean enumeration;
 		wave = WaveOpenFileForReading("test.wav");
 		if (!wave) {
 			fprintf(stderr, "failed to read wave file\n");
-			return -1;
+			//return -1;
+			exit(1);
 		}
 
 		ret = WaveSeekFile(0, wave);
 		if (ret) {
 			fprintf(stderr, "failed to seek wave file\n");
-			return -1;
+			//return -1;
+			exit(1);
 		}
 
 		bufferData = malloc(wave->dataSize);
 		if (!bufferData) {
 			perror("malloc");
-			return -1;
+			//return -1;
+			exit(1);
 		}
 
 		ret = WaveReadFile(bufferData, wave->dataSize, wave);
 		if (ret != wave->dataSize) {
 			fprintf(stderr, "short read: %d, want: %d\n", ret, wave->dataSize);
-			return -1;
+			//return -1;
+			exit(1);
 		}
 
 		//load raw audio stream into our buffer
