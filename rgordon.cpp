@@ -51,7 +51,7 @@ void weapon(int xres, int yres)
     s.left = xres/3;
     s.center = 0;
 
-	ggprint16(&s, 16, 0x00ffffff, "Ryan's Weapon Test Feature");
+	ggprint12(&s, 12, 0x00ffffff, "Ryan's Weapon Test Feature");
 
     // draw a border using a triangle strip
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
