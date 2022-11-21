@@ -2,7 +2,7 @@
 // Individual Source File
 // Team 3
 // intro
-//
+// weapon
 //
 #include <X11/Xlib.h>
 #include <GL/glx.h>
