@@ -13,6 +13,7 @@ Global::Global()
     credits = 0;    
     sound = 0;
     intro = 0;
+    weapon = 0;
 };
 
 /* Ship Object */

@@ -28,7 +28,7 @@ const Flt MINIMUM_ASTEROID_SIZE = 60.0;
 
 class Global {
     public:
-        int xres, yres, HelpScr, credits, sound, soundTestMode, intro, Collision;
+        int xres, yres, HelpScr, credits, sound, soundTestMode, intro, Collision, weapon;
         char keys[65536];
         bool paused{false};
         unsigned int dead;	
