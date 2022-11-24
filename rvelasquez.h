@@ -5,10 +5,14 @@
 #define RVELASQUEZ_H
 #include <vector>
 #include <string>
+
 #include <AL/al.h>
 #include <AL/alc.h>
+
 #include <fstream>
-//#include "vector3d.h"
+
+#include <X11/Xlib.h>
+#include <GL/glx.h>
 
 extern unsigned int managed_state_credits(unsigned int c);
 extern void show_credits(int xres, int yres);
@@ -19,32 +23,52 @@ extern void show_credits(int xres, int yres);
 extern unsigned int managed_state_sound(unsigned int s);
 extern void sound(int xres, int yres);
 
-/*
-class sound {
+class SoundDevice
+{
+public:
+	static SoundDevice* get();
 
-	struct sound {
-		unsigned int sourceid, bufferid;
-		char* buffer;
-		std::string name;
-		data(unsigend int si, unsigend int bi, char* d, const char* n) 
-		: sourceid(si), buffer(bi), buffer(d), name(n) {}
-	}
-	std::vector<data> datas;
-	ALCcontext context;
-	ALCdevice* device;
-	bool isBigEndian;
-	char* loadWAV(const char* fn, int& chan, int& samplerate, int &bps, int& size);
-	int convertToInt(char* buffer, int len);
-	bool isBigEndian();
-	public: 
-		sound();
-		~sound();
-		unsigned int source loadSound(const char* filename);
-		void deleteSound(unsigned int id);
-		void playSound(unsigned int id, const vector3d& pos);
-		void stopSound(unsigned int id);
-		void setListener(const vector3d& position, const vector3d& orientation);	
-}
-*/
+private:
+	SoundDevice();
+	~SoundDevice();
+
+	ALCdevice* p_ALCDevice;
+	ALCcontext* p_ALCContext;
+
+};
+
+class SoundBuffer
+{
+public:
+	static SoundBuffer* get();
+
+	ALuint addSoundEffect(const char* filename);
+	bool removeSoundEffect(const ALuint& buffer);
+
+private:
+	SoundBuffer();
+	~SoundBuffer();
+
+	std::vector<ALuint> p_SoundEffectBuffers;
+};
+
+
+class SoundSource
+{
+public:
+	SoundSource();
+	~SoundSource();
+
+	void Play(const ALuint buffer_to_play);
+
+private:
+	ALuint p_Source;
+	float p_Pitch = 1.f;
+	float p_Gain = 1.f;
+	float p_Position[3] = { 0,0,0 };
+	float p_Velocity[3] = { 0,0,0 };
+	bool p_LoopSound = false;
+	ALuint p_Buffer = 0;
+};
 
 
