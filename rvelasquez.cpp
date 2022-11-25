@@ -118,13 +118,12 @@ void sound(int xres, int yres)
 
 	SoundDevice * mysounddevice = SoundDevice::get();
 
-	uint32_t /*ALuint*/ sound1 = SoundBuffer::get()->addSoundEffect("./soundFiles/big_explosion.wav");
-	uint32_t /*ALuint*/ sound2 = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
-	uint32_t /*ALuint*/ sound3 = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
-	uint32_t /*ALuint*/ sound4 = SoundBuffer::get()->addSoundEffect("./soundFiles/big_explosion.wav");
-	uint32_t /*ALuint*/ sound5 = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
-	uint32_t /*ALuint*/ sound6 = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
-	uint32_t /*ALuint*/ sound7 = SoundBuffer::get()->addSoundEffect("./soundFiles/big_explosion.wav");
+
+	//Set up sound effects 
+	uint32_t /*ALuint*/ explodeSound = SoundBuffer::get()->addSoundEffect("./soundFiles/big_explosion.wav");
+	uint32_t /*ALuint*/ hitSound = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
+	uint32_t /*ALuint*/ laserSound = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
+	uint32_t /*ALuint*/ thrustSound = SoundBuffer::get()->addSoundEffect("./soundFiles/big_explosion.wav");
 
 	SoundSource mySpeaker;
 
