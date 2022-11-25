@@ -127,13 +127,10 @@ void sound(int xres, int yres)
 
 	SoundSource mySpeaker;
 
-	mySpeaker.Play(sound1);
-	mySpeaker.Play(sound2);
-	mySpeaker.Play(sound3);
-	mySpeaker.Play(sound4);
-	mySpeaker.Play(sound5);
-	mySpeaker.Play(sound6);
-	mySpeaker.Play(sound7);
+	mySpeaker.Play(explodeSound);
+	mySpeaker.Play(hitSound);
+	mySpeaker.Play(laserSound);
+	mySpeaker.Play(thrustSound);
 
 	std::cout << "got here\n";
 }
