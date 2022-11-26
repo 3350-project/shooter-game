@@ -133,12 +133,12 @@ void normalize2d(Vec v)
 
 void check_mouse(XEvent *e)
 {
-  //  if (gl.paused) {
-    //    return;
-   // }
+    if (gl.paused) {
+        return;
+    }
     //Did the mouse move?
     //Was a mouse button clicked?
-   /* static int savex = 0;
+    static int savex = 0;
     static int savey = 0;
     //
     static int ct=0;
@@ -228,7 +228,7 @@ void check_mouse(XEvent *e)
         x11.set_mouse_position(100,100);
         savex = 100;
         savey = 100;
-    }*/
+    }
 }
 int sizeasteroids = 40;
 int newshape = 0;
@@ -387,7 +387,7 @@ void physics()
     if (gl.paused|| gl.HelpScr || gl.dead) {
         return;
     }
-    Flt d0,d1,dist, d2, d3, dist2;
+    Flt d0,d1,dist; //d2, d3, dist2;
     //Update ship position---------------- trying to make asteroids close into ship
     g.ship->pos[0] += g.ship->vel[0];
     g.ship->pos[1] += g.ship->vel[1];
