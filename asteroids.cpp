@@ -267,11 +267,18 @@ int check_keys(XEvent *e)
         case XK_c:
             gl.credits = managed_state_credits(gl.credits);
             break;
+<<<<<<< HEAD
         case XK_x:
              newshape +=1;
              if(newshape == 3 ) {
                 newshape = 0;
             }          
+=======
+        case XK_F3:
+            gl.weapon = rgordon::manage_state(gl.weapon);
+            break;
+        case XK_x:           
+>>>>>>> cc685ecb768f21b6343d31a7e4496b57d6fc3354
             break;
         case XK_t:
             break;
@@ -749,8 +756,12 @@ void render()
     if(gl.intro){
         rgordon::intro(gl.xres, gl.yres);
         return;
-
     }
+    if(gl.weapon){
+        rgordon::weapon(gl.xres, gl.yres);
+        return;
+    }
+    
     if (rw.networked()) {
         RWyatt::draw_border(gl.xres, gl.yres);
         rw.draw_networking(gl.xres, gl.yres);

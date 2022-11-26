@@ -2,17 +2,25 @@
 // Individual Source File
 // Team 3
 // intro
-//
+// weapon
 //
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include "fonts.h"
+#include "rgordon.h"
+
 namespace rgordon{
 	
 unsigned int manage_state(unsigned int i)
 {
 	i = i ^ 1;
 	return i;
+}
+
+unsigned int manage_state_weapon(unsigned int F3)
+{
+	F3 = F3 ^ 1;
+	return F3;
 }
 	
 void intro(int xres, int yres)
@@ -36,40 +44,35 @@ void intro(int xres, int yres)
 	ggprint8b(&r, 16, 0x00ff0000, "Intro Screen");
 }
 
-/*  in progress
-
-
-unsigned int manage_state_test_mode(unsigned int p)
+void weapon(int xres, int yres)
 {
-	p = p ^ 1;
-	return p;
-}
-void test_mode(int xres, int yres)
-{
-glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glEnable(GL_BLEND);
-		glColor3f(1.0, 1.0, 0.0);
-		glColor4f(1.0, 1.0, 0.0, 0.9);
-		int w = 20;
-		glBegin(GL_TRIANGLE_STRIP);
-			glVertex2i(0, 0);
-			glVertex2i(w, w);
-			
-			glVertex2i(0, gl.yres);
-			glVertex2i(w, gl.yres-w);
+	Rect s; 
+	s.bot = yres - 100;
+    s.left = xres/3;
+    s.center = 0;
 
-			glVertex2i(gl.xres, gl.yres);
-			glVertex2i(gl.xres-w, gl.yres - w);
-			
-			glVertex2i(gl.xres, 0);
-			glVertex2i(gl.xres-w, w);
-			
-			glVertex2i(0, 0);
-			glVertex2i(w, w);
-	glEnd();
-	glDisable(GL_BLEND);
+	ggprint12(&s, 12, 0x00ffffff, "Ryan's Weapon Test Feature");
+
+    // draw a border using a triangle strip
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
+    glColor4f(1.0, 1.0, 1.0, 0.3);
+    int w = 20;
+    glBegin(GL_TRIANGLE_STRIP);
+        glVertex2i(0, 0);
+        glVertex2i(0+w, w);
+        glVertex2i(0, yres);
+        glVertex2i(0+w, yres-w);
+        glVertex2i(xres, yres);
+        glVertex2i(xres-w, yres-w);
+        glVertex2i(xres, 0);
+        glVertex2i(xres-w, w);
+        glVertex2i(0, 0);
+        glVertex2i(0+w, w);
+    glEnd();
+    glDisable(GL_BLEND);
 }
 
-*/
+
 
 }

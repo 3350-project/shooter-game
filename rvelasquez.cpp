@@ -1,58 +1,34 @@
-//eaname: Rodolfo Velasquez 
+//name: Rodolfo Velasquez 
 //file: rvelasquez.cpp
 //
 //Team 3
-//credits screen
-//sound 
 //
+//features: credit screen and sound 
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <unistd.h>
 #include <string.h>
 #include <errno.h>
-#include <stdint.h>
 #include <inttypes.h>
-#include <unistd.h>
-#include <stdbool.h>
-
+#include <vector>
+#include <climits>
+#include <AL/alext.h>
 #include <AL/al.h>
 #include <AL/alc.h>
-
-#ifdef LIBAUDIO
-	#include <audio/wave.h>
-	#define BACKEND	"libaudio"
-#else
-	#include <AL/alut.h>
-	#define BACKEND "alut"
-#endif
-
 #include <AL/alut.h>
+#include <sndfile.h>
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>
+
 #include "fonts.h"
 #include "rvelasquez.h"
 
-		ALboolean enumeration;
-		const ALCchar *devices;
-		//const ALCchar *defaultDeviceName = argv[1];
-		int ret;
-#ifdef LIBAUDIO
-		WaveInfo *wave;
-#endif
-		char *bufferData;
-		ALCdevice *device;
-		ALvoid *data;
-		ALCcontext *context;
-		ALsizei size, freq;
-		ALenum format;
-		ALuint buffer, source;
-		ALfloat listenerOri[] = { 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f };
-		ALboolean loop = AL_FALSE;
-		ALCenum error;
-		ALint source_state;
-
-		using namespace std;
+using namespace std;
 
 unsigned int managed_state_credits(unsigned int c)
 {
@@ -110,7 +86,6 @@ void show_credits(int xres, int yres)
     ggprint16(&r, 20, 0x00000000, "Rodolfo Velasquez");
 }
 
-
 void sound(int xres, int yres)
 {
 	Rect s; 
@@ -120,217 +95,344 @@ void sound(int xres, int yres)
 
 	ggprint16(&s, 16, 0x00ffffff, "SOUND FEATURE");
 
-    // draw a border using a triangle strip
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
-    glColor4f(0.09, 0.88, 0.24, 1.0);
-    int w = 20;
-    glBegin(GL_TRIANGLE_STRIP);
-        glVertex2i(0, 0);
-        glVertex2i(0+w, w);
-        glVertex2i(0, yres);
-        glVertex2i(0+w, yres-w);
-        glVertex2i(xres, yres);
-        glVertex2i(xres-w, yres-w);
-        glVertex2i(xres, 0);
-        glVertex2i(xres-w, w);
-        glVertex2i(0, 0);
-        glVertex2i(0+w, w);
-    glEnd();
-    glDisable(GL_BLEND);
+	// draw a border using a triangle strip
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_BLEND);
+	glColor4f(0.09, 0.88, 0.24, 1.0);
+	int w = 20;
+	glBegin(GL_TRIANGLE_STRIP);
+	glVertex2i(0, 0);
+	glVertex2i(0+w, w);
+	glVertex2i(0, yres);
+	glVertex2i(0+w, yres-w);
+	glVertex2i(xres, yres);
+	glVertex2i(xres-w, yres-w);
+	glVertex2i(xres, 0);
+	glVertex2i(xres-w, w);
+	glVertex2i(0, 0);
+	glVertex2i(0+w, w);
+	glEnd();
+	glDisable(GL_BLEND);
+
+	std::cout << "starting...\n";
+
+	SoundDevice * mysounddevice = SoundDevice::get();
+
+
+	//Set up sound effects 
+	uint32_t /*ALuint*/ explodeSound = SoundBuffer::get()->addSoundEffect("./soundFiles/big_explosion.wav");
+	uint32_t /*ALuint*/ hitSound = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
+	uint32_t /*ALuint*/ laserSound = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
+	uint32_t /*ALuint*/ thrustSound = SoundBuffer::get()->addSoundEffect("./soundFiles/big_explosion.wav");
+
+	SoundSource mySpeaker;
+
+	mySpeaker.Play(explodeSound);
+	mySpeaker.Play(hitSound);
+	mySpeaker.Play(laserSound);
+	mySpeaker.Play(thrustSound);
+
+	std::cout << "got here\n";
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+//
+// Source Code: Code, Tech and tutorials openal-impl
+// https://github.com/codetechandtutorials/openal-impl/releases/tag/vid1
+//
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////DEVICE
+/*
+class SoundDevice
+{
+	public:
+		static SoundDevice* get();
+
+	private:
+		SoundDevice() noexcept;
+		~SoundDevice();
+
+		ALCdevice* p_ALCDevice;
+		ALCcontext* p_ALCContext;
+};
+*/
+
+SoundDevice* SoundDevice::get()
+{
+	static SoundDevice* snd_device = new SoundDevice();
+	return snd_device;
+}
+
+SoundDevice::SoundDevice()
+{
+	p_ALCDevice = alcOpenDevice(nullptr); // nullptr = get default device
+	if (!p_ALCDevice)
+		throw("failed to get sound device");
+
+	p_ALCContext = alcCreateContext(p_ALCDevice, nullptr);  // create context
+	if(!p_ALCContext)
+		throw("Failed to set sound context");
+
+	if (!alcMakeContextCurrent(p_ALCContext))   // make context current
+		throw("failed to make context current");
+
+	const ALCchar* name = nullptr;
+	if (alcIsExtensionPresent(p_ALCDevice, "ALC_ENUMERATE_ALL_EXT"))
+		name = alcGetString(p_ALCDevice, ALC_ALL_DEVICES_SPECIFIER);
+	if (!name || alcGetError(p_ALCDevice) != AL_NO_ERROR)
+		name = alcGetString(p_ALCDevice, ALC_DEVICE_SPECIFIER);
+	printf("Opened \"%s\"\n", name);
+}
+
+SoundDevice::~SoundDevice() 
+{
+	if (!alcMakeContextCurrent(nullptr))
+		throw("failed to set context to nullptr");
+
+	alcDestroyContext(p_ALCContext);
+	if (p_ALCContext)
+		throw("failed to unset during close");
+
+	if (!alcCloseDevice(p_ALCDevice))
+		throw("failed to close sound device");
+}
+
+/////////////////////////////////////////////BUFFER
+/*
+class SoundBuffer
+{
+public:
+	static SoundBuffer* get();
+
+	ALuint addSoundEffect(const char* filename);
+	bool removeSoundEffect(const ALuint& buffer);
+
+private:
+	SoundBuffer();
+	~SoundBuffer();
+
+	std::vector<ALuint> p_SoundEffectBuffers;
+};
+*/
+
+SoundBuffer* SoundBuffer::get()
+{
+	static SoundBuffer* sndbuf = new SoundBuffer();
+	return sndbuf;
+}
+
+ALuint SoundBuffer::addSoundEffect(const char* filename)
+{
+	ALenum err, format;
+	ALuint buffer;
+	SNDFILE* sndfile;
+	SF_INFO sfinfo;
+	short* membuf;
+	sf_count_t num_frames;
+	ALsizei num_bytes;
+
+	//Open the audio file and check that it's usable. 
+
+	sndfile = sf_open(filename, SFM_READ, &sfinfo);
+	if (!sndfile)
+	{
+		fprintf(stderr, "Could not open audio in %s: %s\n", filename, sf_strerror(sndfile));
+		return 0;
+	}
+	if (sfinfo.frames < 1 || sfinfo.frames >(sf_count_t)(INT_MAX / sizeof(short)) / sfinfo.channels)
+	{
+		fprintf(stderr, "Bad sample count in %s (%" PRId64 ")\n", filename, sfinfo.frames);
+		sf_close(sndfile);
+		return 0;
+	}
+
+	/* Get the sound format, and figure out the OpenAL format */
+
+	format = AL_NONE;
+	if (sfinfo.channels == 1)
+		format = AL_FORMAT_MONO16;
+	else if (sfinfo.channels == 2)
+		format = AL_FORMAT_STEREO16;
+	else if (sfinfo.channels == 3)
+	{
+		if (sf_command(sndfile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == SF_AMBISONIC_B_FORMAT)
+			format = AL_FORMAT_BFORMAT2D_16;
+	}
+	else if (sfinfo.channels == 4)
+	{
+		if (sf_command(sndfile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == SF_AMBISONIC_B_FORMAT)
+			format = AL_FORMAT_BFORMAT3D_16;
+	}
+	if (!format)
+	{
+		fprintf(stderr, "Unsupported channel count: %d\n", sfinfo.channels);
+		sf_close(sndfile);
+		return 0;
+	}
+
+	/*Decode the whole audio file to a buffer. */
+	membuf = static_cast<short*>(malloc((size_t)(sfinfo.frames * sfinfo.channels) * sizeof(short)));
+
+	num_frames = sf_readf_short(sndfile, membuf, sfinfo.frames);
+	if (num_frames < 1)
+	{
+		free(membuf);
+		sf_close(sndfile);
+		fprintf(stderr, "Failed to read samples in %s (%" PRId64 ")\n", filename, num_frames);
+		return 0;
+	}
+	num_bytes = (ALsizei)(num_frames * sfinfo.channels) * (ALsizei)sizeof(short);
+
+
+	/* Buffer the audio data into a new buffer object, then free the data and
+	* close the file.
+	*/
+
+	buffer = 0;
+	alGenBuffers(1, &buffer);
+	alBufferData(buffer, format, membuf, num_bytes, sfinfo.samplerate);
+
+	free(membuf);
+	sf_close(sndfile);
+
+
+	/*Check if an error occured, and clean up if so. */
+	err = alGetError();
+	if (err != AL_NO_ERROR)
+	{
+		fprintf(stderr, "OpenAL Error: %s\n", alGetString(err));
+		if (buffer && alIsBuffer(buffer))
+			alDeleteBuffers(1, &buffer);
+		return 0;
+	}
+
+	p_SoundEffectBuffers.push_back(buffer);  // add to the list of known buffers
+
+	return buffer;
+}
+
+
+bool SoundBuffer::removeSoundEffect(const ALuint& buffer)
+{
+	auto it = p_SoundEffectBuffers.begin();
+	while (it != p_SoundEffectBuffers.end())
+	{
+		if (*it == buffer)
+		{
+			alDeleteBuffers(1, &*it);
+
+			it = p_SoundEffectBuffers.erase(it);
+
+			return true;
+		}
+		else {
+			++it;
+		}
+	}
+	return false;  // couldn't find to remove
+}
+
+SoundBuffer::SoundBuffer()
+{
+	p_SoundEffectBuffers.clear();
+
+}
+
+SoundBuffer::~SoundBuffer()
+{
+	alDeleteBuffers(p_SoundEffectBuffers.size(), p_SoundEffectBuffers.data());
+
+	p_SoundEffectBuffers.clear();
+}
+
+//////////////////////////////////////////////SOURCE
+/*
+class SoundSource
+{
+public:
+	SoundSource();
+	~SoundSource();
+
+	void Play(const ALuint buffer_to_play);
+
+private:
+	ALuint p_Source;
+	float p_Pitch = 1.f;
+	float p_Gain = 1.f;
+	float p_Position[3] = { 0,0,0 };
+	float p_Velocity[3] = { 0,0,0 };
+	bool p_LoopSound = false;
+	ALuint p_Buffer = 0;
+};
+*/
+
+SoundSource::SoundSource()
+{
+	alGenSources(1, &p_Source);
+	alSourcef(p_Source, AL_PITCH, p_Pitch);
+	alSourcef(p_Source, AL_GAIN, p_Gain);
+	alSource3f(p_Source, AL_POSITION, p_Position[0], p_Position[1], p_Position[2]);
+	alSource3f(p_Source, AL_VELOCITY, p_Velocity[0], p_Velocity[1], p_Velocity[2]);
+	alSourcei(p_Source, AL_LOOPING, p_LoopSound);
+	alSourcei(p_Source, AL_BUFFER, p_Buffer);
+}
+
+SoundSource::~SoundSource()
+{
+	alDeleteSources(1, &p_Source);
+}
+
+void SoundSource::Play(const ALuint buffer_to_play)
+{
+	if (buffer_to_play != p_Buffer)
+	{
+			p_Buffer = buffer_to_play;
+			alSourcei(p_Source, AL_BUFFER, (ALint)p_Buffer);
+	}
+
+	alSourcePlay(p_Source);
+
+
+	ALint state = AL_PLAYING;
+	std::cout << "playing sound\n";
+	while (state == AL_PLAYING && alGetError() == AL_NO_ERROR)
+	{
+		std::cout << "currently playing sound\n";
+		alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
+	}
+	std::cout << "done playing sound\n";
 }
 
 /*
-void play_sound() 
+int main()
 {
-    //Sound framework
+	std::cout << "starting...\n";
 
-
-
-	//Listing audio devices 
-	static void list_audio_devices(const ALCchar *devices)
-	{
-		const ALCchar *device = devices, *next = devices + 1;
-		size_t len = 0;
-
-		fprintf(stdout, "Devices list:\n");
-		fprintf(stdout, "----------\n");
-		while (device && *device != '\0' && next && *next != '\0') {
-			fprintf(stdout, "%s\n", device);
-			len = strlen(device);
-			device += (len + 1);
-			next += (len + 2);
-		}
-		fprintf(stdout, "----------\n");
-	}
-
-	#define TEST_ERROR(_msg)		\
-	error = alGetError();		\
-	if (error != AL_NO_ERROR) {	\
-		fprintf(stderr, _msg "\n");	\
-		exit(1);	\
-		//RETURN -1
-	}
-
-	static inline ALenum to_al_format(short channels, short samples)
-	{
-
-		bool stereo = (channels > 1);
-
-		switch (samples) {
-			case 16:
-				if (stereo)
-					return AL_FORMAT_STEREO16;
-				else
-					return AL_FORMAT_MONO16;
-			case 8:
-				if (stereo)
-					return AL_FORMAT_STEREO8;
-				else
-					return AL_FORMAT_MONO8;
-			default:
-				//return -1;
-				exit(1);
-		}
-	}
-
-		ALboolean enumeration;
-		const ALCchar *devices;
-		//const ALCchar *defaultDeviceName = argv[1];
-		int ret;
-#ifdef LIBAUDIO
-		WaveInfo *wave;
-#endif
-		
-		fprintf(stdout, "Using " BACKEND " as audio backend\n");
-
-		//check if OpenAL supports enumeration devices 
-		enumeration = alcIsExtensionPresent(NULL, "ALC_ENUMERATION_EXT");
-		if (enumeration == AL_FALSE)
-			fprintf(stderr, "enumeration extension not available\n");
-
-		//if enumeration is supported then list the audio devices 
-		list_audio_devices(alcGetString(NULL, ALC_DEVICE_SPECIFIER));
-
-		if (!defaultDeviceName)
-			defaultDeviceName = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
-
-		//Open a handle to a device 
-		device = alcOpenDevice(defaultDeviceName);	
-		if (!device) {
-			fprintf(stderr, "unable to open default device\n");
-			//return -1;
-			exit(1);
-		}
-
-		fprintf(stdout, "Device: %s\n", alcGetString(device, ALC_DEVICE_SPECIFIER));
-
-		//reset the error stack 
-		alGetError();
-
-		//To render a scene create and initialize a context
-		context = alcCreateContext(device, NULL);
-		if (!alcMakeContextCurrent(context)) {
-			fprintf(stderr, "failed to make default context\n");
-			//return -1;
-			exit(1);
-		}
-		TEST_ERROR("make default context");
-
-		//set orientation 
-		alListener3f(AL_POSITION, 0, 0, 1.0f);
-		TEST_ERROR("listener position");
-		alListener3f(AL_VELOCITY, 0, 0, 0);
-		TEST_ERROR("listener velocity");
-		alListenerfv(AL_ORIENTATION, listenerOri);
-		TEST_ERROR("listener orientation");
-
-		alGenSources((ALuint)1, &source);
-		TEST_ERROR("source generation");
-
-		alSourcef(source, AL_PITCH, 1);
-		TEST_ERROR("source pitch");
-		alSourcef(source, AL_GAIN, 1);
-		TEST_ERROR("source gain");
-		alSource3f(source, AL_POSITION, 0, 0, 0);
-		TEST_ERROR("source position");
-		alSource3f(source, AL_VELOCITY, 0, 0, 0);
-		TEST_ERROR("source velocity");
-		alSourcei(source, AL_LOOPING, AL_FALSE);
-		TEST_ERROR("source looping");
-
-		//reference to the buffer object 
-		alGenBuffers(1, &buffer);
-		TEST_ERROR("buffer generation");
-
-#ifdef LIBAUDIO
-		//loading an audio stream to a buffer
-		wave = WaveOpenFileForReading("test.wav");
-		if (!wave) {
-			fprintf(stderr, "failed to read wave file\n");
-			//return -1;
-			exit(1);
-		}
-
-		ret = WaveSeekFile(0, wave);
-		if (ret) {
-			fprintf(stderr, "failed to seek wave file\n");
-			//return -1;
-			exit(1);
-		}
-
-		bufferData = malloc(wave->dataSize);
-		if (!bufferData) {
-			perror("malloc");
-			//return -1;
-			exit(1);
-		}
-
-		ret = WaveReadFile(bufferData, wave->dataSize, wave);
-		if (ret != wave->dataSize) {
-			fprintf(stderr, "short read: %d, want: %d\n", ret, wave->dataSize);
-			//return -1;
-			exit(1);
-		}
-
-		//load raw audio stream into our buffer
-		alBufferData(buffer, to_al_format(wave->channels, wave->bitsPerSample),
-				bufferData, wave->dataSize, wave->sampleRate);
-		TEST_ERROR("failed to load buffer data");
-#else
-		alutLoadWAVFile("test.wav", &format, &data, &size, &freq, &loop);
-		TEST_ERROR("loading wav file");
-
-		alBufferData(buffer, format, data, size, freq);
-		TEST_ERROR("buffer copy");
-#endif
-
-		//binding source with its buffer 
-		alSourcei(source, AL_BUFFER, buffer);
-		TEST_ERROR("buffer binding");
-
-		//
-		alSourcePlay(source);
-		TEST_ERROR("source playing");
-
-		alGetSourcei(source, AL_SOURCE_STATE, &source_state);
-		TEST_ERROR("source state get");
-		while (source_state == AL_PLAYING) {
-			alGetSourcei(source, AL_SOURCE_STATE, &source_state);
-			TEST_ERROR("source state get");
-		}
-
-		//exit context
-		alDeleteSources(1, &source);
-		alDeleteBuffers(1, &buffer);
-		device = alcGetContextsDevice(context);
-		alcMakeContextCurrent(NULL);
-		alcDestroyContext(context);
-		alcCloseDevice(device);
-
-	
-}
+	SoundDevice * mysounddevice = SoundDevice::get();
 */
+//	uint32_t /*ALuint*/ sound1 = SoundBuffer::get()->addSoundEffect("./big_explosion.wav");
+//	uint32_t /*ALuint*/ sound2 = SoundBuffer::get()->addSoundEffect("./gun_fire.wav");
+//	uint32_t /*ALuint*/ sound3 = SoundBuffer::get()->addSoundEffect("./gun_fire.wav");
+//	uint32_t /*ALuint*/ sound4 = SoundBuffer::get()->addSoundEffect("./big_explosion.wav");
+//	uint32_t /*ALuint*/ sound5 = SoundBuffer::get()->addSoundEffect("./gun_fire.wav");
+//	uint32_t /*ALuint*/ sound6 = SoundBuffer::get()->addSoundEffect("./gun_fire.wav");
+//	uint32_t /*ALuint*/ sound7 = SoundBuffer::get()->addSoundEffect("./big_explosion.wav");
+/*
+	SoundSource mySpeaker;
 
+	mySpeaker.Play(sound1);
+	mySpeaker.Play(sound2);
+	mySpeaker.Play(sound3);
+	mySpeaker.Play(sound4);
+	mySpeaker.Play(sound5);
+	mySpeaker.Play(sound6);
+	mySpeaker.Play(sound7);
 
+	std::cout << "got here\n";
 
+	return 0;
+}
+
+*/

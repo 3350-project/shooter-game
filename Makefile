@@ -1,6 +1,6 @@
 CFLAGS = -I ./include
 ##LIB    = ./libggfonts.so
-LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm #-lXrandr
+LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm -lopenal -lsndfile #-lXrandr
 USERS = rwyatt.cpp rwyatt.h snez.cpp snez.h aarcosavalos.cpp aarcosavalos.h rvelasquez.cpp rvelasquez.h rgordon.cpp rgordon.h
 GAMEDEPS = GameObjects.cpp GameObjects.h Graphics.cpp Graphics.h
 
