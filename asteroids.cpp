@@ -33,7 +33,6 @@
 #include "rvelasquez.h"
 #include "rgordon.h"
 
-
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 60.0;
@@ -134,12 +133,12 @@ void normalize2d(Vec v)
 
 void check_mouse(XEvent *e)
 {
-    if (gl.paused) {
-        return;
-    }
+  //  if (gl.paused) {
+    //    return;
+   // }
     //Did the mouse move?
     //Was a mouse button clicked?
-    static int savex = 0;
+   /* static int savex = 0;
     static int savey = 0;
     //
     static int ct=0;
@@ -229,9 +228,10 @@ void check_mouse(XEvent *e)
         x11.set_mouse_position(100,100);
         savex = 100;
         savey = 100;
-    }
+    }*/
 }
-
+int sizeasteroids = 40;
+int newshape = 0;
 int check_keys(XEvent *e)
 {
     static int shift=0;
@@ -267,7 +267,11 @@ int check_keys(XEvent *e)
         case XK_c:
             gl.credits = managed_state_credits(gl.credits);
             break;
-        case XK_x:           
+        case XK_x:
+             newshape +=1;
+             if(newshape == 3 ) {
+                newshape = 0;
+            }          
             break;
         case XK_t:
             break;
@@ -278,6 +282,16 @@ int check_keys(XEvent *e)
         case XK_minus:
             break;
         case XK_r:
+            break;
+        case XK_n:
+            sizeasteroids += 5;
+            break;
+        case XK_m:
+            if(sizeasteroids < 5) {
+            sizeasteroids = 0;
+            } else {
+                sizeasteroids -= 5;
+            }
             break;
         case XK_i:
             gl.intro = rgordon::manage_state(gl.intro);
@@ -359,14 +373,15 @@ void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
     ta->vel[1] = a->vel[1] + (rnd()*2.0-1.0);
     //std::cout << "frag" << std::endl;
 }
-
+int hp = 3;
+int flashred = 0;
 void physics()
 {
     if (gl.paused|| gl.HelpScr || gl.dead) {
         return;
     }
-    Flt d0,d1,dist;
-    //Update ship position
+    Flt d0,d1,dist, d2, d3, dist2;
+    //Update ship position---------------- trying to make asteroids close into ship
     g.ship->pos[0] += g.ship->vel[0];
     g.ship->pos[1] += g.ship->vel[1];
     //Check for collision with window edges
@@ -392,7 +407,7 @@ void physics()
         Bullet *b = &g.barr[i];
         //How long has bullet been alive?
         double ts = timeDiff(&b->time, &bt);
-        if (ts > 2.0) {
+        if (ts > 1.0) {
             //time to delete the bullet.
             memcpy(&g.barr[i], &g.barr[g.nbullets-1],
                     sizeof(Bullet));
@@ -422,8 +437,11 @@ void physics()
     //Update asteroid positions
     Asteroid *a = g.ahead;
     while (a) {
-        a->pos[0] += a->vel[0];
-        a->pos[1] += a->vel[1];
+        //Asteroid Movement
+    	a->pos[0] += a->vel[0];
+    	a->pos[1] += a->vel[1];
+
+
         //Check for collision with window edges
         if (a->pos[0] < -100.0) {
             a->pos[0] += (float)gl.xres+200;
@@ -437,7 +455,6 @@ void physics()
         else if (a->pos[1] > (float)gl.yres+100) {
             a->pos[1] -= (float)gl.yres+200;
         }
-        a->angle += a->rotate;
         a = a->next;
     }
     //
@@ -455,65 +472,88 @@ void physics()
             d0 = b->pos[0] - a->pos[0];
             d1 = b->pos[1] - a->pos[1];
             dist = (d0*d0 + d1*d1);
+            if (gl.Collision == 0) {
             //Testing for smaller radius collision
-             if (gl.Collision == 0) {
-                if (dist < (a->radius * a->radius)) {
+                if (dist < (a->radius*a->radius)) {
                     std::cout << "asteroid hit." << std::endl;
-                    //this asteroid is hit.
-                    a->color[0] = 1.0;
-                    a->color[1] = 0.1;
-                    a->color[2] = 0.1;
-                    //asteroid is too small to break up
+                } else {
                     //delete the asteroid and bullet
                     Asteroid *savea = a->next;
                     deleteAsteroid(&g, a);
                     a = savea;
                     g.nasteroids--;
+                }
                     //delete the bullet...
                     memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
                     g.nbullets--;
                     if (a == NULL)
                         break;
-                }
             } else {
-                if (dist < (a->radius * 20 )) {
+               if (dist < (a->radius * 20 )) {
                     std::cout << "asteroid hit." << std::endl;
+               } else {
                     //this asteroid is hit.
                     a->color[0] = 1.0;
                     a->color[1] = 0.1;
                     a->color[2] = 0.1;
-                //asteroid is too small to break up
                 //delete the asteroid and bullet
                 Asteroid *savea = a->next;
                 deleteAsteroid(&g, a);
                 a = savea;
                 g.nasteroids--;
+                }
                 //delete the bullet...
                 memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
                 g.nbullets--;
                 if (a == NULL)
                     break;
                 }
-            }
-            i++;
         }
+            i++;
         if (a == NULL)
             break;
         a = a->next;
     }
+       /* while (i < g.nasteroids) {
+                    d2 = g.ship->pos[0] - a->pos[0];
+                    d3 = g.ship->pos[1] - a->pos[1];
+                    dist2 = (d2*d2 + d3*d3);
+           if(dist2 < (a->radius * sizeasteroids) && hp != 0) {
+                    hp--;
+		            g.ship->vel[0] = 0;
+		            g.ship->vel[1] = 0;
+                    flashred = 1;
+
+                    std::cout<<"Ship has collided with asteroid" << std::endl;
+           }else {
+                    Asteroid *savea = a->next;
+                    deleteAsteroid(&g, a);
+                    a = savea;
+		            g.nasteroids--;
+                    if(hp == 0) {
+                        std::cout << "Hp is now at 0" << std::endl;
+                            if (hp < 0) {
+                                hp = 0;
+                            }
+
+                    }
+                    if (a == NULL)
+                        break;
+                }
+        }*/
     //---------------------------------------------------
     //check keys pressed now
-    if (gl.keys[XK_a]) {
+    if (gl.keys[XK_Left]) {
         g.ship->angle += 4.0;
         if (g.ship->angle >= 360.0f)
             g.ship->angle -= 360.0f;
     }
-    if (gl.keys[XK_d]) {
+    if (gl.keys[XK_Right]) {
         g.ship->angle -= 4.0;
         if (g.ship->angle < 0.0f)
             g.ship->angle += 360.0f;
     }
-    if (gl.keys[XK_w]) {
+    if (gl.keys[XK_Up]) {
         //apply thrust
         //convert ship angle to radians
         Flt rad = ((g.ship->angle+90.0) / 360.0f) * PI * 2.0;
@@ -536,7 +576,7 @@ void physics()
         struct timespec bt;
         clock_gettime(CLOCK_REALTIME, &bt);
         double ts = timeDiff(&g.bulletTimer, &bt);
-        if (ts > 0.4) {
+        if (ts > 0.5) {
             timeCopy(&g.bulletTimer, &bt);
             if (g.nbullets < MAX_BULLETS) {
                 //shoot a bullet...
@@ -561,7 +601,7 @@ void physics()
                 b->color[2] = 1.0f;
                 g.nbullets++;
             }
-        }
+       }
     }
     if (g.mouseThrustOn) {
         //should thrust be turned off
@@ -576,41 +616,19 @@ void physics()
 
 void render()
 {
-    //Steven's render stuff for changing asteroids shapes
-    Rect r;
-    Rect s;
-    glClear(GL_COLOR_BUFFER_BIT);
-    //
-    s.bot = gl.yres-20;
-    s.left = gl.xres/2.5;
-    s.center = 0;
-    r.bot = gl.yres - 20;
-    r.left = 10;
-    r.center = 0;
-    if(gl.Collision == 1) {
-	
-    ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-    ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
-    ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-    ggprint16(&s, 16, 0x00ffffff, "WELCOME TO MY FEATURE");
-    } else {
-    ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-    ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
-    ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-    ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter HelpScreen");
-    }
-
+    snez::Featuremode(gl.xres, gl.yres, gl.Collision, g.nbullets, g.nasteroids);
     //-------------------------------------------------------------------------
     //Draw the ship
+    if (flashred == 1) {
+        glColor3f(1.0f, 0.0, 0.0);
+        flashred = 0;
+    } else {
     glColor3fv(g.ship->color);
+    }
     glPushMatrix();
     glTranslatef(g.ship->pos[0], g.ship->pos[1], g.ship->pos[2]);
-    //float angle = atan2(ship.dir[1], ship.dir[0]);
     glRotatef(g.ship->angle, 0.0f, 0.0f, 1.0f);
     glBegin(GL_TRIANGLES);
-    //glVertex2f(-10.0f, -10.0f);
-    //glVertex2f(  0.0f, 20.0f);
-    //glVertex2f( 10.0f, -10.0f);
     glVertex2f(-12.0f, -10.0f);
     glVertex2f(  0.0f,  20.0f);
     glVertex2f(  0.0f,  -6.0f);
@@ -623,10 +641,12 @@ void render()
     glVertex2f(0.0f, 0.0f);
     glEnd();
     glPopMatrix();
-    if (gl.keys[XK_Up] || g.mouseThrustOn) {
+    //Might not want the thrust so I commented it out
+    
+    if (gl.keys[XK_space]) {
         int i;
         //draw thrust
-        Flt rad = ((g.ship->angle+90.0) / 360.0f) * PI * 2.0;
+        Flt rad = ((g.ship->angle - 90.0) / 360.0f) * PI * 2.0;
         //convert angle to a vector
         Flt xdir = cos(rad);
         Flt ydir = sin(rad);
@@ -635,7 +655,7 @@ void render()
         for (i=0; i<16; i++) {
             xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
             ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
-            r = rnd()*40.0+40.0;
+            r = rnd()*5.0+30.0;
             xe = -xdir * r + rnd() * 18.0 - 9.0;
             ye = -ydir * r + rnd() * 18.0 - 9.0;
             glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
@@ -644,6 +664,7 @@ void render()
         }
         glEnd();
     }
+    
     //-------------------------------------------------------------------------
     //Draw the asteroids
     {
@@ -663,10 +684,6 @@ void render()
                     glVertex2f(a->vert[j][0], a->vert[j][1]);
                 }
                 glEnd();
-                //glBegin(GL_LINES);
-                // glVertex2f(0,   0);
-                //glVertex2f(a->radius, 0);
-                //glEnd();
                 glPopMatrix();
                 glColor3f(1.0f, 0.0f, 0.0f);
                 a = a->next;
@@ -674,18 +691,12 @@ void render()
         }else {
             Asteroid *a = g.ahead;
             while (a) {
-                //Log("draw asteroid...\n");
-                glColor3fv(a->color);
+                glColor3f(rnd(), rnd(),rnd());
                 glPushMatrix();
                 glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
                 glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
-                //float theta;
-                //glBegin(GL_POLYGON);
-                snez::collision_detection(gl.xres, gl.yres);
-                //glBegin(GL_LINES);
-                // glVertex2f(0,   0);
-                //glVertex2f(a->radius, 0);
-                //glEnd();
+                //Changing Asteroids into circles
+                snez::collision_detection(sizeasteroids, newshape);
                 glPopMatrix();
                 glColor3f(1.0f, 0.0f, 0.0f);
                 a = a->next;
@@ -718,13 +729,18 @@ void render()
         gl.paused = false;
         return;
     }
-    if(gl.dead == 1){
+    if(gl.dead == 1 || hp == 0){
         aarcosavalos::finish_game(gl.xres, gl.yres);
+	gl.paused = true;
         return;
     }
     if(gl.credits){
         show_credits(gl.xres, gl.yres);
         return;
+    }
+    if(gl.Collision) {
+	snez::FeatureMode_Indication(gl.xres,gl.yres);
+	return;
     }
     if(gl.sound) {
         sound(gl.xres, gl.yres);

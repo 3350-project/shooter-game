@@ -23,7 +23,7 @@ const float timeslice = 1.0f;
 const float gravity = -0.2f;
 #define PI 3.141592653589793
 #define ALPHA 1
-const int MAX_BULLETS = 11;
+const int MAX_BULLETS = 20;
 const Flt MINIMUM_ASTEROID_SIZE = 60.0;
 
 class Global {
