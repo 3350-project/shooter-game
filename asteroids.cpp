@@ -54,8 +54,15 @@ X11_wrapper x11(1280, 720, gl);
 RWyatt rw;
 
 SoundDevice * mysounddevice = SoundDevice::get();
-SoundSource mySpeaker;
-uint32_t laserSound = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
+SoundSource mySpeaker1;
+SoundSource mySpeaker2;
+SoundSource mySpeaker3;
+SoundSource mySpeaker4;
+
+uint32_t laser = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
+uint32_t explode = SoundBuffer::get()->addSoundEffect("./soundFiles/explode.wav");
+uint32_t shot = SoundBuffer::get()->addSoundEffect("./soundFiles/laser.wav");
+uint32_t thrust = SoundBuffer::get()->addSoundEffect("./soundFiles/thrust.wav");
 
 //function prototypes
 void init_opengl(void);
@@ -184,7 +191,7 @@ void check_mouse(XEvent *e)
                     b->color[2] = 1.0f;
                     ++g.nbullets;
 		    if (gl.sound == 1)
-                        mySpeaker.Play(laserSound);
+                        mySpeaker1.Play(laser);
                 }
             }
         }
@@ -490,6 +497,8 @@ void physics()
             //Testing for smaller radius collision
                 if (dist < (a->radius*a->radius)) {
                     std::cout << "asteroid hit." << std::endl;
+		    if (gl.sound == 1)
+                   	 mySpeaker2.Play(explode);
                     //delete the asteroid and bullet
                     Asteroid *savea = a->next;
                     deleteAsteroid(&g, a);
@@ -504,6 +513,9 @@ void physics()
             } else {
                if (dist < (a->radius * 20 )) {
                     std::cout << "asteroid hit." << std::endl;
+		    if (gl.sound == 1)
+       			    mySpeaker2.Play(explode);
+
                     //this asteroid is hit.
                 //delete the asteroid and bullet
                 Asteroid *savea = a->next;
@@ -516,7 +528,7 @@ void physics()
                 if (a == NULL)
                     break;
                 }
-        }
+	    }
             i++;
             }
         if (a == NULL)
@@ -611,7 +623,7 @@ void physics()
                 g.nbullets++;
             }
 	    if (gl.sound == 1)
-                    mySpeaker.Play(laserSound);
+                    mySpeaker3.Play(shot);
        }
     }
     if (g.mouseThrustOn) {
@@ -674,6 +686,8 @@ void render()
             glVertex2f(g.ship->pos[0]+xe,g.ship->pos[1]+ye);
         }
         glEnd();
+	if (gl.sound==1)
+		mySpeaker4.Play(thrust);
     }
     
     //-------------------------------------------------------------------------
