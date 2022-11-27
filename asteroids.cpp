@@ -274,13 +274,8 @@ int check_keys(XEvent *e)
              newshape +=1;
              if(newshape == 3 ) {
                 newshape = 0;
-<<<<<<< HEAD
             }
             break;          
-=======
-            }          
-	    break;
->>>>>>> 2047ea5b0122fa4c7ed7e6638f42a8fbed0a021f
         case XK_F3:
             gl.weapon = rgordon::manage_state(gl.weapon);
             break;
