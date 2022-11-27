@@ -712,7 +712,7 @@ void render()
         }
 	if (g.nasteroids == 0)
         {
-           if (wave <= MAX_WAVE)
+           if (wave > MAX_WAVE)
                wave = MAX_WAVE;
            else
                wave = wave + 5;
