@@ -59,7 +59,10 @@ void check_mouse(XEvent *e);
 int check_keys(XEvent *e);
 void physics();
 void render();
+void next_wave(int);
 
+int wave = 10;
+int MAX_WAVE = 60;
 //==========================================================================
 // M A I N
 //==========================================================================
@@ -271,12 +274,19 @@ int check_keys(XEvent *e)
              newshape +=1;
              if(newshape == 3 ) {
                 newshape = 0;
+<<<<<<< HEAD
             }
             break;          
+=======
+            }          
+	    break;
+>>>>>>> 2047ea5b0122fa4c7ed7e6638f42a8fbed0a021f
         case XK_F3:
             gl.weapon = rgordon::manage_state(gl.weapon);
             break;
         case XK_t:
+	    next_wave(wave);
+            wave = wave + 5;
             break;
         case XK_Down:
             break;
@@ -700,6 +710,14 @@ void render()
                 a = a->next;
             }
         }
+	if (g.nasteroids == 0)
+        {
+           if (wave >= MAX_WAVE)
+               wave = MAX_WAVE;
+           else
+               wave = wave + 5;
+           next_wave(wave);
+        }
     }
     //-------------------------------------------------------------------------
     //Draw the bullets
@@ -757,6 +775,38 @@ void render()
         RWyatt::draw_border(gl.xres, gl.yres);
         rw.draw_networking(gl.xres, gl.yres);
     }
+}
 
-
+void next_wave (int waves)
+{
+	std::cout << "NEXT WAVE\n";
+	 for (int j = 0; j < waves; j++) {
+        Asteroid *a = new Asteroid;
+        a->nverts = 8;
+        a->radius = rnd() * 80.0 + 40.0;
+        Flt r2 = a->radius / 2.0;
+        Flt angle = 0.0f;
+        Flt inc = (PI * 2.0) / (Flt)a->nverts;
+        for (int i = 0; i < a->nverts; i++) {
+            a->vert[i][0] = sin(angle) * (r2 + rnd() * a->radius);
+            a->vert[i][1] = cos(angle) * (r2 + rnd() * a->radius);
+            angle += inc;
+        }
+        a->pos[0] = (Flt)(rand() % gl.xres);
+        a->pos[1] = (Flt)(rand() % gl.yres);
+        a->pos[2] = 0.0f;
+        a->angle = 0.0;
+        a->rotate = rnd() * 4.0 - 2.0;
+        a->color[0] = 0.8;
+        a->color[1] = 0.8;
+        a->color[2] = 0.7;
+        a->vel[0] = (Flt)(rnd() * 2.0 - 1.0);
+        a->vel[1] = (Flt)(rnd() * 2.0 - 1.0);
+        // add to front of linked list
+        a->next = g.ahead;
+        if (g.ahead != NULL)
+            g.ahead->prev = a;
+        g.ahead = a;
+	++g.nasteroids;
+    }
 }
