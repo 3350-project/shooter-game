@@ -267,18 +267,14 @@ int check_keys(XEvent *e)
         case XK_c:
             gl.credits = managed_state_credits(gl.credits);
             break;
-<<<<<<< HEAD
         case XK_x:
              newshape +=1;
              if(newshape == 3 ) {
                 newshape = 0;
-            }          
-=======
+            }
+            break;          
         case XK_F3:
             gl.weapon = rgordon::manage_state(gl.weapon);
-            break;
-        case XK_x:           
->>>>>>> cc685ecb768f21b6343d31a7e4496b57d6fc3354
             break;
         case XK_t:
             break;
@@ -483,32 +479,26 @@ void physics()
             //Testing for smaller radius collision
                 if (dist < (a->radius*a->radius)) {
                     std::cout << "asteroid hit." << std::endl;
-                } else {
                     //delete the asteroid and bullet
                     Asteroid *savea = a->next;
                     deleteAsteroid(&g, a);
                     a = savea;
                     g.nasteroids--;
-                }
                     //delete the bullet...
                     memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
                     g.nbullets--;
                     if (a == NULL)
                         break;
+                }
             } else {
                if (dist < (a->radius * 20 )) {
                     std::cout << "asteroid hit." << std::endl;
-               } else {
                     //this asteroid is hit.
-                    a->color[0] = 1.0;
-                    a->color[1] = 0.1;
-                    a->color[2] = 0.1;
                 //delete the asteroid and bullet
                 Asteroid *savea = a->next;
                 deleteAsteroid(&g, a);
                 a = savea;
                 g.nasteroids--;
-                }
                 //delete the bullet...
                 memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
                 g.nbullets--;
@@ -517,6 +507,7 @@ void physics()
                 }
         }
             i++;
+            }
         if (a == NULL)
             break;
         a = a->next;
