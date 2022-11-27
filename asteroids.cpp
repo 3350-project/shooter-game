@@ -53,6 +53,10 @@ X11_wrapper x11(1280, 720, gl);
 // Personal class instance
 RWyatt rw;
 
+SoundDevice * mysounddevice = SoundDevice::get();
+SoundSource mySpeaker;
+uint32_t laserSound = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
+
 //function prototypes
 void init_opengl(void);
 void check_mouse(XEvent *e);
@@ -179,6 +183,8 @@ void check_mouse(XEvent *e)
                     b->color[1] = 1.0f;
                     b->color[2] = 1.0f;
                     ++g.nbullets;
+		    if (gl.sound == 1)
+                        mySpeaker.Play(laserSound);
                 }
             }
         }
@@ -265,7 +271,7 @@ int check_keys(XEvent *e)
         case XK_f:
             break;
         case XK_s:
-			gl.sound = managed_state_sound(gl.sound);
+	    gl.sound = managed_state_sound(gl.sound);
             break;
         case XK_c:
             gl.credits = managed_state_credits(gl.credits);
@@ -604,6 +610,8 @@ void physics()
                 b->color[2] = 1.0f;
                 g.nbullets++;
             }
+	    if (gl.sound == 1)
+                    mySpeaker.Play(laserSound);
        }
     }
     if (g.mouseThrustOn) {
