@@ -779,6 +779,7 @@ void render()
 
 void next_wave (int waves)
 {
+	std::cout << "NEXT WAVE\n";
 	 for (int j = 0; j < waves; j++) {
         Asteroid *a = new Asteroid;
         a->nverts = 8;
