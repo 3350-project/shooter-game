@@ -28,7 +28,7 @@ class SoundDevice
         static SoundDevice* get();
 
     private:
-        SoundDevice();
+        SoundDevice() noexcept(false);
         ~SoundDevice();
 
         ALCdevice* p_ALCDevice;
