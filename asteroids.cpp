@@ -807,6 +807,6 @@ void next_wave (int waves)
         if (g.ahead != NULL)
             g.ahead->prev = a;
         g.ahead = a;
-
+	++g.nasteroids;
     }
 }
