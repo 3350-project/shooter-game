@@ -1,3 +1,7 @@
+//CMPS3350 - Software Engineering
+//Fall 2022 - Team-3 Project
+//Program modified by: Axel Arcos, Ryan Gordon, Steven Nez, 
+//                     Rodolfo Velasquez, Reid Wyatt
 //
 //program: asteroids.cpp
 //author:  Gordon Griesel
@@ -191,7 +195,7 @@ void check_mouse(XEvent *e)
                     b->color[2] = 1.0f;
                     ++g.nbullets;
 		    if (gl.sound == 1)
-                        mySpeaker1.Play(laser);
+                        mySpeaker1.Play(shot);
                 }
             }
         }
@@ -591,6 +595,8 @@ void physics()
             g.ship->vel[0] *= speed;
             g.ship->vel[1] *= speed;
         }
+	    if (gl.sound==1)
+		    mySpeaker4.Play(thrust);
     }
     if (gl.keys[XK_space]) {
         //a little time between each bullet
@@ -623,7 +629,7 @@ void physics()
                 g.nbullets++;
             }
 	    if (gl.sound == 1)
-                    mySpeaker3.Play(shot);
+                    mySpeaker3.Play(laser);
        }
     }
     if (g.mouseThrustOn) {
@@ -686,8 +692,6 @@ void render()
             glVertex2f(g.ship->pos[0]+xe,g.ship->pos[1]+ye);
         }
         glEnd();
-	if (gl.sound==1)
-		mySpeaker4.Play(thrust);
     }
     
     //-------------------------------------------------------------------------
