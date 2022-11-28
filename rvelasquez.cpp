@@ -4,7 +4,23 @@
 //CMPS 3350 Software engineering 
 //Team 3
 //
-//features: credit screen and sound 
+//Features: Credit Screen and Sound
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+// 					Works Cited: 
+// Code, Tech and tutorials openal-impl
+// November 5, 2020
+// openAL Tutorial pt.1 | Init and Play Sound Effects
+// https://www.youtube.com/watch?v=kWQM1iQ1W0E
+// https://github.com/codetechandtutorials/openal-impl/releases/tag/vid1
+//
+// Mt. Ford Studios 
+// June 18, 2018
+// JS Asteroids Game Part 7 (Sounds effects and Music)
+// https://www.youtube.com/watch?v=LfSBbrGqFV0
+// https://drive.google.com/file/d/1tmjvMKxCcJeyTpi5pI6A8cgVxwWnyPXn/view
+//
+//////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <stdio.h>
@@ -56,42 +72,29 @@ void show_credits(int xres, int yres)
     glEnd();
 
     Rect r; 
-    r.bot = yres - 200;
+    r.bot = yres - 240;
     r.left = xres / 2;
-    r.center = 10;
     ggprint16(&r, 20, 0x00000000, "CREDITS");
 
-    r.bot = yres - 240;
+    r.bot = yres - 280;
     r.left = (xres / 2) - 75;
-    r.center = 60;
     ggprint16(&r, 20, 0x00000000, "Axel Arcos");
 
-    r.bot = yres - 280;
-    r.left = (xres / 2) - 73;
-    r.center = 61;
+    r.bot = yres - 320;
+    r.left = (xres / 2) - 65;
     ggprint16(&r, 20, 0x00000000, "Ryan Gordon");
 
-    r.bot = yres - 320;
+    r.bot = yres - 360;
     r.left = (xres / 2) - 72;
-    r.center = 60;
     ggprint16(&r, 20, 0x00000000, "Steven Nez");
 
-    r.bot = yres - 360;
-    r.center = 63;
+    r.bot = yres - 400;
     ggprint16(&r, 20, 0x00000000, "Reid Wyatt");
 
-    r.bot = yres - 400;
-    r.center = 70;
+    r.bot = yres - 440;
+    r.left = (xres/2) - 40;
     ggprint16(&r, 20, 0x00000000, "Rodolfo Velasquez");
 }
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//
-// The knoledwge and main source came from Code, Tech and tutorials openal-impl
-// https://www.youtube.com/watch?v=kWQM1iQ1W0E
-// https://github.com/codetechandtutorials/openal-impl/releases/tag/vid1
-//
-//////////////////////////////////////////////////////////////////////////////////////////////////
 
 void sound(int xres, int yres)
 {
@@ -132,37 +135,30 @@ SoundDevice* SoundDevice::get()
 //Open device 
 SoundDevice::SoundDevice()
 {
-    p_ALCDevice = alcOpenDevice(nullptr); // nullptr = get default device
-    if (!p_ALCDevice)
-        throw("failed to get sound device");
-
-    p_ALCContext = alcCreateContext(p_ALCDevice, nullptr);  // create context
-    if(!p_ALCContext)
-        throw("Failed to set sound context");
-
-    if (!alcMakeContextCurrent(p_ALCContext))   // make context current
-        throw("failed to make context current");
+    device = alcOpenDevice(nullptr);                      
+    if(device) {
+        context = alcCreateContext(device, nullptr);                                
+        alcMakeContextCurrent(context); 
+    } else {
+        cout << "could not open device" << endl;
+        exit(1);	
+    }
 
     const ALCchar* name = nullptr;
-    if (alcIsExtensionPresent(p_ALCDevice, "ALC_ENUMERATE_ALL_EXT"))
-        name = alcGetString(p_ALCDevice, ALC_ALL_DEVICES_SPECIFIER);
-    if (!name || alcGetError(p_ALCDevice) != AL_NO_ERROR)
-        name = alcGetString(p_ALCDevice, ALC_DEVICE_SPECIFIER);
+    if (alcIsExtensionPresent(device, "ALC_ENUMERATE_ALL_EXT"))
+        name = alcGetString(device, ALC_ALL_DEVICES_SPECIFIER);
+    if (!name || alcGetError(device) != AL_NO_ERROR)
+        name = alcGetString(device, ALC_DEVICE_SPECIFIER);
     printf("Opened \"%s\"\n", name);
 }
 
 //Device destructor 
 SoundDevice::~SoundDevice() 
 {
-    if (!alcMakeContextCurrent(nullptr))
-        throw("failed to set context to nullptr");
-
-    alcDestroyContext(p_ALCContext);
-    if (p_ALCContext)
-        throw("failed to unset during close");
-
-    if (!alcCloseDevice(p_ALCDevice))
-        throw("failed to close sound device");
+    device = alcGetContextsDevice(context);
+    alcMakeContextCurrent(NULL);
+    alcDestroyContext(context);
+    alcCloseDevice(device);	
 }
 
 //Creating a buffer
@@ -243,39 +239,39 @@ ALuint SoundBuffer::addSoundEffect(const char* filename)
     }
 
     //Adds buffer to a vector of sound effects 
-    p_SoundEffectBuffers.push_back(buffer); 
+    SoundEffectBuffers.push_back(buffer); 
     return buffer;
 }
 
 //removes sound effect from sound effects vector
 bool SoundBuffer::removeSoundEffect(const ALuint& buffer)
 {
-    auto it = p_SoundEffectBuffers.begin();
-    while (it != p_SoundEffectBuffers.end()) {
-        if (*it == buffer) {
-            alDeleteBuffers(1, &*it);
-            it = p_SoundEffectBuffers.erase(it);
+    auto t = SoundEffectBuffers.begin();
+    while (t != SoundEffectBuffers.end()) {
+        if (*t == buffer) {
+            alDeleteBuffers(1, &*t);
+            t = SoundEffectBuffers.erase(t);
             return true;
         }
         else {
-            ++it;
+            ++t;
         }
     }
-    return false;  // couldn't find to remove
+    return false;  
 }
 
 //Clears the sound effects' vector  
 SoundBuffer::SoundBuffer()
 {
-    p_SoundEffectBuffers.clear();
+    SoundEffectBuffers.clear();
 
 }
 
 //Buffer destructor
 SoundBuffer::~SoundBuffer() 
 {
-    alDeleteBuffers(p_SoundEffectBuffers.size(), p_SoundEffectBuffers.data());
-    p_SoundEffectBuffers.clear();
+    alDeleteBuffers(SoundEffectBuffers.size(), SoundEffectBuffers.data());
+    SoundEffectBuffers.clear();
 }
 
 //Defines the source 

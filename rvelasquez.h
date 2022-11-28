@@ -28,11 +28,11 @@ class SoundDevice
         static SoundDevice* get();
 
     private:
-        SoundDevice() noexcept(false);
+        SoundDevice();
         ~SoundDevice();
 
-        ALCdevice* p_ALCDevice;
-        ALCcontext* p_ALCContext;
+        ALCdevice* device;
+        ALCcontext* context;
 
 };
 
@@ -48,7 +48,7 @@ class SoundBuffer
         SoundBuffer();
         ~SoundBuffer();
 
-        std::vector<ALuint> p_SoundEffectBuffers;
+        std::vector<ALuint> SoundEffectBuffers;
 };
 
 
