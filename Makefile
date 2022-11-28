@@ -1,5 +1,6 @@
 CFLAGS = -I ./include
 ##LIB    = ./libggfonts.so
+NOAUDIOFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm 
 LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm -lopenal -lsndfile #-lXrandr
 USERS = rwyatt.cpp rwyatt.h snez.cpp snez.h aarcosavalos.cpp aarcosavalos.h rvelasquez.cpp rvelasquez.h rgordon.cpp rgordon.h
 GAMEDEPS = GameObjects.cpp GameObjects.h Graphics.cpp Graphics.h
@@ -7,7 +8,10 @@ GAMEDEPS = GameObjects.cpp GameObjects.h Graphics.cpp Graphics.h
 all: asteroids
 
 asteroids: asteroids.cpp log.cpp timers.cpp $(GAMEDEPS) $(USERS)
-	g++ $(CFLAGS) asteroids.cpp log.cpp timers.cpp $(GAMEDEPS) $(USERS) libggfonts.a -Wall -Wextra $(LFLAGS) -oasteroids
+	g++ $(CFLAGS) asteroids.cpp log.cpp timers.cpp $(GAMEDEPS) $(USERS) libggfonts.a -Wall -Wextra $(LFLAGS) -oasteroids -DAUDIO
+
+noaudio: asteroids.cpp log.cpp timers.cpp $(GAMEDEPS) $(USERS)
+	g++ $(CFLAGS) asteroids.cpp log.cpp timers.cpp $(GAMEDEPS) $(USERS) libggfonts.a -Wall -Wextra $(NOAUDIOFLAGS) -oasteroids
 
 clean:
 	rm -f asteroids

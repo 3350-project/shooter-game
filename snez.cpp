@@ -8,7 +8,7 @@
 namespace snez
 {
 
-    Rect r,s,d;
+    Rect r,s,d,f, i,it;
     float PI;
     unsigned int manage_stateF2(unsigned int F2)
     {
@@ -36,25 +36,47 @@ namespace snez
         glEnd();
 
         r.bot = yres - 100;
-        r.left = xres/3;
+        r.left = xres/6;
         r.center = 0;
 
         ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
-        ggprint8b(&r, 16, 0xffffffff, "Controls:  Arrow Key UP: To Go Forward, Arrow Key RIGHT: To Rotate Right, Arrow Key LEFT: To Rotate Left, SPACE: To Shoot Bullets");
+        ggprint8b(&r, 16, 0xffffffff, "Controls:  Arrow Key UP: To Go Forward, Arrow Key DOWN: To Stop, Arrow Key RIGHT: To Rotate Right, Arrow Key LEFT: To Rotate Left, SPACE: To Shoot Bullets");
         ggprint8b(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
         ggprint8b(&r, 16, 0xffffffff, "To Go into Rudy's Feature Mode Press S");
-        ggprint8b(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
-        ggprint8b(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
 
     }
-    void Featuremode(int xres, int yres, int Collision, int nbullets, int nasteroids)
+    void Featuremode(int xres, int yres, int Collision, int hp, int nasteroids)
     {
+
+        int xcent = xres;
+        int ycent = yres;
+        int w = xres;
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        s.bot = yres-50;
+        glColor3f(0.0, 0.0, 0.5);
+        glBegin(GL_QUADS);
+        glVertex2f(xcent-w, ycent-w);
+        glVertex2f(xcent-w, ycent+w);
+        glVertex2f(xcent+w, ycent+w);
+        glVertex2f(xcent+w, ycent-w);
+        glEnd();
+
+        s.bot = yres-40;
         s.left = xres/2.5;
         s.center = 0;
+
+        f.bot = yres-70;
+        f.left = xres/2.5;
+        f.center = 0;
+
+        i.bot = yres/100;
+        i.left = xres - (xres-50);
+        i.center = 0;
+
+        it.bot = (yres/100)+ 20;
+        it.left = xres - (xres-50);
+        it.center = 0;
 
         r.bot = yres - 50;
         r.left = 50;
@@ -65,14 +87,14 @@ namespace snez
         d.center = 0;
 
         if(Collision == 1) {
-            ggprint8b(&r, 16, 0x00ff0000, "3350 - TopGun");
-            ggprint8b(&r, 16, 0x00ffff00, "Number of Bullets on Screen: %i", nbullets);
+            ggprint16(&f, 16, 0x00ff0000, "3350 - TopGun");
+            ggprint16(&it, 16, 0x00ff0000, "Health Points Left: %i", hp);
             ggprint8b(&r, 16, 0x00ffff00, "Number of Enemies Left: %i", nasteroids);
             ggprint16(&s, 16, 0x00ffffff, "WELCOME TO MY FEATURE");
         } else {
             //NEED TO MAKE A RELOAD SYSTEM FOR GAME DO NOT FORGET
-            ggprint8b(&d, 16, 0x00ff0000, "3350 - TopGun");
-            ggprint8b(&d, 16, 0x00ffff00, "Bullets: %i / 30", nbullets);
+            ggprint16(&f, 16, 0x00ff0000, "3350 - TopGun");
+            ggprint16(&i, 16, 0x00ff0000, "Health Points Left: %i", hp);
             ggprint8b(&d, 16, 0x00ffff00, "Number of Enemies Left: %i", nasteroids);
             ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter HelpScreen");
         }
@@ -82,7 +104,7 @@ namespace snez
     void collision_detection(int sizeasteroids, int newshape) 
     {
         float theta;
-        if (newshape == 0) {
+        if (newshape == 1) {
             glBegin(GL_TRIANGLES);
 
             glVertex2f(sizeasteroids, sizeasteroids);
@@ -91,7 +113,7 @@ namespace snez
 
             glEnd();
         }
-        if (newshape == 1) {
+        if (newshape == 0) {
            glBegin(GL_POLYGON);
             for(int i = 0; i < 360; i++) {
                 theta = i*3.142/180;
@@ -119,7 +141,7 @@ namespace snez
         // Draw a border using a triangle strip
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
-        glColor4f(0.0, 0.0, 1.0, 1.0);
+        glColor4f(rand(),rand(), rand(), rand());
 
         int w = 20;
 

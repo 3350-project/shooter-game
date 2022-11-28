@@ -32,16 +32,19 @@
 #include <errno.h>
 #include <inttypes.h>
 #include <vector>
+#include <X11/Xlib.h>
+#include <GL/glx.h>
+#include "fonts.h"
+#include "rvelasquez.h"
+
+#ifdef AUDIO
 #include <climits>
 #include <AL/alext.h>
 #include <AL/al.h>
 #include <AL/alc.h>
 #include <AL/alut.h>
 #include <sndfile.h>
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-#include "fonts.h"
-#include "rvelasquez.h"
+#endif
 
 using namespace std;
 
@@ -125,6 +128,7 @@ void sound(int xres, int yres)
     glDisable(GL_BLEND);
 }
 
+#ifdef AUDIO
 //Create a device
 SoundDevice* SoundDevice::get()
 {
@@ -306,5 +310,6 @@ void SoundSource::Play(const ALuint buffer_to_play)
     alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
 }
 
+#endif
 
 

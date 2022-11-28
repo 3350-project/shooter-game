@@ -57,6 +57,7 @@ X11_wrapper x11(1280, 720, gl);
 // Personal class instance
 RWyatt rw;
 
+#ifdef AUDIO
 SoundDevice * mysounddevice = SoundDevice::get();
 SoundSource mySpeaker1;
 SoundSource mySpeaker2;
@@ -67,6 +68,7 @@ uint32_t laser = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav")
 uint32_t explode = SoundBuffer::get()->addSoundEffect("./soundFiles/explode.wav");
 uint32_t shot = SoundBuffer::get()->addSoundEffect("./soundFiles/laser.wav");
 uint32_t thrust = SoundBuffer::get()->addSoundEffect("./soundFiles/thrust.wav");
+#endif
 
 //function prototypes
 void init_opengl(void);
@@ -194,8 +196,10 @@ void check_mouse(XEvent *e)
                     b->color[1] = 1.0f;
                     b->color[2] = 1.0f;
                     ++g.nbullets;
+#ifdef AUDIO
                     if (gl.sound == 1)
                         mySpeaker1.Play(shot);
+#endif
                 }
             }
         }
@@ -282,7 +286,9 @@ int check_keys(XEvent *e)
         case XK_f:
             break;
         case XK_s:
+#ifdef AUDIO
             gl.sound = managed_state_sound(gl.sound);
+#endif
             break;
         case XK_c:
             gl.credits = managed_state_credits(gl.credits);
@@ -399,7 +405,7 @@ void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
     //std::cout << "frag" << std::endl;
 }
 int hp = 3;
-int flashred = 0;
+int flashred = 20;
 void physics()
 {
     if (gl.paused|| gl.HelpScr || gl.dead) {
@@ -501,9 +507,11 @@ void physics()
                 //Testing for smaller radius collision
                 if (dist < (a->radius*a->radius)) {
                     std::cout << "asteroid hit." << std::endl;
+#ifdef AUDIO
                     if (gl.sound == 1)
                         mySpeaker2.Play(explode);
-                    //delete the asteroid and bullet
+#endif
+                   // delete the asteroid and bullet
                     Asteroid *savea = a->next;
                     deleteAsteroid(&g, a);
                     a = savea;
@@ -513,37 +521,14 @@ void physics()
                     g.nbullets--;
                     if (a == NULL)
                         break;
-                } 
-                d2 = g.ship->pos[0] - a->pos[0];
-                d3 = g.ship->pos[1] - a->pos[1];
-                dist2 = (d2*d2 + d3*d3);
-                if(dist2 < (a->radius * sizeasteroids) && hp != 0) {
-                    hp--;
-                    g.ship->vel[0] = 0;
-                    g.ship->vel[1] = 0;
-                    flashred = 1;
-                    std::cout<<"Ship has collided with asteroid" << std::endl;
-		    //Delete Asteroids
-                    Asteroid *savea = a->next;
-                    deleteAsteroid(&g, a);
-                    a = savea;
-                    g.nasteroids--;
-                    if(hp == 0) {
-                        std::cout << "Hp is now at 0" << std::endl;
-                        if (hp < 0) {
-                            hp = 0;
-                        }
-
-                    }
-                    if (a == NULL)
-                        break;
-                }
-
+		}
             } else {
-                if (dist < (a->radius * 20 )) {
+                if (dist < (a->radius * sizeasteroids )) {
                     std::cout << "asteroid hit." << std::endl;
+#ifdef AUDIO
                     if (gl.sound == 1)
                         mySpeaker2.Play(explode);
+#endif
 
                     //this asteroid is hit.
                     //delete the asteroid and bullet
@@ -559,22 +544,65 @@ void physics()
                 }
             }
             i++;
-        }
-        if (a == NULL)
-            break;
-        a = a->next;
+	}
+	if (a == NULL)
+	    break;
+	a = a->next;
+    }
+    a = g.ahead;
+    while (a) {
+        //is there a bullet within its radius?
+        int i=0;
+        while (i < g.nasteroids) {
+                d2 = g.ship->pos[0] - a->pos[0];
+                d3 = g.ship->pos[1] - a->pos[1];
+                dist2 = (d2*d2 + d3*d3);
+                if((dist2) < (a->radius * (sizeasteroids*2)) && hp != 0) {
+                    hp--;
+                    g.ship->vel[0] = 0;
+                    g.ship->vel[1] = 0;
+                    flashred = 1;
+                    std::cout<<"Ship has collided with asteroid" << std::endl;
+
+#ifdef AUDIO
+                    if (gl.sound == 1)
+                        mySpeaker2.Play(explode);
+#endif
+		    //Delete Asteroids
+                    Asteroid *savea = a->next;
+                    deleteAsteroid(&g, a);
+                    a = savea;
+                    g.nasteroids--;
+                    if(hp == 0) {
+                        std::cout << "Hp is now at 0" << std::endl;
+                        if (hp < 0) {
+                            hp = 0;
+                        }
+
+                    }
+                    if (a == NULL)
+                        break;
+                }
+            i++;
+	}
+	if (a == NULL)
+	    break;
+	a = a->next;
     }
     //---------------------------------------------------
     //check keys pressed now
     if (gl.keys[XK_Left]) {
+	
         g.ship->angle += 4.0;
         if (g.ship->angle >= 360.0f)
             g.ship->angle -= 360.0f;
     }
     if (gl.keys[XK_Right]) {
-        g.ship->angle -= 4.0;
+       // g.ship->vel[0] += .5;
+	g.ship->angle -= 4.0;
         if (g.ship->angle < 0.0f)
             g.ship->angle += 360.0f;
+	    
     }
     if (gl.keys[XK_Up]) {
         //apply thrust
@@ -583,19 +611,26 @@ void physics()
         //convert angle to a vector
         Flt xdir = cos(rad);
         Flt ydir = sin(rad);
-        g.ship->vel[0] += xdir*0.1f;
-        g.ship->vel[1] += ydir*0.1f;
+        g.ship->vel[0] += xdir+0.1f;
+        g.ship->vel[1] += ydir+0.1f;
         Flt speed = sqrt(g.ship->vel[0]*g.ship->vel[0]+
                 g.ship->vel[1]*g.ship->vel[1]);
-        if (speed > 5.0f) {
-            speed = 5.0f;
+        if (speed > 3) {
+            speed = 3;
             normalize2d(g.ship->vel);
             g.ship->vel[0] *= speed;
             g.ship->vel[1] *= speed;
         }
+
+#ifdef AUDIO
         if (gl.sound==1)
             mySpeaker4.Play(thrust);
-    }
+#endif
+}
+    if (gl.keys[XK_Down]) {
+            g.ship->vel[0] = 0;
+            g.ship->vel[1] = 0;
+        }
     if (gl.keys[XK_space]) {
         //a little time between each bullet
         struct timespec bt;
@@ -626,8 +661,10 @@ void physics()
                 b->color[2] = 1.0f;
                 g.nbullets++;
             }
+#ifdef AUDIO
             if (gl.sound == 1)
-                mySpeaker3.Play(laser);
+            	mySpeaker3.Play(laser);
+#endif
         }
     }
     if (g.mouseThrustOn) {
@@ -636,20 +673,22 @@ void physics()
         clock_gettime(CLOCK_REALTIME, &mtt);
         double tdif = timeDiff(&mtt, &g.mouseThrustTimer);
         //std::cout << "tdif: " << tdif << std::endl;
-        if (tdif < -0.3)
+        if (tdif < 0.5)
             g.mouseThrustOn = false;
     }
 }
 
 void render()
 {
-    snez::Featuremode(gl.xres, gl.yres, gl.Collision, g.nbullets, g.nasteroids);
+    snez::Featuremode(gl.xres, gl.yres, gl.Collision, hp, g.nasteroids);
     //-------------------------------------------------------------------------
     //Draw the ship
-    if (flashred == 1) {
+    if (flashred < 20) {
         glColor3f(1.0f, 0.0, 0.0);
-        flashred = 0;
+        flashred += 1;
+
     } else {
+	flashred = 20;
         glColor3fv(g.ship->color);
     }
     glPushMatrix();
@@ -668,7 +707,6 @@ void render()
     glVertex2f(0.0f, 0.0f);
     glEnd();
     glPopMatrix();
-    //Might not want the thrust so I commented it out
 
     if (gl.keys[XK_space]) {
         int i;
@@ -777,10 +815,12 @@ void render()
         snez::FeatureMode_Indication(gl.xres,gl.yres);
         return;
     }
+#ifdef AUDIO
     if(gl.sound) {
         sound(gl.xres, gl.yres);
         return;
     }
+#endif
     if(gl.intro){
         rgordon::intro(gl.xres, gl.yres);
         return;
