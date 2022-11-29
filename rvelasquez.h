@@ -25,15 +25,14 @@ extern void Play(const ALuint buffer_to_Play);
 class SoundDevice
 {
     public:
+         SoundDevice();
+        ~SoundDevice();
+
         static SoundDevice* get();
 
     private:
-        SoundDevice();
-        ~SoundDevice();
-
         ALCdevice* device;
         ALCcontext* context;
-
 };
 
 class SoundBuffer
