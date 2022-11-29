@@ -40,11 +40,17 @@ namespace snez
         r.center = 0;
 
         ggprint16(&r, 16, 0xffffffff, "HELP SCREEN");
-        ggprint10(&r, 16, 0xffffffff, "Controls:  W: To Go Up,  S: To Go Down, D: To Go Right, A: To G Left, Left Mouse Click: To Shoot Bullets, Mouse Movement: To Rotate Player");
-        ggprint10(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
-        ggprint10(&r, 16, 0xffffffff, "To Go into Rudy's Feature Mode Press S");
-        ggprint10(&r, 16, 0xffffffff, "To Go into Axel's Feature Mode Press R");
-        ggprint10(&r, 16, 0xffffffff, "Press P to Pause");
+        ggprint10(&r, 16, 0xffffffff, "");
+        ggprint10(&r, 16, 0xffffffff, "");
+        ggprint10(&r, 16, 0xffffffff, "- Controls:  W: To Go Up,  S: To Go Down, D: To Go Right, A: To G Left, Left Mouse Click: To Shoot Bullets, Mouse Movement: To Rotate Player");
+        ggprint10(&r, 16, 0xffffffff, "");
+        ggprint10(&r, 16, 0xffffffff, "- To Go into Steven's Feature Mode Press F2");
+        ggprint10(&r, 16, 0xffffffff, "");
+        ggprint10(&r, 16, 0xffffffff, "- To Go into Rudy's Feature Mode Press S");
+        ggprint10(&r, 16, 0xffffffff, "");
+        ggprint10(&r, 16, 0xffffffff, "- To Go into Axel's Feature Mode Press R");
+        ggprint10(&r, 16, 0xffffffff, "");
+        ggprint10(&r, 16, 0xffffffff, "- Press P to Pause");
 
     }
     void Featuremode(int xres, int yres, int Collision, int hp, int nasteroids)
