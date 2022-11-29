@@ -282,7 +282,9 @@ int check_keys(XEvent *e)
     (void)shift;
     switch (key) {
         case XK_Escape:
+#ifdef AUDIO
             delete mysounddevice;
+#endif
             return 1;
         case XK_f:
             break;
