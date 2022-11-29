@@ -2,14 +2,13 @@
 //Fall 2022 - Team-3 Project
 //Program modified by: Axel Arcos, Ryan Gordon, Steven Nez, 
 //                     Rodolfo Velasquez, Reid Wyatt
-//
+
 //program: asteroids.cpp
 //author:  Gordon Griesel
 //date:    2014 - 2021
 //mod spring 2015: added constructors
 //This program is a game starting point for a 3350 project.
-//
-//
+
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
@@ -206,6 +205,7 @@ void check_mouse(XEvent *e)
         savey = 100;
     }
 }
+
 int sizeasteroids = 40;
 int newshape = 0;
 int check_keys(XEvent *e)
@@ -550,19 +550,19 @@ void render()
         glEnd();
     }
 
-    while(gl.HelpScr){
+    while(gl.HelpScr) {
         snez::Show_HelpScr(gl.xres, gl.yres);
         gl.credits = 0;
         gl.dead = false;
         gl.paused = false;
         return;
     }
-    if(gl.dead == 1 || mainPlayer.health == 0){
+    if(gl.dead == 1 || mainPlayer.health == 0) {
         aarcosavalos::finish_game(gl.xres, gl.yres);
         gl.paused = true;
         return;
     }
-    if(gl.credits){
+    if(gl.credits) {
         show_credits(gl.xres, gl.yres);
         return;
     }
@@ -576,11 +576,11 @@ void render()
         return;
     }
 #endif
-    if(gl.intro){
+    if(gl.intro) {
         rgordon::intro(gl.xres, gl.yres);
         return;
     }
-    if(gl.weapon){
+    if(gl.weapon) {
         rgordon::weapon(gl.xres, gl.yres);
         return;
     }
