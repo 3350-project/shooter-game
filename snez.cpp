@@ -91,7 +91,7 @@ namespace snez
         if(Collision == 1) {
             ggprint16(&f, 16, 0x00ff0000, "3350 - TopGun");
             ggprint16(&it, 16, 0x00ff0000, "Health Points Left: %i", hp);
-            ggprint8b(&r, 16, 0x00ffff00, "Number of Enemies Left: %i", nasteroids);
+            ggprint16(&r, 16, 0x00ffff00, "Number of Enemies Left: %i", nasteroids);
             ggprint16(&s, 16, 0x00ffffff, "WELCOME TO MY FEATURE");
         } else {
             ggprint16(&f, 16, 0x00ff0000, "3350 - TopGun");
