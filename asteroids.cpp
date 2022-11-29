@@ -206,8 +206,7 @@ void check_mouse(XEvent *e)
     }
 }
 
-int sizeasteroids = 40;
-int newshape = 0;
+
 int check_keys(XEvent *e)
 {
     static int shift=0;
@@ -249,9 +248,9 @@ int check_keys(XEvent *e)
             gl.credits = managed_state_credits(gl.credits);
             break;
         case XK_x:
-            newshape +=1;
-            if(newshape == 3 ) {
-                newshape = 0;
+            g.newshape += 1;
+            if(g.newshape == 3 ) {
+                g.newshape = 0;
             }
             break;          
         case XK_F3:
@@ -269,13 +268,13 @@ int check_keys(XEvent *e)
         case XK_r:
             break;
         case XK_n:
-            sizeasteroids += 5;
+            g.sizeasteroids += 5;
             break;
         case XK_m:
-            if(sizeasteroids < 5) {
-                sizeasteroids = 0;
+            if(g.sizeasteroids < 5) {
+                g.sizeasteroids = 0;
             } else {
-                sizeasteroids -= 5;
+                g.sizeasteroids -= 5;
             }
             break;
         case XK_i:
@@ -307,7 +306,6 @@ int check_keys(XEvent *e)
     return 0;
 }
 
-int flashred = 20;
 void physics()
 {
     if (gl.paused|| gl.HelpScr || gl.dead) {
@@ -389,7 +387,7 @@ void physics()
             dist = d0 * d0 + d1 * d1;
 
             if (dist < e.colisionRadius * e.colisionRadius &&
-                dist < e.colisionRadius * sizeasteroids) {
+                dist < e.colisionRadius * g.sizeasteroids) {
                 std::cout << "asteroid hit" << std::endl;
 
                 // delete enemy and bullet
@@ -397,7 +395,7 @@ void physics()
                 b.hitHealth();
                 g.score += 1;
 #ifdef AUDIO
-                if (gl.sound == 1)
+                if (gl.sound)
                     mySpeaker2.Play(explode);
 #endif
             }
@@ -410,7 +408,7 @@ void physics()
             d3 = p.position.y - e.position.y;
             dist2 = d2 * d2 + d3 * d3;
 
-            if (dist2 < e.colisionRadius * sizeasteroids * 2 && p.health > 0) {
+            if (dist2 < e.colisionRadius * g.sizeasteroids * 2 && p.health > 0) {
                 if (!g.invincibilityFrames) {
                     p.hitHealth();
                 }
@@ -418,11 +416,11 @@ void physics()
                 g.score -= 1;
                 p.velocity.x = 0;
                 p.velocity.y = 0;
-                flashred = 1;
+                g.flashred = 1;
                 std::cout<< "Player has collided with asteroid" << std::endl;
 
 #ifdef AUDIO
-                    if (gl.sound == 1)
+                    if (gl.sound)
                         mySpeaker2.Play(explode);
 #endif
             }
@@ -435,28 +433,28 @@ void physics()
     if (gl.keys[XK_a]) {
         mainPlayer.moveLeft(g.MOVE_SPEED);
 #ifdef AUDIO
-        if (gl.sound==1)
+        if (gl.sound)
             mySpeaker4.Play(thrust);
 #endif
     }
     if (gl.keys[XK_d]) {
         mainPlayer.moveRight(g.MOVE_SPEED);
 #ifdef AUDIO
-        if (gl.sound==1)
+        if (gl.sound)
             mySpeaker4.Play(thrust);
 #endif
     }
     if (gl.keys[XK_w]) {
         mainPlayer.moveUp(g.MOVE_SPEED);
 #ifdef AUDIO
-        if (gl.sound==1)
+        if (gl.sound)
             mySpeaker4.Play(thrust);
 #endif
     }
     if (gl.keys[XK_s]) {
         mainPlayer.moveDown(g.MOVE_SPEED);
 #ifdef AUDIO
-        if (gl.sound==1)
+        if (gl.sound)
             mySpeaker4.Play(thrust);
 #endif
     }
@@ -494,12 +492,12 @@ void render()
     rw.drawScore(gl.xres, gl.yres, g.score);
 
     //Draw the player
-    if (flashred < 20) {
+    if (g.flashred < 20) {
         glColor3f(1.0f, 0.0, 0.0);
-        flashred += 1;
+        g.flashred += 1;
 
     } else {
-	    flashred = 20;
+	    g.flashred = 20;
         glColor3f(mainPlayer.color.x, 
                   mainPlayer.color.y,
                   mainPlayer.color.z);
@@ -528,7 +526,7 @@ void render()
         glTranslatef(e.position.x, e.position.y, e.position.z);
         glRotatef(e.rotation, 0.0f, 0.0f, 1.0f);
         //Changing Asteroids into circles
-        snez::collision_detection(sizeasteroids, newshape);
+        snez::collision_detection(g.sizeasteroids, g.newshape);
         glPopMatrix();
         glColor3f(1.0f, 0.0f, 0.0f);
     }
@@ -557,7 +555,7 @@ void render()
         gl.paused = false;
         return;
     }
-    if(gl.dead == 1 || mainPlayer.health == 0) {
+    if(gl.dead || mainPlayer.health == 0) {
         aarcosavalos::finish_game(gl.xres, gl.yres);
         gl.paused = true;
         return;

@@ -32,6 +32,9 @@ class Game {
         int score = 0;
         int waveSize = 10;
         bool invincibilityFrames = true;
+        int sizeasteroids = 40;
+        int newshape = 0;
+        int flashred = 20;
     public:
         Game(Global&);
         void cleanDead();
