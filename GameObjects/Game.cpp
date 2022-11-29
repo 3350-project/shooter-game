@@ -20,6 +20,7 @@ Global::Global()
     sound = 0;
     intro = 0;
     weapon = 0;
+    feature = 0;
 };
 
 /* Game Object */
