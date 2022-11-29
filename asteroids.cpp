@@ -561,7 +561,8 @@ void render()
         gl.paused = true;
         return;
     }
-    if(gl.credits) {
+    if(gl.credits || g.score ==100) {
+	gl.paused = true;
         show_credits(gl.xres, gl.yres);
         return;
     }

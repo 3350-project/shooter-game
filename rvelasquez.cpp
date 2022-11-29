@@ -81,20 +81,24 @@ void show_credits(int xres, int yres)
 
     r.bot = yres - 280;
     r.left = (xres / 2) - 75;
+    ggprint16(&r, 20, 0x00000000, "YOU WIN!");
+    
+    r.bot = yres - 320;
+    r.left = (xres / 2) - 75;
     ggprint16(&r, 20, 0x00000000, "Axel Arcos");
 
-    r.bot = yres - 320;
+    r.bot = yres - 360;
     r.left = (xres / 2) - 65;
     ggprint16(&r, 20, 0x00000000, "Ryan Gordon");
 
-    r.bot = yres - 360;
+    r.bot = yres - 400;
     r.left = (xres / 2) - 72;
     ggprint16(&r, 20, 0x00000000, "Steven Nez");
 
-    r.bot = yres - 400;
+    r.bot = yres - 440;
     ggprint16(&r, 20, 0x00000000, "Reid Wyatt");
 
-    r.bot = yres - 440;
+    r.bot = yres - 460;
     r.left = (xres/2) - 40;
     ggprint16(&r, 20, 0x00000000, "Rodolfo Velasquez");
 }
