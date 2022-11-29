@@ -39,10 +39,11 @@ namespace snez
         r.left = xres/6;
         r.center = 0;
 
-        ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
-        ggprint8b(&r, 16, 0xffffffff, "Controls:  W: To Go Up,  S: To Go Down, D: To Rotate Right, A: To Rotate Left, SPACE: To Shoot Bullets");
-        ggprint8b(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
-        ggprint8b(&r, 16, 0xffffffff, "To Go into Rudy's Feature Mode Press S");
+        ggprint16(&r, 16, 0xffffffff, "HELP SCREEN");
+        ggprint10(&r, 16, 0xffffffff, "Controls:  W: To Go Up,  S: To Go Down, D: To Rotate Right, A: To Rotate Left, SPACE: To Shoot Bullets");
+        ggprint10(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
+        ggprint10(&r, 16, 0xffffffff, "To Go into Rudy's Feature Mode Press S");
+        ggprint10(&r, 16, 0xffffffff, "To Go into Axel's Feature Mode Press R");
 
     }
     void Featuremode(int xres, int yres, int Collision, int hp, int nasteroids)
