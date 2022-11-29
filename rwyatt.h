@@ -1,28 +1,19 @@
-// Reid Wyatt
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+*/
 #ifndef RWYATT_H
 #define RWYATT_H
-
-#include <string>
 
 class RWyatt
 {
 private:
-    static void flip_state(bool &state);
-    bool network_state;
-    bool multiplayer;
-    std::string user_name;
-    std::string server_ip;
+    static void flipState(bool &state);
 public:
-    static void pause_screen(bool &paused);
-    static void draw_border(int xres, int yres);
-    void draw_networking(int xres, int yres);
-    bool start_networking();
-    bool stop_networking();
-    bool networked();
-    bool mutliplayer();
-    void set_network_config(int, char*[]);
-    std::string player_name();
-    std::string server_name();
+    static void pauseScreen(bool &paused);
+    static void drawBorder(int xres, int yres);
+    static void drawScore(int, int, int);
     RWyatt();
 };
 
