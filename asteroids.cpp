@@ -584,7 +584,7 @@ void render()
         return;
     }
     if(gl.feature) {
-	aarcosavalos::Feautre_mode(gl.xres, gl.yres);
+	aarcosavalos::Feature_mode(gl.xres, gl.yres);
 	return;
     }
 }
