@@ -93,15 +93,14 @@ namespace snez
             ggprint8b(&r, 16, 0x00ffff00, "Number of Enemies Left: %i", nasteroids);
             ggprint16(&s, 16, 0x00ffffff, "WELCOME TO MY FEATURE");
         } else {
-            //NEED TO MAKE A RELOAD SYSTEM FOR GAME DO NOT FORGET
             ggprint16(&f, 16, 0x00ff0000, "3350 - TopGun");
             ggprint16(&i, 16, 0x00ff0000, "Health Points Left: %i", hp);
             ggprint8b(&d, 16, 0x00ffff00, "Number of Enemies Left: %i", nasteroids);
             ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter HelpScreen");
         }
     }
+    
     //This will be my Function that will detect collision and will coincide with taking damage aswell
-
     void collision_detection(int sizeasteroids, int newshape) 
     {
         float theta;
