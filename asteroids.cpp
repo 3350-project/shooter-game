@@ -285,7 +285,7 @@ int check_keys(XEvent *e)
             gl.HelpScr = snez::manage_stateF1(gl.HelpScr);
             break;
         case XK_p:
-            RWyatt::pause_screen(gl.paused);
+            RWyatt::pauseScreen(gl.paused);
             // unlocks and shows cursor
             x11.show_mouse_cursor(gl.paused);
             break;
@@ -489,6 +489,9 @@ void render()
     Player &mainPlayer = g.getMainPlayer();
     snez::Featuremode(gl.xres, gl.yres, gl.Collision, mainPlayer.health, g.enemies.size());
     //-------------------------------------------------------------------------
+
+    // Draw score
+    rw.drawScore(gl.xres, gl.yres, g.score);
 
     //Draw the player
     if (flashred < 20) {
