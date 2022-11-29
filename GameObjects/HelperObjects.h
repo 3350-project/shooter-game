@@ -1,3 +1,12 @@
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+ * TEAM: 3
+ * ---
+ * File containing helpful classes for use in other files.
+*/
+
 #ifndef HELPERS_H
 #define HELPERS_H
 

@@ -1,3 +1,12 @@
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+ * TEAM: 3
+ * ---
+ * Contains methods for setting up GameEntities, which 
+ * make up all interactive objects in the game.
+*/
 #ifndef GAME_ENTITY_H
 #define GAME_ENTITY_H
 

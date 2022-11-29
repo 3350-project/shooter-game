@@ -1,3 +1,12 @@
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+ * TEAM: 3
+ * ---
+ * Contains methods for setting up GameEntities, which 
+ * make up all interactive objects in the game.
+*/
 #include "GameShared.h"
 
 #define rnd() (((float)rand())/(float)RAND_MAX)

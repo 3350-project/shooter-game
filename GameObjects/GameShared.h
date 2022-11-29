@@ -1,3 +1,12 @@
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+ * TEAM: 3
+ * ---
+ * Shared header file containing needed headers.
+*/
+
 #include <string>
 #include <vector>
 #include <random>

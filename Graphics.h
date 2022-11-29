@@ -1,3 +1,12 @@
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+ * TEAM: 3
+ * ---
+ * File containing X11 Wrapper methods from asteroids.cpp.
+ * Moved to this file for simplicity.
+*/
 #ifndef GAMEGRAPHICS_H
 #define GAMEGRAPHICS_H
 

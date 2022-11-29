@@ -1,3 +1,12 @@
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+ * TEAM: 3
+ * ---
+ * File containing X11 Wrapper methods from asteroids.cpp.
+ * Moved to this file for simplicity.
+*/
 #include <iostream>
 #include "Graphics.h"
 
@@ -69,7 +78,7 @@ void X11_wrapper::set_title()
 {
     //Set the window title bar.
     XMapWindow(dpy, win);
-    XStoreName(dpy, win, "Asteroids template");
+    XStoreName(dpy, win, "Top Gun - 3350");
 }
 
 void X11_wrapper::check_resize(XEvent *e)

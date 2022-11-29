@@ -2,6 +2,8 @@
  * AUTHOR: Reid Wyatt
  * CLASS: CMPS 3350
  * DATE: FALL 2022
+ * TEAM: 3
+ * Contains methods for drawing on screen.
 */
 #ifndef RWYATT_H
 #define RWYATT_H
