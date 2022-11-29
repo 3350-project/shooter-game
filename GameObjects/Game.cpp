@@ -18,13 +18,13 @@ Global::Global()
 Game::Game(Global &gl) : gl(gl)
 {
     players.push_back(Player(gl.xres, gl.yres));
-    mouseThrustOn = false;
     // starting 10 enemies...
-    for (int j = 0; j < 10; j++)
-    {
-        enemies.push_back(Enemy(gl.xres, gl.yres));
-    }
-    clock_gettime(CLOCK_REALTIME, &bulletTimer);
+    spawnWave();
+}
+
+Player& Game::getMainPlayer()
+{
+    return players.at(0);
 }
 
 void Game::cleanDead()
@@ -33,7 +33,42 @@ void Game::cleanDead()
         return e.health <= 0;
     });
 
-    std::erase_if(players, [](Player p) {
-        return p.health <= 0;
+    // std::erase_if(players, [](Player p) {
+    //     return p.health <= 0;
+    // });
+
+    auto currentTime = std::chrono::steady_clock::now();
+
+    std::erase_if(bullets, [&](Bullet b) {
+        auto diff = currentTime - b.createdAt;
+        return b.health <= 0 || diff >= std::chrono::seconds(BULLET_DURATION);
     });
+}
+
+void Game::spawnWave()
+{
+    timeWaveReset = std::chrono::steady_clock::now();
+    for (int i = 0; i < waveSize; i++)
+    {
+        enemies.push_back(Enemy(gl.xres, gl.yres));
+    }
+    waveSize += 5;
+}
+
+void Game::reset()
+{
+    players.clear();
+    bullets.clear();
+    enemies.clear();
+
+    score = 0;
+    waveSize = 10;
+
+    players.push_back(Player(gl.xres, gl.yres));
+
+    // starting 10 enemies...
+    for (int i = 0; i < 10; i++)
+    {
+        enemies.push_back(Enemy(gl.xres, gl.yres));
+    }
 }

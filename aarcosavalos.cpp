@@ -35,6 +35,6 @@ namespace aarcosavalos{
         r.center = 0;
         ggprint8b(&r, 16, 0x00ff0000, "GAME OVER");
         ggprint8b(&r, 16, 0x00ff0000, "Press Esc to stop the game");
-        ggprint8b(&r, 16, 0x00ff0000, "Play Again? (Y/N)");
+        ggprint8b(&r, 16, 0x00ff0000, "Play Again? (Y/ESC)");
     }
 }

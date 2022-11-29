@@ -40,7 +40,7 @@ namespace snez
         r.center = 0;
 
         ggprint8b(&r, 16, 0xffffffff, "HELP SCREEN");
-        ggprint8b(&r, 16, 0xffffffff, "Controls:  Arrow Key UP: To Go Forward, Arrow Key DOWN: To Stop, Arrow Key RIGHT: To Rotate Right, Arrow Key LEFT: To Rotate Left, SPACE: To Shoot Bullets");
+        ggprint8b(&r, 16, 0xffffffff, "Controls:  W: To Go Up,  S: To Go Down, D: To Rotate Right, A: To Rotate Left, SPACE: To Shoot Bullets");
         ggprint8b(&r, 16, 0xffffffff, "To Go into Steven's Feature Mode Press F2");
         ggprint8b(&r, 16, 0xffffffff, "To Go into Rudy's Feature Mode Press S");
 

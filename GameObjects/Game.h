@@ -18,10 +18,19 @@ class Game {
         Global &gl;
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
-        bool mouseThrustOn;
+        static const int MAX_BULLETS = 30;
+        const int BULLET_DURATION = 1;
+        const int MOVE_SPEED = 10;
+        int score = 0;
+        int waveSize = 10;
+        bool invincibilityFrames = true;
     public:
         Game(Global&);
         void cleanDead();
+        Player& getMainPlayer();
+        void reset();
+        void spawnWave();
+        std::chrono::time_point<std::chrono::steady_clock> timeWaveReset;
 };
 
 #endif

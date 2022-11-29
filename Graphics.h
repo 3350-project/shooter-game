@@ -3,7 +3,7 @@
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>
-#include "GameObjects.h"
+#include "GameObjects/GameShared.h"
 
 //X Windows variables
 class X11_wrapper {

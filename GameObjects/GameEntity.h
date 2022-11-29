@@ -25,7 +25,7 @@ class Enemy : public GameEntity
 {
 public:
     EnemyType type;
-    Enemy(float, float);
+    Enemy(int, int);
 };
 
 class Player : public GameEntity
@@ -34,12 +34,18 @@ public:
     std::string name = ""; // multiplayer
     Player(float, float);
     void setRotation(float);
+    void moveUp(int);
+    void moveDown(int);
+    void moveLeft(int);
+    void moveRight(int);
+    void reset();
 };
 
 class Bullet : public GameEntity
 {
 public:
     Bullet(Player);
+    std::chrono::time_point<std::chrono::steady_clock> createdAt;  
 };
 
 #endif
