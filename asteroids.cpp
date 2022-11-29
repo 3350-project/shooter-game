@@ -282,6 +282,7 @@ int check_keys(XEvent *e)
     (void)shift;
     switch (key) {
         case XK_Escape:
+            delete mysounddevice;
             return 1;
         case XK_f:
             break;

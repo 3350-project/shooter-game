@@ -268,7 +268,6 @@ bool SoundBuffer::removeSoundEffect(const ALuint& buffer)
 SoundBuffer::SoundBuffer()
 {
     SoundEffectBuffers.clear();
-
 }
 
 //Buffer destructor
