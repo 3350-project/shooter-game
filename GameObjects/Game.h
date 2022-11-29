@@ -11,7 +11,14 @@
 
 class Global {
     public:
-        int xres, yres, HelpScr, credits, sound, soundTestMode, intro, Collision, weapon;
+        int xres, yres;
+        int HelpScr;
+        int credits;
+        int sound, soundTestMode;
+        int intro;
+        int Collision;
+        int weapon;
+        int feature;
         char keys[65536];
         bool paused{false};
         unsigned int dead;	
