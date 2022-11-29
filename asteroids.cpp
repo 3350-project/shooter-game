@@ -266,6 +266,7 @@ int check_keys(XEvent *e)
         case XK_minus:
             break;
         case XK_r:
+	    gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
         case XK_n:
             g.sizeasteroids += 5;
@@ -581,5 +582,9 @@ void render()
     if(gl.weapon) {
         rgordon::weapon(gl.xres, gl.yres);
         return;
+    }
+    if(gl.feature) {
+	aarcosavalos::Feautre_mode(gl.xres, gl.yres);
+	return;
     }
 }
