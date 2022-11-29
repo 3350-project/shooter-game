@@ -103,7 +103,7 @@ namespace snez
             ggprint16(&f, 16, 0x00ff0000, "3350 - TopGun");
             ggprint16(&i, 16, 0x00ff0000, "Health Points Left: %i", hp);
             ggprint16(&d, 16, 0x00ffff00, "Number of Enemies Left: %i", nasteroids);
-            ggprint8b(&s, 16, 0x00ffffff, "Press F1 To Enter HelpScreen");
+            ggprint10(&s, 16, 0x00ffffff, "Press F1 To Enter HelpScreen");
         }
     }
     
