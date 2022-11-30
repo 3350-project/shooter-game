@@ -81,7 +81,7 @@ void show_credits(int xres, int yres)
 
     r.bot = yres - 280;
     r.left = (xres / 2) - 75;
-    ggprint16(&r, 20, 0x00000000, "YOU WIN!");
+    ggprint16(&r, 20, 0x00000000, "Congratulations YOU WIN!");
     
     r.bot = yres - 320;
     r.left = (xres / 2) - 75;
