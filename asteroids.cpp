@@ -389,7 +389,7 @@ void physics()
 
             if (dist < e.colisionRadius * e.colisionRadius &&
                 dist < e.colisionRadius * g.sizeasteroids) {
-                std::cout << "asteroid hit" << std::endl;
+                std::cout << "Enemy Killed!" << std::endl;
 
                 // delete enemy and bullet
                 e.hitHealth();
@@ -418,7 +418,7 @@ void physics()
                 p.velocity.x = 0;
                 p.velocity.y = 0;
                 g.flashred = 1;
-                std::cout<< "Player has collided with asteroid" << std::endl;
+                std::cout<< "Player has collided with enemy!" << std::endl;
 
 #ifdef AUDIO
                     if (gl.sound)
