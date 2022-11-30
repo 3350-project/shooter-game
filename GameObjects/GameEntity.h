@@ -47,7 +47,6 @@ public:
     void moveDown(int);
     void moveLeft(int);
     void moveRight(int);
-    void reset();
 };
 
 class Bullet : public GameEntity
