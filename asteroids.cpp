@@ -35,7 +35,9 @@
 #include "aarcosavalos.h"
 #include "rvelasquez.h"
 #include "rgordon.h"
+//Adding this for the mean time
 
+#define rnd() (((float)rand())/(float)RAND_MAX)
 //-----------------------------------------------------------------------------
 //Setup timers
 const double physicsRate = 1.0 / 60.0;
@@ -473,10 +475,55 @@ void physics()
         }
     }
     g.cleanDead();
-
+    int i = 0;
     if (g.enemies.empty()) {
         g.spawnWave();
+        i += 1;
+
+       for (Enemy& e : g.enemies) {
+           if (i == 0) { 
+            e.velocity = {(float)(rnd() * 2.0 - 1.0),
+                (float)(rnd() * 2.0 - 1.0),
+                0.0f};
+           }
+           if (i == 1) { 
+            e.velocity = {(float)(rnd() * 2.0 - 0.6),
+                (float)(rnd() * 2.0 - 0.6),
+                0.0f};
+
+            g.sizeasteroids += 5;
+           }
+           if (i == 2) { 
+            e.velocity = {(float)(rnd() * 2.0 - 0.2),
+                (float)(rnd() * 2.0 - 0.2),
+                0.0f};
+
+            g.sizeasteroids += 5;
+           }
+           if (i == 3) { 
+            e.velocity = {(float)(rnd() * 2.0 + 0.2),
+                (float)(rnd() * 2.0 + 0.2),
+                0.0f};
+
+            g.sizeasteroids += 5;
+           }
+           if (i == 4) { 
+            e.velocity = {(float)(rnd() * 2.0 + 0.6),
+                (float)(rnd() * 2.0 + 0.6),
+                0.0f};
+
+            g.sizeasteroids += 5;
+           }
+           if (i == 5) { 
+            e.velocity = {(float)(rnd() * 2.0 + 1),
+                (float)(rnd() * 2.0 + 1),
+                0.0f};
+            
+            g.sizeasteroids += 5;
+           }
+
         std::cout << rw.getPlayerData().asString() << std::endl;
+        }
     }
 }
     
@@ -491,7 +538,18 @@ void render()
 
     //Draw the player
     if (g.flashred < 20) {
+        if (g.flashred > 1 && g.flashred < 5) {
         glColor3f(1.0f, 0.0, 0.0);
+        }
+        if (g.flashred > 5 && g.flashred < 10) {
+        glColor3f(1.0f, 1.0f, 1.0f);
+        }
+        if (g.flashred > 10 && g.flashred < 15) {
+        glColor3f(1.0f, 0.0, 0.0);
+        }
+        if (g.flashred > 15 && g.flashred < 20) {
+        glColor3f(1.0f, 1.0f, 1.0f);
+        }
         g.flashred += 1;
 
     } else {
