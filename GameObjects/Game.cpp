@@ -62,6 +62,7 @@ void Game::spawnWave()
         enemies.push_back(Enemy(gl.xres, gl.yres));
     }
     waveSize += 5;
+
 }
 
 void Game::reset()

@@ -63,7 +63,7 @@ void RWyatt::drawScore(int xres, int yres, int score)
 */
 RWyatt::RWyatt() 
 {
-    playerData = getSavedPlayerData();
+    getSavedPlayerData();
 }
 
 /**
@@ -83,22 +83,22 @@ bool RWyatt::savePlayerData()
         return false;
     }
     
-    outf << playerData.getScore() << " " 
-         << playerData.getShotsFired() << " " 
-         << playerData.getEnemiesKilled() << " " 
-         << playerData.getPlayerDeaths() << " " 
-         << playerData.getTimesHit();
+    outf << mPlayerData.getScore() << " " 
+         << mPlayerData.getShotsFired() << " " 
+         << mPlayerData.getEnemiesKilled() << " " 
+         << mPlayerData.getPlayerDeaths() << " " 
+         << mPlayerData.getTimesHit();
 
     return true;
 }
 
-RW::SaveData RWyatt::getSavedPlayerData()
+void RWyatt::getSavedPlayerData()
 {
     std::ifstream inf {"savedata"};
 
     if (!inf) {
         std::cerr << "RWyatt::getSavedPlayerData: Save file does not exist\n";
-        return RW::SaveData(0, 0, 0, 0, 0);
+        mPreviousPlayerData = RW::SaveData(0, 0, 0, 0, 0);
     }
     
     int score, shots, enemies, deaths, hits;
@@ -111,12 +111,52 @@ RW::SaveData RWyatt::getSavedPlayerData()
         >> deaths
         >> hits;
 
-    return RW::SaveData(score, shots, enemies, deaths, hits);
+    mPreviousPlayerData = RW::SaveData(score, shots, enemies, deaths, hits);
 }
 
 RW::SaveData& RWyatt::getPlayerData()
 {
-    return playerData;
+    return mPlayerData;
+}
+
+RW::SaveData& RWyatt::getPreviousPlayerData()
+{
+    return mPreviousPlayerData;
+}
+
+bool RWyatt::getPromptSaveScore()
+{
+    return mPromptSaveScore;
+}
+
+void RWyatt::switchPromptSaveScore()
+{
+    flipState(mPromptSaveScore);
+}
+
+void RWyatt::drawPromptSaveScore(int xres, int yres)
+{
+    Rect r;
+	r.bot = yres / 2.5 + 100;
+	r.left = xres / 2.5;
+	r.center = 0;
+
+    // int w = 200;
+    // int xcent = xres / 2;	
+    // int ycent = yres / 2;
+    // glColor3f(0.57, 0.82, 1.0);
+    // glBegin(GL_QUADS);
+    // glVertex2f(xcent-w, ycent-w);
+    // glVertex2f(xcent-w, ycent+w);
+    // glVertex2f(xcent+w, ycent+w);
+    // glVertex2f(xcent+w, ycent-w);
+    // glEnd();
+
+    ggprint16(&r, 20, 0x00ffffff, "Your Score");
+    ggprint16(&r, 20, 0x00ffffff, "    Score: %d", mPlayerData.getScore());
+    ggprint16(&r, 20, 0x00ffffff, "    Shots Fired: %d", mPlayerData.getShotsFired());
+    ggprint16(&r, 20, 0x00ffffff, "    Enemies Killed: %d", mPlayerData.getEnemiesKilled());
+    ggprint16(&r, 20, 0x00ffffff, "Would you like to save your score? (Y/N)");
 }
 
 /**

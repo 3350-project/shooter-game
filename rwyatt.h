@@ -58,14 +58,21 @@ class RWyatt
 private:
     static void flipState(bool &state);
     bool saveFileExists();
-    RW::SaveData playerData;
-    RW::SaveData getSavedPlayerData();
+    RW::SaveData mPlayerData;
+    RW::SaveData mPreviousPlayerData;
+    bool mPromptSaveScore {false};
+
 public:
     static void pauseScreen(bool &paused);
     static void drawBorder(int xres, int yres);
     static void drawScore(int, int, int);
     bool savePlayerData();
+    void getSavedPlayerData();
+    RW::SaveData& getPreviousPlayerData();
     RW::SaveData& getPlayerData();
+    bool getPromptSaveScore();
+    void switchPromptSaveScore();
+    void drawPromptSaveScore(int, int);
     RWyatt();
 };
 
