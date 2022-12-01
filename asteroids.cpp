@@ -87,6 +87,8 @@ int main()
     clock_gettime(CLOCK_REALTIME, &timeStart);
     x11.set_mouse_position(100,100);
 
+    std::cout << "Previous Saved Data: " << rw.getPreviousPlayerData().asString() << std::endl;
+
     int done=0;
     while (!done) {
         while (x11.getXPending()) {
@@ -106,6 +108,7 @@ int main()
         render();
         x11.swapBuffers();
     }
+    rw.savePlayerData();
     cleanup_fonts();
     return 0;
 }
@@ -295,6 +298,10 @@ int check_keys(XEvent *e)
             gl.paused = false;
             g.reset();
             break;
+        case XK_F9:
+            rw.switchPromptSaveScore();
+            RWyatt::pauseScreen(gl.paused);
+            break;
     }
     return 0;
 }
@@ -476,7 +483,6 @@ void physics()
 
     if (g.enemies.empty()) {
         g.spawnWave();
-        std::cout << rw.getPlayerData().asString() << std::endl;
     }
 }
     
@@ -488,6 +494,10 @@ void render()
 
     // Draw score
     rw.drawScore(gl.xres, gl.yres, g.score);
+
+    if (rw.getPromptSaveScore()) {
+        rw.drawPromptSaveScore(gl.xres, gl.yres);
+    }
 
     //Draw the player
     if (g.flashred < 20) {
