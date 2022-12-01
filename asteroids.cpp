@@ -71,6 +71,7 @@ uint32_t thrust = SoundBuffer::get()->addSoundEffect("./soundFiles/thrust.wav");
 
 //function prototypes
 void init_opengl(void);
+    // File format:
 void check_mouse(XEvent *e);
 int check_keys(XEvent *e);
 void physics();
@@ -171,6 +172,7 @@ void check_mouse(XEvent *e)
                 //shoot a bullet...
                 if (g.bullets.size() < Game::MAX_BULLETS) {
                     g.bullets.push_back(Bullet(g.getMainPlayer()));
+                    rw.getPlayerData().addToShotsFired();
 #ifdef AUDIO
                     if (gl.sound == 1)
                         mySpeaker1.Play(shot);
@@ -256,7 +258,7 @@ int check_keys(XEvent *e)
             break;
         case XK_t:
             g.spawnWave();
-            // break;
+            break;
         case XK_r:
 	    gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
@@ -384,6 +386,8 @@ void physics()
                 // delete enemy and bullet
                 e.hitHealth();
                 b.hitHealth();
+                rw.getPlayerData().addToScore();
+                rw.getPlayerData().addToEnemiesKilled();
                 g.score += 1;
 #ifdef AUDIO
                 if (gl.sound)
@@ -404,6 +408,7 @@ void physics()
                     p.hitHealth();
                 }
                 e.hitHealth();
+                rw.getPlayerData().subtractFromScore();
                 g.score -= 1;
                 p.velocity.x = 0;
                 p.velocity.y = 0;
@@ -459,6 +464,7 @@ void physics()
             //shoot a bullet...
             if (g.bullets.size() < Game::MAX_BULLETS) {
                 g.bullets.push_back(Bullet(g.getMainPlayer()));
+                rw.getPlayerData().addToShotsFired();
 #ifdef AUDIO
                 if (gl.sound == 1)
                     mySpeaker1.Play(shot);
@@ -470,6 +476,7 @@ void physics()
 
     if (g.enemies.empty()) {
         g.spawnWave();
+        std::cout << rw.getPlayerData().asString() << std::endl;
     }
 }
     
@@ -551,8 +558,8 @@ void render()
         gl.paused = true;
         return;
     }
-    if(gl.credits || g.score ==100) {
-	gl.paused = true;
+    if(gl.credits || g.score == 100) {
+	    gl.paused = true;
         show_credits(gl.xres, gl.yres);
         return;
     }

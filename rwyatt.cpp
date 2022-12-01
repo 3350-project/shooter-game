@@ -7,6 +7,8 @@
  * Contains methods for drawing on screen.
 */
 #include <iostream>
+#include <filesystem>
+#include <fstream>
 #include <GL/glx.h>
 #include "fonts.h"
 #include "rwyatt.h"
@@ -14,8 +16,6 @@
 /*
  * STATIC METHODS
  */
-RWyatt::RWyatt() {}
-
 void RWyatt::flipState(bool &state)
 {
     state = !state;
@@ -57,3 +57,68 @@ void RWyatt::drawScore(int xres, int yres, int score)
 
     ggprint16(&r, 20, 0x00ffffff, "Score: %d", score);
 }
+
+/**
+ * CLASS METHODS
+*/
+RWyatt::RWyatt() 
+{
+    playerData = getSavedPlayerData();
+}
+
+/**
+ * SCORE METHODS
+*/
+bool RWyatt::saveFileExists()
+{
+    return std::filesystem::exists("savadata");
+}
+
+bool RWyatt::savePlayerData()
+{
+    std::ofstream outf {"savedata"};
+
+    if (!outf) {
+        std::cerr << "RWyatt::savePlayerData\n";
+        return false;
+    }
+    
+    outf << playerData.getScore() << " " 
+         << playerData.getShotsFired() << " " 
+         << playerData.getEnemiesKilled() << " " 
+         << playerData.getPlayerDeaths() << " " 
+         << playerData.getTimesHit();
+
+    return true;
+}
+
+RW::SaveData RWyatt::getSavedPlayerData()
+{
+    std::ifstream inf {"savedata"};
+
+    if (!inf) {
+        std::cerr << "RWyatt::getSavedPlayerData: Save file does not exist\n";
+        return RW::SaveData(0, 0, 0, 0, 0);
+    }
+    
+    int score, shots, enemies, deaths, hits;
+
+    // File format:
+    // score shots enemies deaths hits
+    inf >> score
+        >> shots
+        >> enemies
+        >> deaths
+        >> hits;
+
+    return RW::SaveData(score, shots, enemies, deaths, hits);
+}
+
+RW::SaveData& RWyatt::getPlayerData()
+{
+    return playerData;
+}
+
+/**
+ * WEAPON METHODS
+*/

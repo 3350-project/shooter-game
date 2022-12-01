@@ -1,3 +1,12 @@
+/**
+ * AUTHOR: Reid Wyatt
+ * CLASS: CMPS 3350
+ * DATE: FALL 2022
+ * TEAM: 3
+ * ---
+ * File containing base class for creating unique weapons.
+*/
+
 #ifndef WEAPON_H
 #define WEAPON_H
 
