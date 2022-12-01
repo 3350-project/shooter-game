@@ -237,8 +237,6 @@ int check_keys(XEvent *e)
             delete mysounddevice;
 #endif
             return 1;
-        case XK_f:
-            break;
         case XK_z:
 #ifdef AUDIO
             gl.sound = managed_state_sound(gl.sound);
@@ -259,12 +257,6 @@ int check_keys(XEvent *e)
         case XK_t:
             g.spawnWave();
             // break;
-        case XK_Down:
-            break;
-        case XK_equal:
-            break;
-        case XK_minus:
-            break;
         case XK_r:
 	    gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
@@ -288,8 +280,6 @@ int check_keys(XEvent *e)
             RWyatt::pauseScreen(gl.paused);
             // unlocks and shows cursor
             x11.show_mouse_cursor(gl.paused);
-            break;
-        case XK_F7:
             break;
         case XK_F2:
             gl.Collision = snez::manage_stateF2(gl.Collision);
