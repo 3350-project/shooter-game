@@ -26,6 +26,7 @@ class Global {
         int Collision;
         int weapon;
         int feature;
+        int picture;
         char keys[65536];
         bool paused{false};
         unsigned int dead;	
@@ -57,5 +58,13 @@ class Game {
         void spawnWave();
         std::chrono::time_point<std::chrono::steady_clock> timeWaveReset;
 };
-
+/*
+class Image
+{
+    public:
+        int width, height;
+        unsigned char *data;
+        Image(const char*);
+};
+*/
 #endif

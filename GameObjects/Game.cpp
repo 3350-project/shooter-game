@@ -25,6 +25,7 @@ Global::Global()
     intro = 1;
     weapon = 0;
     feature = 0;
+    picture = 0;
 };
 
 /* Game Object */
@@ -84,3 +85,26 @@ void Game::reset()
 
     spawnWave();
 }
+/*
+Image::Image(const char *fname)
+{
+    std::ifstream fin(fname);
+    if (fin.fail())
+    {
+        std::cout << "ERROR - opening image " << fname << std::endl;
+        width = height = 1;
+        data = new unsigned char [width * height * 3];
+        *data = 255;
+        return;
+    }
+    char p6[8];
+    fin >> p6;
+    fin >> width >> height;
+    int maxcolor;
+    fin >> maxcolor;
+    data = new unsigned char [width * height * 3];
+    fin.read((char *)data, 1);
+    fin.read((char *)data, width * height * 3);
+    fin.close();
+}
+*/
