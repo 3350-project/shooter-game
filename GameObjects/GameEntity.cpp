@@ -8,6 +8,7 @@
  * make up all interactive objects in the game.
 */
 #include "GameShared.h"
+#include <iostream>
 
 #define rnd() (((float)rand())/(float)RAND_MAX)
 #define random(a) (float)(rand()%a)
@@ -79,16 +80,17 @@ Enemy::Enemy(int resolutionX, int resolutionY)
     health = 1;
 }
 
-Bullet::Bullet(Player p)
+Bullet::Bullet(Player p, Weapon w, float angleOffset)
 {
-    float rad = ((p.rotation + 90.0f) / 360.0f) * M_PI * 2.0;
+    float rad = ((p.rotation + 90.0f + angleOffset) / 360.0f) * M_PI * 2.0;
     float directionX = cos(rad);
     float directionY = sin(rad);
     position.x = p.position.x + directionX * 20.0f;
     position.y = p.position.y + directionY * 20.0f;
-    velocity.x = p.velocity.x + directionX * 6.0f + rnd() * 0.1;
-    velocity.y = p.velocity.y + directionY * 6.0f + rnd() * 0.1;
+    velocity.x = p.velocity.x + directionX * w.getBulletVelocity() + rnd() * 0.1;
+    velocity.y = p.velocity.y + directionY * w.getBulletVelocity() + rnd() * 0.1;
     color = {1.0f, 1.0f, 1.0f};
     health = 1;
     createdAt = std::chrono::steady_clock::now();
+    lifetime = w.getBulletLifetime();
 }

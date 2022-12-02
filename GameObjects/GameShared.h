@@ -16,6 +16,6 @@
 #include <vector>
 
 #include "HelperObjects.h"
+#include "Weapon.h"
 #include "GameEntity.h"
 #include "Game.h"
-#include "Weapon.h"

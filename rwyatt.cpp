@@ -48,14 +48,14 @@ void RWyatt::drawBorder(int xres, int yres)
     glDisable(GL_BLEND);
 }
 
-void RWyatt::drawScore(int xres, int yres, int score)
+void RWyatt::drawScore(int xres, int yres)
 {
 	Rect r;
 	r.bot = yres - 100;
 	r.left = xres / 2.5;
 	r.center = 0;
 
-    ggprint16(&r, 20, 0x00ffffff, "Score: %d", score);
+    ggprint16(&r, 20, 0x00ffffff, "Score: %d", getPlayerData().getScore());
 }
 
 /**
@@ -152,13 +152,80 @@ void RWyatt::drawPromptSaveScore(int xres, int yres)
     // glVertex2f(xcent+w, ycent-w);
     // glEnd();
 
-    ggprint16(&r, 20, 0x00ffffff, "Your Score");
-    ggprint16(&r, 20, 0x00ffffff, "    Score: %d", mPlayerData.getScore());
-    ggprint16(&r, 20, 0x00ffffff, "    Shots Fired: %d", mPlayerData.getShotsFired());
-    ggprint16(&r, 20, 0x00ffffff, "    Enemies Killed: %d", mPlayerData.getEnemiesKilled());
+    ggprint16(&r, 20, 0x00ffffff, "Current Saved Score:");
+    ggprint16(&r, 20, 0x00ffffff, "  Score: %d", mPlayerData.getScore());
+    ggprint16(&r, 20, 0x00ffffff, "  Shots Fired: %d", mPlayerData.getShotsFired());
+    ggprint16(&r, 20, 0x00ffffff, "  Enemies Killed: %d", mPlayerData.getEnemiesKilled());
     ggprint16(&r, 20, 0x00ffffff, "Would you like to save your score? (Y/N)");
 }
 
 /**
  * WEAPON METHODS
 */
+RW::WeaponHandler::WeaponHandler()
+{
+    // Pistol
+    mPlayerWeapons.push_back(
+        Weapon("Pistol", 15, 1.0, 5.0, 1, 1, 1.5)
+    );
+    // Rifle
+    mPlayerWeapons.push_back(
+        Weapon("Rifle", 30, 1.0, 10.0, 1, 2, 1.0)
+    );
+    // Shotgun
+    mPlayerWeapons.push_back(
+        Weapon("Shotgun", 8, 1.0, 5.0, 1, 1, 1.5)
+    );
+    // Sniper
+    mPlayerWeapons.push_back(
+        Weapon("Sniper", 5, 1.0, 30.0, 1, 3, 2.0)
+    );
+    // Machine Gun
+    mPlayerWeapons.push_back(
+        Weapon("Machine Gun", 45, 1.0, 4.0, 1, 3.0, 0.8)
+    );
+}
+
+Weapon RW::WeaponHandler::getActiveWeapon()
+{
+    return mActiveWeapon;
+}
+
+void RW::WeaponHandler::setActiveWeapon(int weaponId)
+{
+    if (weaponId < 0 && weaponId > 5) {
+        std::cerr << "RW::WeaponHandler::setActiveWeapon: Invalid weapon ID" << std::endl;
+        return;
+    }
+    mActiveWeapon = mPlayerWeapons[weaponId-1];
+}
+
+// Returns a vector of bullets to be added to active bullets
+std::vector<Bullet> RW::WeaponHandler::fireActiveWeapon(Player p)
+{
+    std::vector<Bullet> bullets;
+
+    if (mActiveWeapon.getCurrentMagizine() == 0) {
+        std::cout << mActiveWeapon.getWeaponName() << " OUT OF AMMO!" << std::endl;
+        return bullets;
+    }
+
+    // Bullet location is based on player position
+    if (mActiveWeapon.getWeaponName() == "Shotgun") {
+        // create multiple bullets
+        for (int angleOffset = -15; angleOffset < 15; angleOffset += 5) {
+            bullets.push_back(Bullet(p, mActiveWeapon, angleOffset));
+        }
+    } else {
+        bullets.push_back(Bullet(p, mActiveWeapon, 0.0f));
+    }
+    mActiveWeapon.decCurrentMagizine();
+    //DEBUG
+    std::cout << "Mag: " 
+              << mActiveWeapon.getCurrentMagizine() 
+              << " / " 
+              << mActiveWeapon.getMagizineSize()
+              << std::endl;
+
+    return bullets;
+}

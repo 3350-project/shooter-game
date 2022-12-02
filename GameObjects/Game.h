@@ -41,8 +41,6 @@ class Game {
         Global &gl;
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
-        static const int MAX_BULLETS = 30;
-        const int BULLET_DURATION = 1;
         const int MOVE_SPEED = 10;
         int score = 0;
         int waveSize = 10;

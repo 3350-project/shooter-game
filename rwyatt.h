@@ -6,8 +6,12 @@
  * ---
  * Contains methods for drawing on screen.
 */
+
 #include <string>
 #include <sstream>
+#include <vector>
+#include "GameObjects/GameShared.h"
+
 #ifndef RWYATT_H
 #define RWYATT_H
 
@@ -53,6 +57,21 @@ namespace RW {
     };
 }
 
+namespace RW {
+    class WeaponHandler
+    {
+    private:
+        std::vector<Weapon> mPlayerWeapons;
+        Weapon mActiveWeapon;
+    public:
+        WeaponHandler();
+        Weapon getActiveWeapon();
+        void setActiveWeapon(int);
+        std::vector<Weapon> getAllPlayerWeapons();
+        std::vector<Bullet> fireActiveWeapon(Player p);
+    };
+}
+
 class RWyatt
 {
 private:
@@ -61,11 +80,10 @@ private:
     RW::SaveData mPlayerData;
     RW::SaveData mPreviousPlayerData;
     bool mPromptSaveScore {false};
-
 public:
     static void pauseScreen(bool &paused);
     static void drawBorder(int xres, int yres);
-    static void drawScore(int, int, int);
+    void drawScore(int, int);
     bool savePlayerData();
     void getSavedPlayerData();
     RW::SaveData& getPreviousPlayerData();

@@ -6,22 +6,29 @@
  * ---
  * File containing base class for creating unique weapons.
 */
-
+#include <chrono>
 #ifndef WEAPON_H
 #define WEAPON_H
 
 class Weapon
 {
 public:
-    Weapon(std::string w, int m, float f, float v, int d) :
+    Weapon() {}
+    Weapon(std::string w, int m, float f, float v, int d, float l, float b) :
         mWeaponName {w}, mMagizineSize {m}, mCurrentMagizine {m},
-        mFireRate {f}, mBulletVelocity {v}, mWeaponDamage {d} 
+        mFireRate {f}, mBulletVelocity {v}, mWeaponDamage {d},
+        mBulletLifetime(l), mTimeBetweenShots(b) 
     {};
-    int getCurrentMagizine() { return mCurrentMagizine; }
-    int getMagizineSize() { return mMagizineSize; }
-    int getDamage() { return mWeaponDamage; }
     std::string getWeaponName() { return mWeaponName; }
-    void fireWeapon();
+    int getMagizineSize() { return mMagizineSize; }
+    int getCurrentMagizine() { return mCurrentMagizine; }
+    int getFireRate() { return mFireRate; }
+    int getBulletVelocity() { return mBulletVelocity; }
+    int getDamage() { return mWeaponDamage; }
+    int getBulletLifetime() { return mBulletLifetime; }
+    int getTimeBetweenShots() { return mTimeBetweenShots; }
+    void decCurrentMagizine() { mCurrentMagizine--; }
+    void reloadWeapon() { mCurrentMagizine = mMagizineSize; }
 private:
     std::string mWeaponName;
     int mMagizineSize;
@@ -29,6 +36,8 @@ private:
     float mFireRate;
     float mBulletVelocity; 
     int mWeaponDamage;
+    int mBulletLifetime;
+    int mTimeBetweenShots;
     std::chrono::time_point<std::chrono::steady_clock> mResetTime {};
 };
 

@@ -58,6 +58,7 @@ X11_wrapper x11(1280, 720, gl);
 //Image ferret("ferret.ppm"), zombie("zombie.ppm");
 // Personal class instance
 RWyatt rw;
+RW::WeaponHandler wh;
 
 #ifdef AUDIO 
 SoundDevice * mysounddevice = SoundDevice::get();
@@ -113,7 +114,10 @@ int main()
     clock_gettime(CLOCK_REALTIME, &timeStart);
     x11.set_mouse_position(100,100);
 
+    // DEBUG
     std::cout << "Previous Saved Data: " << rw.getPreviousPlayerData().asString() << std::endl;
+    // start with pistol
+    wh.setActiveWeapon(1);
 
     int done=0;
     while (!done) {
@@ -135,7 +139,6 @@ int main()
         render();
         x11.swapBuffers();
     }
-    rw.savePlayerData();
     cleanup_fonts();
     return 0;
 }
@@ -205,25 +208,25 @@ void check_mouse(XEvent *e)
         return;
     }
     if (e->type == ButtonPress) {
-        if (e->xbutton.button==1) {
-            //Left button is down
-            //a little time between each bullet
-            struct timespec bt;
-            clock_gettime(CLOCK_REALTIME, &bt);
-            double ts = timeDiff(&g.bulletTimer, &bt);
-            if (ts > 0.1) {
-                timeCopy(&g.bulletTimer, &bt);
-                //shoot a bullet...
-                if (g.bullets.size() < Game::MAX_BULLETS) {
-                    g.bullets.push_back(Bullet(g.getMainPlayer()));
-                    rw.getPlayerData().addToShotsFired();
-#ifdef AUDIO
-                    if (gl.sound == 1)
-                        mySpeaker1.Play(pistol);
-#endif
-                }
-            }
-        }
+//         if (e->xbutton.button==1) {
+//             //Left button is down
+//             //a little time between each bullet
+//             struct timespec bt;
+//             clock_gettime(CLOCK_REALTIME, &bt);
+//             double ts = timeDiff(&g.bulletTimer, &bt);
+//             if (ts > 0.1) {
+//                 timeCopy(&g.bulletTimer, &bt);
+//                 //shoot a bullet...
+//                 if (g.bullets.size() < Game::MAX_BULLETS) {
+//                     g.bullets.push_back(Bullet(g.getMainPlayer()));
+//                     rw.getPlayerData().addToShotsFired();
+// #ifdef AUDIO
+//                     if (gl.sound == 1)
+//                         mySpeaker1.Play(shot);
+// #endif
+//                 }
+//             }
+//         }
         if (e->xbutton.button==3) {
             //Right button is down
         }
@@ -305,7 +308,7 @@ int check_keys(XEvent *e)
             // break;
         case XK_Down:
             break;
-        case XK_1:
+        case XK_i:
             gl.intro = aarcosavalos::manage_state(gl.intro);
         case XK_equal:
             break;
@@ -315,6 +318,11 @@ int check_keys(XEvent *e)
             gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
         case XK_n:
+            if (rw.getPromptSaveScore()) {
+                rw.switchPromptSaveScore();
+                RWyatt::pauseScreen(gl.paused);
+                break;
+            }
             g.sizeasteroids += 5;
             break;
         case XK_m:
@@ -323,9 +331,6 @@ int check_keys(XEvent *e)
             } else {
                 g.sizeasteroids -= 5;
             }
-            break;
-        case XK_i:
-            gl.intro = rgordon::manage_state(gl.intro);
             break;
         case XK_F1:
             gl.HelpScr = snez::manage_stateF1(gl.HelpScr);
@@ -347,6 +352,12 @@ int check_keys(XEvent *e)
                 g.wavenum = 1;
             break;
         case XK_y:
+            if (rw.getPromptSaveScore()) {
+                rw.savePlayerData();
+                rw.switchPromptSaveScore();
+                RWyatt::pauseScreen(gl.paused);
+                break;
+            }
             // if player chose to play again make it 0 (false)
             gl.dead = 0;
             gl.paused = false;
@@ -359,6 +370,22 @@ int check_keys(XEvent *e)
         case XK_F9:
             rw.switchPromptSaveScore();
             RWyatt::pauseScreen(gl.paused);
+            break;
+        // Weapon Swap Keys
+        case XK_1:
+            wh.setActiveWeapon(1);
+            break;
+        case XK_2:
+            wh.setActiveWeapon(2);
+            break;
+        case XK_3:
+            wh.setActiveWeapon(3);
+            break;
+        case XK_4:
+            wh.setActiveWeapon(4);
+            break;
+        case XK_5:
+            wh.setActiveWeapon(5);
             break;
     }
     return 0;
@@ -481,8 +508,6 @@ void physics()
                 std::cout<< "Player has collided with enemy!" << std::endl;
 
 #ifdef AUDIO
-                if (gl.sound)
-                    mySpeaker2.Play(explode);
                     if (gl.sound)
                         mySpeaker5.Play(explosion);
 #endif
@@ -526,17 +551,21 @@ void physics()
         struct timespec bt;
         clock_gettime(CLOCK_REALTIME, &bt);
         double ts = timeDiff(&g.bulletTimer, &bt);
-        if (ts > 0.1) {
+        if (ts >= wh.getActiveWeapon().getTimeBetweenShots()) {
             timeCopy(&g.bulletTimer, &bt);
             //shoot a bullet...
-            if (g.bullets.size() < Game::MAX_BULLETS) {
-                g.bullets.push_back(Bullet(g.getMainPlayer()));
-                rw.getPlayerData().addToShotsFired();
-#ifdef AUDIO
-                if (gl.sound == 1)
-                    mySpeaker2.Play(shotgun);
-#endif
+            auto newBullets = wh.fireActiveWeapon(g.getMainPlayer());
+            for (Bullet b : newBullets) {
+                g.bullets.push_back(b);
             }
+            rw.getPlayerData().addToShotsFired();
+#ifdef AUDIO
+            if (gl.sound == 1)
+                mySpeaker1.Play(shotgun);
+#endif
+            //DEBUG
+            auto wep = wh.getActiveWeapon().getWeaponName();
+            std::cout << wep << std::endl;
         }
     }
     g.cleanDead();
@@ -575,11 +604,7 @@ void render()
     //-------------------------------------------------------------------------
 
     // Draw score
-    rw.drawScore(gl.xres, gl.yres, g.score);
-
-    if (rw.getPromptSaveScore()) {
-        rw.drawPromptSaveScore(gl.xres, gl.yres);
-    }
+    rw.drawScore(gl.xres, gl.yres);
 
     //Draw the player
     if (g.flashred < 20) {
@@ -651,6 +676,9 @@ void render()
         gl.dead = false;
         gl.paused = false;
         return;
+    }
+    if (rw.getPromptSaveScore()) {
+        rw.drawPromptSaveScore(gl.xres, gl.yres);
     }
     if(gl.dead || mainPlayer.health == 0) {
         aarcosavalos::finish_game(gl.xres, gl.yres);
