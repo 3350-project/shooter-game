@@ -55,7 +55,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 Global gl;
 Game g = Game(gl);
 X11_wrapper x11(1280, 720, gl);
-Image ferret("ferret.ppm"), zombie("zombie.ppm");
+//Image ferret("ferret.ppm"), zombie("zombie.ppm");
 // Personal class instance
 RWyatt rw;
 RW::WeaponHandler wh;
