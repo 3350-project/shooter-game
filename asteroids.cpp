@@ -10,15 +10,16 @@
 //This program is a game starting point for a 3350 project.
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
 #include <ctime>
 #include <cmath>
 #include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
+#include <X11/Xutil.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
 #include <math.h>
@@ -54,40 +55,65 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 Global gl;
 Game g = Game(gl);
 X11_wrapper x11(1280, 720, gl);
-
+//Image ferret("ferret.ppm"), zombie("zombie.ppm");
 // Personal class instance
 RWyatt rw;
 
-#ifdef AUDIO
+#ifdef AUDIO 
 SoundDevice * mysounddevice = SoundDevice::get();
+
 SoundSource mySpeaker1;
 SoundSource mySpeaker2;
 SoundSource mySpeaker3;
 SoundSource mySpeaker4;
+SoundSource mySpeaker5;
+SoundSource mySpeaker6;
+SoundSource mySpeaker7;
+SoundSource mySpeaker8;
+SoundSource mySpeaker9;
 
-uint32_t laser = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
-uint32_t explode = SoundBuffer::get()->addSoundEffect("./soundFiles/explode.wav");
-uint32_t shot = SoundBuffer::get()->addSoundEffect("./soundFiles/laser.wav");
-uint32_t thrust = SoundBuffer::get()->addSoundEffect("./soundFiles/thrust.wav");
+uint32_t /*Spearker1*/pistol = SoundBuffer::get()->addSoundEffect("./soundFiles/9mm_pistol.wav");
+uint32_t /*Spearker2*/shotgun = SoundBuffer::get()->addSoundEffect("./soundFiles/shotgun.wav");
+uint32_t /*Spearker3*/sniper = SoundBuffer::get()->addSoundEffect("./soundFiles/sniper_rifle.wav");
+uint32_t /*Spearker4*/machineGun = SoundBuffer::get()->addSoundEffect("./soundFiles/50-cal-mg.wav"); 
+uint32_t /*Spearker5*/explosion = SoundBuffer::get()->addSoundEffect("./soundFiles/explode.wav");
+uint32_t /*Spearker6*/sucess = SoundBuffer::get()->addSoundEffect("./soundFiles/success.wav");
+uint32_t /*Spearker7*/failure = SoundBuffer::get()->addSoundEffect("./soundFiles/gameOver.wav");
+uint32_t /*Spearker8*/dying = SoundBuffer::get()->addSoundEffect("./soundFiles/dying.wav");
+uint32_t /*Spearker9*/dawn = SoundBuffer::get()->addSoundEffect("./soundFiles/DawnFinal24hrs.wav");
+
+MusicBuffer myMusic("./soundFiles/mandoIntro.wav");
+//myMusic.Play();
+
+//This is how to call a sound effect 
+//  #ifdef AUDIO
+//  if (gl.sound == 1)
+//      mySpeaker<#>.Play(<sound_name>);
+//  #endif
+
 #endif
 
 //function prototypes
 void init_opengl(void);
+void init_textures(void);
     // File format:
 void check_mouse(XEvent *e);
 int check_keys(XEvent *e);
 void physics();
 void render();
-
+void DrawSquare();
 //==========================================================================
 // M A I N
 //==========================================================================
 int main()
 {
     init_opengl();
+    init_textures();
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
     x11.set_mouse_position(100,100);
+
+    std::cout << "Previous Saved Data: " << rw.getPreviousPlayerData().asString() << std::endl;
 
     int done=0;
     while (!done) {
@@ -105,9 +131,11 @@ int main()
             physics();
             physicsCountdown -= physicsRate;
         }
+//        aarcosavalos::intro_screen();
         render();
         x11.swapBuffers();
     }
+    rw.savePlayerData();
     cleanup_fonts();
     return 0;
 }
@@ -134,6 +162,20 @@ void init_opengl(void)
     initialize_fonts();
 }
 
+void init_textures(void)
+{
+    // Enable texture in Opengl
+    glEnable(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+}
 void normalize2d(Vector3& v)
 {
     float len = v.x * v.x + v.y * v.y;
@@ -177,7 +219,7 @@ void check_mouse(XEvent *e)
                     rw.getPlayerData().addToShotsFired();
 #ifdef AUDIO
                     if (gl.sound == 1)
-                        mySpeaker1.Play(shot);
+                        mySpeaker1.Play(pistol);
 #endif
                 }
             }
@@ -186,7 +228,7 @@ void check_mouse(XEvent *e)
             //Right button is down
         }
     }
-    
+
     if (savex != e->xbutton.x || savey != e->xbutton.y) {
         Player &mainPlayer = g.getMainPlayer();
         //Mouse moved
@@ -241,7 +283,7 @@ int check_keys(XEvent *e)
             delete mysounddevice;
 #endif
             return 1;
-        case XK_z:
+        case XK_F4:
 #ifdef AUDIO
             gl.sound = managed_state_sound(gl.sound);
 #endif
@@ -260,9 +302,17 @@ int check_keys(XEvent *e)
             break;
         case XK_t:
             g.spawnWave();
+            // break;
+        case XK_Down:
+            break;
+        case XK_1:
+            gl.intro = aarcosavalos::manage_state(gl.intro);
+        case XK_equal:
+            break;
+        case XK_minus:
             break;
         case XK_r:
-	    gl.feature = aarcosavalos::manage_state(gl.feature);    
+            gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
         case XK_n:
             g.sizeasteroids += 5;
@@ -305,6 +355,10 @@ int check_keys(XEvent *e)
             g.reset();
             g.wavenum = 1;
             
+            break;
+        case XK_F9:
+            rw.switchPromptSaveScore();
+            RWyatt::pauseScreen(gl.paused);
             break;
     }
     return 0;
@@ -364,7 +418,7 @@ void physics()
             b.position.y -= (float)gl.yres;
         }
     }
-    
+
     // Asteroid updates
     for (Enemy& e : g.enemies) {
         e.updatePosition();
@@ -391,7 +445,7 @@ void physics()
             dist = d0 * d0 + d1 * d1;
 
             if (dist < e.colisionRadius * e.colisionRadius &&
-                dist < e.colisionRadius * g.sizeasteroids) {
+                    dist < e.colisionRadius * g.sizeasteroids) {
                 std::cout << "Enemy Killed!" << std::endl;
 
                 // delete enemy and bullet
@@ -402,7 +456,7 @@ void physics()
                 g.score += 1;
 #ifdef AUDIO
                 if (gl.sound)
-                    mySpeaker2.Play(explode);
+                    mySpeaker5.Play(explosion);
 #endif
             }
         }
@@ -427,8 +481,10 @@ void physics()
                 std::cout<< "Player has collided with enemy!" << std::endl;
 
 #ifdef AUDIO
+                if (gl.sound)
+                    mySpeaker2.Play(explode);
                     if (gl.sound)
-                        mySpeaker2.Play(explode);
+                        mySpeaker5.Play(explosion);
 #endif
             }
         }
@@ -441,28 +497,28 @@ void physics()
         mainPlayer.moveLeft(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker3.Play(sniper);
 #endif
     }
     if (gl.keys[XK_d]) {
         mainPlayer.moveRight(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker4.Play(machineGun);
 #endif
     }
     if (gl.keys[XK_w]) {
         mainPlayer.moveUp(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker9.Play(dawn);
 #endif
     }
     if (gl.keys[XK_s]) {
         mainPlayer.moveDown(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker7.Play(failure);
 #endif
     }
     if (gl.keys[XK_space]) {
@@ -478,12 +534,13 @@ void physics()
                 rw.getPlayerData().addToShotsFired();
 #ifdef AUDIO
                 if (gl.sound == 1)
-                    mySpeaker1.Play(shot);
+                    mySpeaker2.Play(shotgun);
 #endif
             }
         }
     }
     g.cleanDead();
+
     if (g.enemies.empty()) {
         g.sizeasteroids += 5;
         g.spawnWave();
@@ -516,7 +573,7 @@ void physics()
     }
 
 }
-    
+
 void render()
 {
     Player &mainPlayer = g.getMainPlayer();
@@ -526,16 +583,20 @@ void render()
     // Draw score
     rw.drawScore(gl.xres, gl.yres, g.score);
 
+    if (rw.getPromptSaveScore()) {
+        rw.drawPromptSaveScore(gl.xres, gl.yres);
+    }
+
     //Draw the player
     if (g.flashred < 20) {
         glColor3f(1.0f, 0.0, 0.0);
         g.flashred += 1;
 
     } else {
-	    g.flashred = 20;
+        g.flashred = 20;
         glColor3f(mainPlayer.color.x, 
-                  mainPlayer.color.y,
-                  mainPlayer.color.z);
+                mainPlayer.color.y,
+                mainPlayer.color.z);
     }
     glPushMatrix();
     glTranslatef(mainPlayer.position.x, mainPlayer.position.y, mainPlayer.position.z);
@@ -617,16 +678,50 @@ void render()
         return;
     }
 #endif
+    /*
     if(gl.intro) {
         rgordon::intro(gl.xres, gl.yres);
         return;
     }
+    */
     if(gl.weapon) {
         rgordon::weapon(gl.xres, gl.yres);
         return;
     }
     if(gl.feature) {
-	aarcosavalos::Feature_mode(gl.xres, gl.yres);
-	return;
+        DrawSquare();
+        //aarcosavalos::Feature_mode(gl.xres, gl.yres);
+        return;
+    }
+    if (gl.intro)
+    {
+        gl.paused = aarcosavalos::manage_state(gl.paused);
+        aarcosavalos::intro_screen(gl.xres, gl.yres);
+        return;
     }
 }
+
+void DrawSquare()
+{
+    //glClear(GL_COLOR_BUFFER_BIT);
+    // Draw box
+    glPushMatrix();
+    //glBindTexture(GL_TEXTURE_2D, gl.ferretTex);    //bind the texture
+    glColor3ub(0, 0, 0);
+    //glTranslatef(gl.pos[0], gl.pos[1], 0.0f);
+    glBegin(GL_QUADS);
+    glVertex2f(-gl.w, -gl.w);
+    glVertex2f(-gl.w,  gl.w);
+    glVertex2f( gl.w,  gl.w);
+    glVertex2f( gl.w, -gl.w);
+    
+       glVertex2f(-gl.xres, -gl.yres);
+       glVertex2f(-gl.xres,  gl.yres);
+       glVertex2f( gl.xres,  gl.yres);
+       glVertex2f( gl.xres, -gl.yres);
+       
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glEnd();
+    glPopMatrix();
+}
+

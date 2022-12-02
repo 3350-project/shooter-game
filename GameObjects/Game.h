@@ -9,9 +9,16 @@
 #ifndef GAME_H
 #define GAME_H
 
+#include <GL/glu.h>
+#include <GL/glx.h>
+#include <X11/Xlib.h>
+
 class Global {
     public:
         int xres, yres;
+        float w;
+        float dir;
+        float pos[2];
         int HelpScr;
         int credits;
         int sound, soundTestMode;
@@ -22,6 +29,7 @@ class Global {
         char keys[65536];
         bool paused{false};
         unsigned int dead;	
+        GLuint ferretTex, zombieTex;
         Global();
 };
 

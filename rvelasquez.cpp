@@ -6,12 +6,14 @@
 //
 //Features: Credit Screen and Sound
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-// 					Works Cited: 
+///////////////////////////////////////////////////////////////////////////////
+// 					                    
 // Code, Tech and tutorials openal-impl
 // November 5, 2020
 // openAL Tutorial pt.1 | Init and Play Sound Effects
+// openAl Tutorial pt.2 | Music & Long Sound Buffering
 // https://www.youtube.com/watch?v=kWQM1iQ1W0E
+// https://www.youtube.com/watch?v=pYK8XZHV74s
 // https://github.com/codetechandtutorials/openal-impl/releases/tag/vid1
 //
 // Mt. Ford Studios 
@@ -20,7 +22,7 @@
 // https://www.youtube.com/watch?v=LfSBbrGqFV0
 // https://drive.google.com/file/d/1tmjvMKxCcJeyTpi5pI6A8cgVxwWnyPXn/view
 //
-//////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
 #include <stdio.h>
@@ -36,6 +38,8 @@
 #include <GL/glx.h>
 #include "fonts.h"
 #include "rvelasquez.h"
+#include <malloc.h>
+#include <cstddef>
 
 #ifdef AUDIO
 #include <climits>
@@ -54,10 +58,10 @@ unsigned int managed_state_credits(unsigned int c)
     return c;
 }
 
-unsigned int managed_state_sound(unsigned int s)
+unsigned int managed_state_sound(unsigned int F4)
 {
-    s = s ^ 1;
-    return s;
+    F4 = F4 ^ 1;
+    return F4;
 }
 
 void show_credits(int xres, int yres)
@@ -66,45 +70,46 @@ void show_credits(int xres, int yres)
     int ycent = yres / 2;
 
     int w = 200;
-    glColor3f(0.57, 0.82, 1.0);
+    glColor3f(0.0,0.0,0.0);
     glBegin(GL_QUADS);
     glVertex2f(xcent-w, ycent-w);
     glVertex2f(xcent-w, ycent+w);
     glVertex2f(xcent+w, ycent+w);
     glVertex2f(xcent+w, ycent-w);
     glEnd();
-
+    
+    glColor3f(1.0,1.0,1.0);
+    
     Rect r; 
     r.bot = yres - 240;
     r.left = xres / 2;
-    ggprint16(&r, 20, 0x00000000, "CREDITS");
+    ggprint16(&r, 20, 0xffffffff, "~ CREDITS SCREEN ~");
 
     r.bot = yres - 280;
     r.left = (xres / 2) - 75;
-    ggprint16(&r, 20, 0x00000000, "Congratulations YOU WIN!");
-    
+    ggprint16(&r, 20, 0xffffffff, "Axel Arcos");
+
     r.bot = yres - 320;
-    r.left = (xres / 2) - 75;
-    ggprint16(&r, 20, 0x00000000, "Axel Arcos");
+    r.left = (xres / 2) - 65;
+    ggprint16(&r, 20, 0xffffffff, "Ryan Gordon");
 
     r.bot = yres - 360;
-    r.left = (xres / 2) - 65;
-    ggprint16(&r, 20, 0x00000000, "Ryan Gordon");
+    r.left = (xres / 2) - 72;
+    ggprint16(&r, 20, 0xffffffff, "Steven Nez");
 
     r.bot = yres - 400;
-    r.left = (xres / 2) - 72;
-    ggprint16(&r, 20, 0x00000000, "Steven Nez");
+    ggprint16(&r, 20, 0xffffffff, "Reid Wyatt");
 
     r.bot = yres - 440;
-    ggprint16(&r, 20, 0x00000000, "Reid Wyatt");
-
-    r.bot = yres - 460;
     r.left = (xres/2) - 40;
-    ggprint16(&r, 20, 0x00000000, "Rodolfo Velasquez");
+    ggprint16(&r, 20, 0xffffffff, "Rodolfo Velasquez");
 }
+
 
 void sound(int xres, int yres)
 {
+    class MusicBuffer;
+
     Rect s; 
     s.bot = yres - 80;
     s.left = xres / 2;
@@ -151,7 +156,6 @@ SoundDevice::SoundDevice()
         cout << "could not open device" << endl;
         exit(1);	
     }
-
     const ALCchar* name = nullptr;
     if (alcIsExtensionPresent(device, "ALC_ENUMERATE_ALL_EXT"))
         name = alcGetString(device, ALC_ALL_DEVICES_SPECIFIER);
@@ -190,47 +194,52 @@ ALuint SoundBuffer::addSoundEffect(const char* filename)
     //Check the audio file 
     sndfile = sf_open(filename, SFM_READ, &sfinfo);
     if (!sndfile) {
-        fprintf(stderr, "Could not open audio in %s: %s\n", filename, sf_strerror(sndfile));
+        fprintf(stderr, "Could not open audio in %s: %s\n", filename, 
+                sf_strerror(sndfile));
         return 0;
     }
-    if (sfinfo.frames < 1 || sfinfo.frames >(sf_count_t)(INT_MAX / sizeof(short)) / sfinfo.channels) {
-        fprintf(stderr, "Bad sample count in %s (%" PRId64 ")\n", filename, sfinfo.frames);
+    if (sfinfo.frames < 1 || sfinfo.frames > (sf_count_t)(INT_MAX / 
+        sizeof(short)) / sfinfo.channels) {
+            fprintf(stderr, "Bad sample count in %s (%" PRId64 ")\n", 
+                    filename, sfinfo.frames);
         sf_close(sndfile);
         return 0;
     }
 
     //Checks the audio file has the correct format
     format = AL_NONE;
-    if (sfinfo.channels == 1)
+    if (sfinfo.channels == 1) {
         format = AL_FORMAT_MONO16;
-    else if (sfinfo.channels == 2)
+    } else if (sfinfo.channels == 2) {
         format = AL_FORMAT_STEREO16;
-    else if (sfinfo.channels == 3) {
-        if (sf_command(sndfile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == SF_AMBISONIC_B_FORMAT)
-            format = AL_FORMAT_BFORMAT2D_16;
-    }
-    else if (sfinfo.channels == 4) {
-        if (sf_command(sndfile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == SF_AMBISONIC_B_FORMAT)
-            format = AL_FORMAT_BFORMAT3D_16;
+    } else if (sfinfo.channels == 3) {
+        if (sf_command(sndfile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == 
+            SF_AMBISONIC_B_FORMAT) format = AL_FORMAT_BFORMAT2D_16;
+    } else if (sfinfo.channels == 4) {
+        if (sf_command(sndfile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == 
+            SF_AMBISONIC_B_FORMAT) format = AL_FORMAT_BFORMAT3D_16;
     }
     if (!format) {
         fprintf(stderr, "Unsupported channel count: %d\n", sfinfo.channels);
-        sf_close(sndfile);
+                sf_close(sndfile);
         return 0;
     }
 
     //Decodes the audio file into a buffer
-    membuf = static_cast<short*>(malloc((size_t)(sfinfo.frames * sfinfo.channels) * sizeof(short)));
+    membuf = static_cast<short*>(malloc((size_t)(sfinfo.frames * 
+             sfinfo.channels) * sizeof(short)));
     num_frames = sf_readf_short(sndfile, membuf, sfinfo.frames);
     if (num_frames < 1) {
         free(membuf);
         sf_close(sndfile);
-        fprintf(stderr, "Failed to read samples in %s (%" PRId64 ")\n", filename, num_frames);
+        fprintf(stderr, "Failed to read samples in %s (%" PRId64 ")\n", 
+                filename, num_frames);
         return 0;
     }
-    num_bytes = (ALsizei)(num_frames * sfinfo.channels) * (ALsizei)sizeof(short);
+    num_bytes = (ALsizei)(num_frames * sfinfo.channels) * (ALsizei)
+                 sizeof(short);
 
-    //Buffers the audio file into a new buffer, frees the memory and close the audio file 
+    //Loads audio file into a new buffer, frees memory and closees audio file 
     buffer = 0;
     alGenBuffers(1, &buffer);
     alBufferData(buffer, format, membuf, num_bytes, sfinfo.samplerate);
@@ -260,15 +269,14 @@ bool SoundBuffer::removeSoundEffect(const ALuint& buffer)
             alDeleteBuffers(1, &*t);
             t = SoundEffectBuffers.erase(t);
             return true;
-        }
-        else {
+        } else {
             ++t;
         }
     }
     return false;  
 }
 
-//Clears the sound effects' vector  
+//Clears the sound effects' vector   
 SoundBuffer::SoundBuffer()
 {
     SoundEffectBuffers.clear();
@@ -287,8 +295,10 @@ SoundSource::SoundSource()
     alGenSources(1, &p_Source);
     alSourcef(p_Source, AL_PITCH, p_Pitch);
     alSourcef(p_Source, AL_GAIN, p_Gain);
-    alSource3f(p_Source, AL_POSITION, p_Position[0], p_Position[1], p_Position[2]);
-    alSource3f(p_Source, AL_VELOCITY, p_Velocity[0], p_Velocity[1], p_Velocity[2]);
+    alSource3f(p_Source, AL_POSITION, p_Position[0], p_Position[1], 
+               p_Position[2]);
+    alSource3f(p_Source, AL_VELOCITY, p_Velocity[0], p_Velocity[1], 
+               p_Velocity[2]);
     alSourcei(p_Source, AL_LOOPING, p_LoopSound);
     alSourcei(p_Source, AL_BUFFER, p_Buffer);
 }
@@ -307,10 +317,139 @@ void SoundSource::Play(const ALuint buffer_to_play)
         p_Buffer = buffer_to_play;
         alSourcei(p_Source, AL_BUFFER, (ALint)p_Buffer);
     }
-
     alSourcePlay(p_Source);
     ALint state = AL_PLAYING;
     alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
+}
+
+//Music buffer play function  
+void MusicBuffer::Play()
+{
+	ALsizei i;
+    alGetError();
+	//Rewind source position and clear buffer queue
+	alSourceRewind(p_Source);
+	alSourcei(p_Source, AL_BUFFER, 0);
+	//Fill the buffer queue(4 buffers)
+	for (i = 0; i < NUM_BUFFERS; i++) {
+        sf_count_t slen = sf_readf_short(p_SndFile, p_Membuf, BUFFER_SAMPLES);
+		if (slen < 1) break;
+		slen *= p_Sfinfo.channels * (sf_count_t)sizeof(short);
+		alBufferData(p_Buffers[i], p_Format, p_Membuf, (ALsizei)slen, 
+            p_Sfinfo.samplerate);
+	}
+	if (alGetError() != AL_NO_ERROR) {
+	    cout << "Error buffering for playback";
+        exit(1);
+	}
+    //Queue and start playback 
+	alSourceQueueBuffers(p_Source, i, p_Buffers);
+	alSourcePlay(p_Source);
+	if (alGetError() != AL_NO_ERROR) {
+	    cout << "Error starting playback";
+        exit(1);
+	}
+}
+
+//Re-buffers what has been played 
+void MusicBuffer::UpdateStream()
+{
+    ALint processed, state;
+    alGetError();
+    //Checks state and what has been processed 
+    alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
+    alGetSourcei(p_Source, AL_BUFFERS_PROCESSED, &processed);
+    if (alGetError() != AL_NO_ERROR) {
+        cout << "error checking music source state";
+        exit(1);
+    }
+    //Unqueue and handle each processed buffer
+    while (processed > 0) {
+        ALuint bufid;
+        sf_count_t slen;
+        alSourceUnqueueBuffers(p_Source, 1, &bufid);
+        processed--;
+        //Reads data, refill buffer & queue it back to the source
+        slen = sf_readf_short(p_SndFile, p_Membuf, BUFFER_SAMPLES);
+        if (slen > 0) {
+            slen *= p_Sfinfo.channels * (sf_count_t)sizeof(short);
+            alBufferData(bufid, p_Format, p_Membuf, (ALsizei)slen,
+                p_Sfinfo.samplerate);
+            alSourceQueueBuffers(p_Source, 1, &bufid);
+        }
+        if (alGetError() != AL_NO_ERROR) {
+            cout << "error buffering music data";
+            exit (1);
+        }
+    }
+    //Ensures source hasn't underrun(lacking data)
+    if (state != AL_PLAYING && state != AL_PAUSED) {
+        ALint queued;
+        //If no buffers are queued, playback is finished
+        alGetSourcei(p_Source, AL_BUFFERS_QUEUED, &queued);
+        if (queued == 0)
+            return;
+        alSourcePlay(p_Source);
+        if (alGetError() != AL_NO_ERROR) {
+            cout << "error restarting music playback";
+        }
+    }
+}
+
+//Returns source for music buffer 
+ALint MusicBuffer::getSource()
+{
+	return p_Source;
+}
+
+//Instantiate a new music buffer  
+MusicBuffer::MusicBuffer(const char* filename)
+{
+    //Generate source and buffers
+    alGenSources(1, &p_Source);
+    alGenBuffers(NUM_BUFFERS, p_Buffers);
+    std::size_t frame_size;
+    //open and read audio file   
+    p_SndFile = sf_open(filename, SFM_READ, &p_Sfinfo);
+    if (!p_SndFile) {
+        cout << "error opening the file";
+        exit(1);
+    } else {
+        cout << "Audio files loadup succesfully\n";
+    }
+    //Check audio file format and set it up to the correct OpenAL format 
+    if (p_Sfinfo.channels == 1) {
+        p_Format = AL_FORMAT_MONO16;
+    } else if (p_Sfinfo.channels == 2) {
+        p_Format = AL_FORMAT_STEREO16;
+    } else if (p_Sfinfo.channels == 3) {
+        if (sf_command(p_SndFile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == 
+            SF_AMBISONIC_B_FORMAT) p_Format = AL_FORMAT_BFORMAT2D_16;
+    } else if (p_Sfinfo.channels == 4) {
+        if (sf_command(p_SndFile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) ==
+            SF_AMBISONIC_B_FORMAT) p_Format = AL_FORMAT_BFORMAT3D_16;
+    }
+    if (!p_Format) {
+        sf_close(p_SndFile);
+        p_SndFile = NULL;
+        cout << "Unsupported channel file";
+        exit(1);
+    }
+    //Calculate frame size and allocates memory  
+    frame_size = ((size_t)BUFFER_SAMPLES * (size_t)p_Sfinfo.channels) * 
+                  sizeof(short);
+    p_Membuf = static_cast<short*>(malloc(frame_size));
+}
+
+//Music buffer destructor 
+MusicBuffer::~MusicBuffer()
+{
+	alDeleteSources(1, &p_Source);
+	if (p_SndFile)
+	    sf_close(p_SndFile);
+	p_SndFile = nullptr;
+	free(p_Membuf);
+	alDeleteBuffers(NUM_BUFFERS, p_Buffers);
 }
 
 #endif
