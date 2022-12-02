@@ -37,9 +37,9 @@ namespace aarcosavalos{
 
         ggprint16(&r, 16, 0x00ff0000, "GAME OVER");
         ggprint16(&r, 16, 0x00ff0000, "");
-        ggprint16(&r, 16, 0x00ff0000, "Press Esc to stop the game");
+        ggprint10(&r, 16, 0x00ff0000, "Press Esc to stop the game");
         ggprint16(&r, 16, 0x00ff0000, "");
-        ggprint16(&r, 16, 0x00ff0000, "Play Again? (Y/ESC)");
+        ggprint10(&r, 16, 0x00ff0000, "Play Again? (Y/ESC)");
 
     }
     void Feature_mode(int xres, int yres)
@@ -101,13 +101,18 @@ namespace aarcosavalos{
 
         ggprint16(&t, 16, 0x00ffffff, "WELCOME TO TOP GUN");
         ggprint16(&r, 16, 0x00ff0000, "");
+        ggprint16(&r, 16, 0x00ff0000, "");
         ggprint16(&t, 16, 0x00ffffff, "Press I to start the game");
+        ggprint16(&r, 16, 0x00ff0000, "");
         ggprint16(&r, 16, 0x00ff0000, "");
         ggprint16(&t, 16, 0x00ffffff, "WASD to move, SPACE to shoot");
         ggprint16(&r, 16, 0x00ff0000, "");
+        ggprint16(&r, 16, 0x00ff0000, "");
         ggprint16(&t, 16, 0x00ffffff, "1 - 5 to change weapons");
         ggprint16(&r, 16, 0x00ff0000, "");
+        ggprint16(&r, 16, 0x00ff0000, "");
         ggprint16(&t, 16, 0x00ffffff, "P to pause the game");
+        ggprint16(&r, 16, 0x00ff0000, "");
         ggprint16(&r, 16, 0x00ff0000, "");
         ggprint16(&t, 16, 0x00ffffff, "F1 to enter the help screen");
 
