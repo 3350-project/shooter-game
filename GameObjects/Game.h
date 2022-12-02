@@ -26,6 +26,7 @@ class Global {
         int Collision;
         int weapon;
         int feature;
+        int picture;
         char keys[65536];
         bool paused{false};
         unsigned int dead;	
