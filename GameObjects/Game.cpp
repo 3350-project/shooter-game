@@ -13,12 +13,16 @@ Global::Global()
 {
     xres = 1280;
     yres = 720;
+    w = 50.0f;
+    dir = 25.0f;
+    pos[0] = 0.0f + w;
+    pos[1] = yres /2.0f;
     memset(keys, 0, 65536);
     HelpScr = 0;
     dead = 0;
     credits = 0;
     sound = 0;
-    intro = 0;
+    intro = 1;
     weapon = 0;
     feature = 0;
 };
