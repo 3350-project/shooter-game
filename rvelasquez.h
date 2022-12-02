@@ -6,6 +6,8 @@
 //
 //functions prototype 
 
+
+#ifndef RVELASQUEZ_H
 #define RVELASQUEZ_H
 #include <vector>
 #include <string>
@@ -14,14 +16,22 @@
 #include <fstream>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
+#endif
+
+#ifdef AUDIO
+#include <sndfile.h>
+#endif
 
 extern unsigned int managed_state_credits(unsigned int c);;
-extern unsigned int managed_state_sound(unsigned int s);
+extern unsigned int managed_state_sound(unsigned int F4);
 
 extern void show_credits(int xres, int yres);
 extern void sound(int xres, int yres);
 extern void Play(const ALuint buffer_to_Play);
+extern void PlayMusic();
+extern void UpdateStream();
 
+#ifdef AUDIO
 class SoundDevice
 {
     public:
@@ -69,5 +79,28 @@ class SoundSource
         ALuint p_Buffer = 0;
 };
 
+class MusicBuffer
+{
+public:
+	void Play();
+	void UpdateStream();
+    
+	ALint getSource();
+    
+    MusicBuffer(const char* filename);
+    ~MusicBuffer();
 
+private:
+	ALuint p_Source;
+	static const int BUFFER_SAMPLES = 8192;
+	static const int NUM_BUFFERS = 4;
+	ALuint p_Buffers[NUM_BUFFERS];
+	SNDFILE* p_SndFile;
+	SF_INFO p_Sfinfo;
+	short* p_Membuf;
+	ALenum p_Format;
+ 
+	MusicBuffer() = delete;
+};
 
+#endif

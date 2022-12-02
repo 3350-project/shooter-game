@@ -73,8 +73,8 @@ Enemy::Enemy(int resolutionX, int resolutionY)
                 random(resolutionY),
                 0.0f};
 
-    velocity = {(float)(rnd() * 2.0 - 1.0),
-                (float)(rnd() * 2.0 - 1.0),
+    velocity = {(float)(rnd() * 2.0 - 0.5),
+                (float)(rnd() * 2.0 - 0.5),
                 0.0f};
 
     health = 1;

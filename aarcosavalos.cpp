@@ -6,7 +6,7 @@
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #include "fonts.h"
-
+#include "GameObjects/GameShared.h"
 namespace aarcosavalos{
 
     Rect r, t;
@@ -76,6 +76,32 @@ namespace aarcosavalos{
         ggprint16(&t, 16, 0x00ffffff, "WELCOME TO MY FEATURE");
         ggprint8b(&r, 16, 0x00ffffff, "Press g to see the first feature");
         ggprint8b(&r, 16, 0x00ffffff, "Press t to see the first feature");
+
+    }
+    void intro_screen(int xres, int yres)
+    {
+        t.bot = yres-40;
+        t.left = xres/2.5;
+        t.center = 0;
+
+        glClear(GL_COLOR_BUFFER_BIT);
+        // Draw box
+        glPushMatrix();
+        //glBindTexture(GL_TEXTURE_2D, gl.ferretTex);    //bind the texture
+        glColor3ub(0, 0, 0);
+        //glTranslatef(gl.pos[0], gl.pos[1], 0.0f);
+        glBegin(GL_QUADS);
+        glVertex2f(-xres, -yres);
+        glVertex2f(-xres,  yres);
+        glVertex2f( xres,  yres);
+        glVertex2f( xres, -yres);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        glEnd();
+        glPopMatrix();
+
+        ggprint16(&t, 16, 0x00ffffff, "WELCOME TO TOP GUN");
+        ggprint16(&t, 16, 0x00ffffff, "Press 1 to start the game");
 
     }
 }
