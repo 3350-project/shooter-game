@@ -366,7 +366,7 @@ int check_keys(XEvent *e)
 
 void physics()
 {
-    if (gl.paused|| gl.HelpScr || gl.dead) {
+    if (gl.paused || gl.HelpScr || gl.dead || gl.intro) {
         return;
     }
     float d0,d1,dist, d2, d3, dist2;
@@ -550,27 +550,21 @@ void physics()
 
    }
     for (Enemy& e : g.enemies) {
-        if (g.wavenum < 2) {
-           e.velocity = {(float)(rnd() * 2.0 - 0.5),
-                (float)(rnd() * 2.0 - 0.5),
-                0.0f};
-        }
         if (g.wavenum == 2) {
-           e.velocity = {(float)(rnd() * 2.0),
-                (float)(rnd() * 2.0 - 0.25),
-                0.0f};
+           e.velocity.x *= 1.1;
+           e.velocity.y *= 1.1;
         }
         if (g.wavenum == 3) {
-           e.velocity = {(float)(rnd() * 2.0 + 0.5),
-                (float)(rnd() * 2.0 - 0.25),
-                0.0f};
+           e.velocity.x *= 1.2;
+           e.velocity.y *= 1.2;
+
         }
-        if (g.wavenum >= 4) {
-           e.velocity = {(float)(rnd() * 2.0 + 0.75),
-                (float)(rnd() * 2.0 - 0.25),
-                0.0f};
+        if (g.wavenum == 4) {
+           e.velocity.x *= 1.3;
+           e.velocity.y *= 1.3;
+
         }
-    }
+    } 
 
 }
 
@@ -693,20 +687,18 @@ void render()
         //aarcosavalos::Feature_mode(gl.xres, gl.yres);
         return;
     }
-    if (gl.intro)
-    {
-        gl.paused = aarcosavalos::manage_state(gl.paused);
+    if (gl.intro==1) {
         aarcosavalos::intro_screen(gl.xres, gl.yres);
         return;
-    }
+    
+    } 
+    
 }
 
 void DrawSquare()
 {
-    //glClear(GL_COLOR_BUFFER_BIT);
     // Draw box
     glPushMatrix();
-    //glBindTexture(GL_TEXTURE_2D, gl.ferretTex);    //bind the texture
     glColor3ub(0, 0, 0);
     //glTranslatef(gl.pos[0], gl.pos[1], 0.0f);
     glBegin(GL_QUADS);
