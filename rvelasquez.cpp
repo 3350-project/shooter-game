@@ -7,7 +7,7 @@
 //Features: Credit Screen and Sound
 
 ///////////////////////////////////////////////////////////////////////////////
-// 					                      Works Cited: 
+// 					                    
 // Code, Tech and tutorials openal-impl
 // November 5, 2020
 // openAL Tutorial pt.1 | Init and Play Sound Effects
