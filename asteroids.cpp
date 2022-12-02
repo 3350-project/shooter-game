@@ -508,8 +508,6 @@ void physics()
                 std::cout<< "Player has collided with enemy!" << std::endl;
 
 #ifdef AUDIO
-                if (gl.sound)
-                    mySpeaker2.Play(explode);
                     if (gl.sound)
                         mySpeaker5.Play(explosion);
 #endif
@@ -563,7 +561,7 @@ void physics()
             rw.getPlayerData().addToShotsFired();
 #ifdef AUDIO
             if (gl.sound == 1)
-                mySpeaker1.Play(shot);
+                mySpeaker1.Play(shotgun);
 #endif
             //DEBUG
             auto wep = wh.getActiveWeapon().getWeaponName();
