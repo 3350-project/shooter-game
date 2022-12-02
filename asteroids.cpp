@@ -58,17 +58,38 @@ X11_wrapper x11(1280, 720, gl);
 // Personal class instance
 RWyatt rw;
 
-#ifdef AUDIO
+#ifdef AUDIO 
 SoundDevice * mysounddevice = SoundDevice::get();
+
 SoundSource mySpeaker1;
 SoundSource mySpeaker2;
 SoundSource mySpeaker3;
 SoundSource mySpeaker4;
+SoundSource mySpeaker5;
+SoundSource mySpeaker6;
+SoundSource mySpeaker7;
+SoundSource mySpeaker8;
+SoundSource mySpeaker9;
 
-uint32_t laser = SoundBuffer::get()->addSoundEffect("./soundFiles/gun_fire.wav");
-uint32_t explode = SoundBuffer::get()->addSoundEffect("./soundFiles/explode.wav");
-uint32_t shot = SoundBuffer::get()->addSoundEffect("./soundFiles/laser.wav");
-uint32_t thrust = SoundBuffer::get()->addSoundEffect("./soundFiles/thrust.wav");
+uint32_t /*Spearker1*/pistol = SoundBuffer::get()->addSoundEffect("./soundFiles/9mm_pistol.wav");
+uint32_t /*Spearker2*/shotgun = SoundBuffer::get()->addSoundEffect("./soundFiles/shotgun.wav");
+uint32_t /*Spearker3*/sniper = SoundBuffer::get()->addSoundEffect("./soundFiles/sniper_rifle.wav");
+uint32_t /*Spearker4*/machineGun = SoundBuffer::get()->addSoundEffect("./soundFiles/50-cal-mg.wav"); 
+uint32_t /*Spearker5*/explosion = SoundBuffer::get()->addSoundEffect("./soundFiles/explode.wav");
+uint32_t /*Spearker6*/sucess = SoundBuffer::get()->addSoundEffect("./soundFiles/success.wav");
+uint32_t /*Spearker7*/failure = SoundBuffer::get()->addSoundEffect("./soundFiles/gameOver.wav");
+uint32_t /*Spearker8*/dying = SoundBuffer::get()->addSoundEffect("./soundFiles/dying.wav");
+uint32_t /*Spearker9*/dawn = SoundBuffer::get()->addSoundEffect("./soundFiles/DawnFinal24hrs.wav");
+
+MusicBuffer myMusic("./soundFiles/mandoIntro.wav");
+//myMusic.Play();
+
+//This is how to call a sound effect 
+//  #ifdef AUDIO
+//  if (gl.sound == 1)
+//      mySpeaker<#>.Play(<sound_name>);
+//  #endif
+
 #endif
 
 //function prototypes
@@ -180,7 +201,7 @@ void check_mouse(XEvent *e)
                     rw.getPlayerData().addToShotsFired();
 #ifdef AUDIO
                     if (gl.sound == 1)
-                        mySpeaker1.Play(shot);
+                        mySpeaker1.Play(pistol);
 #endif
                 }
             }
@@ -244,7 +265,7 @@ int check_keys(XEvent *e)
             delete mysounddevice;
 #endif
             return 1;
-        case XK_z:
+        case XK_F4:
 #ifdef AUDIO
             gl.sound = managed_state_sound(gl.sound);
 #endif
@@ -400,7 +421,7 @@ void physics()
                 g.score += 1;
 #ifdef AUDIO
                 if (gl.sound)
-                    mySpeaker2.Play(explode);
+                    mySpeaker5.Play(explosion);
 #endif
             }
         }
@@ -426,7 +447,7 @@ void physics()
 
 #ifdef AUDIO
                     if (gl.sound)
-                        mySpeaker2.Play(explode);
+                        mySpeaker5.Play(explosion);
 #endif
             }
         }
@@ -439,28 +460,28 @@ void physics()
         mainPlayer.moveLeft(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker3.Play(sniper);
 #endif
     }
     if (gl.keys[XK_d]) {
         mainPlayer.moveRight(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker4.Play(machineGun);
 #endif
     }
     if (gl.keys[XK_w]) {
         mainPlayer.moveUp(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker9.Play(dawn);
 #endif
     }
     if (gl.keys[XK_s]) {
         mainPlayer.moveDown(g.MOVE_SPEED);
 #ifdef AUDIO
         if (gl.sound)
-            mySpeaker4.Play(thrust);
+            mySpeaker7.Play(failure);
 #endif
     }
     if (gl.keys[XK_space]) {
@@ -476,7 +497,7 @@ void physics()
                 rw.getPlayerData().addToShotsFired();
 #ifdef AUDIO
                 if (gl.sound == 1)
-                    mySpeaker1.Play(shot);
+                    mySpeaker2.Play(shotgun);
 #endif
             }
         }
