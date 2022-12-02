@@ -83,8 +83,6 @@ uint32_t /*Spearker7*/failure = SoundBuffer::get()->addSoundEffect("./soundFiles
 uint32_t /*Spearker8*/dying = SoundBuffer::get()->addSoundEffect("./soundFiles/dying.wav");
 uint32_t /*Spearker9*/dawn = SoundBuffer::get()->addSoundEffect("./soundFiles/DawnFinal24hrs.wav");
 
-MusicBuffer myMusic("./soundFiles/mandoIntro.wav");
-//myMusic.Play();
 
 #endif
 
