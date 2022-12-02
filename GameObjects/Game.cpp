@@ -25,6 +25,7 @@ Global::Global()
     intro = 1;
     weapon = 0;
     feature = 0;
+    picture = 0;
 };
 
 /* Game Object */
