@@ -161,6 +161,7 @@ void init_opengl(void)
 
 void init_textures(void)
 {
+/*	
      // Enable texture in Opengl
     glEnable(GL_TEXTURE_2D);
 
@@ -183,6 +184,7 @@ void init_textures(void)
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB,
             GL_UNSIGNED_BYTE, zombie.data);
     glBindTexture(GL_TEXTURE_2D, 0);
+*/    
 }
 void normalize2d(Vector3& v)
 {
