@@ -13,15 +13,13 @@
 // openAL Tutorial pt.1 | Init and Play Sound Effects
 // openAl Tutorial pt.2 | Music & Long Sound Buffering
 // https://www.youtube.com/watch?v=kWQM1iQ1W0E
-// https://www.youtube.com/watch?v=pYK8XZHV74s
-// https://github.com/codetechandtutorials/openal-impl/releases/tag/vid1
+// https://www.youtube.com/watch?v=pYK8XZHV74s// 
 //
 // Mt. Ford Studios 
 // June 18, 2018
 // JS Asteroids Game Part 7 (Sounds effects and Music)
 // https://www.youtube.com/watch?v=LfSBbrGqFV0
-// https://drive.google.com/file/d/1tmjvMKxCcJeyTpi5pI6A8cgVxwWnyPXn/view
-//
+// 
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -104,7 +102,6 @@ void show_credits(int xres, int yres)
     r.left = (xres/2) - 40;
     ggprint16(&r, 20, 0xffffffff, "Rodolfo Velasquez");
 }
-
 
 void sound(int xres, int yres)
 {
@@ -320,136 +317,6 @@ void SoundSource::Play(const ALuint buffer_to_play)
     alSourcePlay(p_Source);
     ALint state = AL_PLAYING;
     alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
-}
-
-//Music buffer play function  
-void MusicBuffer::Play()
-{
-	ALsizei i;
-    alGetError();
-	//Rewind source position and clear buffer queue
-	alSourceRewind(p_Source);
-	alSourcei(p_Source, AL_BUFFER, 0);
-	//Fill the buffer queue(4 buffers)
-	for (i = 0; i < NUM_BUFFERS; i++) {
-        sf_count_t slen = sf_readf_short(p_SndFile, p_Membuf, BUFFER_SAMPLES);
-		if (slen < 1) break;
-		slen *= p_Sfinfo.channels * (sf_count_t)sizeof(short);
-		alBufferData(p_Buffers[i], p_Format, p_Membuf, (ALsizei)slen, 
-            p_Sfinfo.samplerate);
-	}
-	if (alGetError() != AL_NO_ERROR) {
-	    cout << "Error buffering for playback";
-        exit(1);
-	}
-    //Queue and start playback 
-	alSourceQueueBuffers(p_Source, i, p_Buffers);
-	alSourcePlay(p_Source);
-	if (alGetError() != AL_NO_ERROR) {
-	    cout << "Error starting playback";
-        exit(1);
-	}
-}
-
-//Re-buffers what has been played 
-void MusicBuffer::UpdateStream()
-{
-    ALint processed, state;
-    alGetError();
-    //Checks state and what has been processed 
-    alGetSourcei(p_Source, AL_SOURCE_STATE, &state);
-    alGetSourcei(p_Source, AL_BUFFERS_PROCESSED, &processed);
-    if (alGetError() != AL_NO_ERROR) {
-        cout << "error checking music source state";
-        exit(1);
-    }
-    //Unqueue and handle each processed buffer
-    while (processed > 0) {
-        ALuint bufid;
-        sf_count_t slen;
-        alSourceUnqueueBuffers(p_Source, 1, &bufid);
-        processed--;
-        //Reads data, refill buffer & queue it back to the source
-        slen = sf_readf_short(p_SndFile, p_Membuf, BUFFER_SAMPLES);
-        if (slen > 0) {
-            slen *= p_Sfinfo.channels * (sf_count_t)sizeof(short);
-            alBufferData(bufid, p_Format, p_Membuf, (ALsizei)slen,
-                p_Sfinfo.samplerate);
-            alSourceQueueBuffers(p_Source, 1, &bufid);
-        }
-        if (alGetError() != AL_NO_ERROR) {
-            cout << "error buffering music data";
-            exit (1);
-        }
-    }
-    //Ensures source hasn't underrun(lacking data)
-    if (state != AL_PLAYING && state != AL_PAUSED) {
-        ALint queued;
-        //If no buffers are queued, playback is finished
-        alGetSourcei(p_Source, AL_BUFFERS_QUEUED, &queued);
-        if (queued == 0)
-            return;
-        alSourcePlay(p_Source);
-        if (alGetError() != AL_NO_ERROR) {
-            cout << "error restarting music playback";
-        }
-    }
-}
-
-//Returns source for music buffer 
-ALint MusicBuffer::getSource()
-{
-	return p_Source;
-}
-
-//Instantiate a new music buffer  
-MusicBuffer::MusicBuffer(const char* filename)
-{
-    //Generate source and buffers
-    alGenSources(1, &p_Source);
-    alGenBuffers(NUM_BUFFERS, p_Buffers);
-    std::size_t frame_size;
-    //open and read audio file   
-    p_SndFile = sf_open(filename, SFM_READ, &p_Sfinfo);
-    if (!p_SndFile) {
-        cout << "error opening the file";
-        exit(1);
-    } else {
-        cout << "Audio files loadup succesfully\n";
-    }
-    //Check audio file format and set it up to the correct OpenAL format 
-    if (p_Sfinfo.channels == 1) {
-        p_Format = AL_FORMAT_MONO16;
-    } else if (p_Sfinfo.channels == 2) {
-        p_Format = AL_FORMAT_STEREO16;
-    } else if (p_Sfinfo.channels == 3) {
-        if (sf_command(p_SndFile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) == 
-            SF_AMBISONIC_B_FORMAT) p_Format = AL_FORMAT_BFORMAT2D_16;
-    } else if (p_Sfinfo.channels == 4) {
-        if (sf_command(p_SndFile, SFC_WAVEX_GET_AMBISONIC, NULL, 0) ==
-            SF_AMBISONIC_B_FORMAT) p_Format = AL_FORMAT_BFORMAT3D_16;
-    }
-    if (!p_Format) {
-        sf_close(p_SndFile);
-        p_SndFile = NULL;
-        cout << "Unsupported channel file";
-        exit(1);
-    }
-    //Calculate frame size and allocates memory  
-    frame_size = ((size_t)BUFFER_SAMPLES * (size_t)p_Sfinfo.channels) * 
-                  sizeof(short);
-    p_Membuf = static_cast<short*>(malloc(frame_size));
-}
-
-//Music buffer destructor 
-MusicBuffer::~MusicBuffer()
-{
-	alDeleteSources(1, &p_Source);
-	if (p_SndFile)
-	    sf_close(p_SndFile);
-	p_SndFile = nullptr;
-	free(p_Membuf);
-	alDeleteBuffers(NUM_BUFFERS, p_Buffers);
 }
 
 #endif

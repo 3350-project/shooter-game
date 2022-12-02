@@ -83,14 +83,11 @@ uint32_t /*Spearker7*/failure = SoundBuffer::get()->addSoundEffect("./soundFiles
 uint32_t /*Spearker8*/dying = SoundBuffer::get()->addSoundEffect("./soundFiles/dying.wav");
 uint32_t /*Spearker9*/dawn = SoundBuffer::get()->addSoundEffect("./soundFiles/DawnFinal24hrs.wav");
 
-MusicBuffer myMusic("./soundFiles/mandoIntro.wav");
-//myMusic.Play();
-
-//This is how to call a sound effect 
-//  #ifdef AUDIO
-//  if (gl.sound == 1)
-//      mySpeaker<#>.Play(<sound_name>);
-//  #endif
+//How to call a sound effect 
+//#ifdef AUDIO
+//    if (gl.sound == 1)
+//        mySpeaker<#>.Play(<sound_name>);
+//#endif
 
 #endif
 
