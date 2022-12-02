@@ -16,6 +16,8 @@
 #include <fstream>
 #include <X11/Xlib.h>
 #include <GL/glx.h>
+#endif
+
 #ifdef AUDIO
 #include <sndfile.h>
 #endif
@@ -29,6 +31,7 @@ extern void Play(const ALuint buffer_to_Play);
 extern void PlayMusic();
 extern void UpdateStream();
 
+#ifdef AUDIO
 class SoundDevice
 {
     public:

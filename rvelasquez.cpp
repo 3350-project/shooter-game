@@ -105,6 +105,7 @@ void show_credits(int xres, int yres)
     ggprint16(&r, 20, 0xffffffff, "Rodolfo Velasquez");
 }
 
+
 void sound(int xres, int yres)
 {
     class MusicBuffer;
