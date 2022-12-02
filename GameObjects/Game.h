@@ -42,6 +42,7 @@ class Game {
         int sizeasteroids = 40;
         int newshape = 0;
         int flashred = 20;
+        int wavenum = 0;
     public:
         Game(Global&);
         void cleanDead();

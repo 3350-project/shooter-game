@@ -291,11 +291,20 @@ int check_keys(XEvent *e)
         case XK_g:
             gl.dead = 1;
             break;
+        case XK_l:
+            g.wavenum += 1;
+            if (g.wavenum == 5)
+                g.wavenum = 1;
+            break;
         case XK_y:
             // if player chose to play again make it 0 (false)
             gl.dead = 0;
             gl.paused = false;
+            g.sizeasteroids = 40;
+            g.newshape = 0;
             g.reset();
+            g.wavenum = 1;
+            
             break;
     }
     return 0;
@@ -475,56 +484,37 @@ void physics()
         }
     }
     g.cleanDead();
-    int i = 0;
     if (g.enemies.empty()) {
+        g.sizeasteroids += 5;
         g.spawnWave();
-        i += 1;
-
-       for (Enemy& e : g.enemies) {
-           if (i == 0) { 
-            e.velocity = {(float)(rnd() * 2.0 - 1.0),
-                (float)(rnd() * 2.0 - 1.0),
-                0.0f};
-           }
-           if (i == 1) { 
-            e.velocity = {(float)(rnd() * 2.0 - 0.6),
-                (float)(rnd() * 2.0 - 0.6),
-                0.0f};
-
-            g.sizeasteroids += 5;
-           }
-           if (i == 2) { 
-            e.velocity = {(float)(rnd() * 2.0 - 0.2),
-                (float)(rnd() * 2.0 - 0.2),
-                0.0f};
-
-            g.sizeasteroids += 5;
-           }
-           if (i == 3) { 
-            e.velocity = {(float)(rnd() * 2.0 + 0.2),
-                (float)(rnd() * 2.0 + 0.2),
-                0.0f};
-
-            g.sizeasteroids += 5;
-           }
-           if (i == 4) { 
-            e.velocity = {(float)(rnd() * 2.0 + 0.6),
-                (float)(rnd() * 2.0 + 0.6),
-                0.0f};
-
-            g.sizeasteroids += 5;
-           }
-           if (i == 5) { 
-            e.velocity = {(float)(rnd() * 2.0 + 1),
-                (float)(rnd() * 2.0 + 1),
-                0.0f};
-            
-            g.sizeasteroids += 5;
-           }
 
         std::cout << rw.getPlayerData().asString() << std::endl;
+        std::cout << "Now Going into Wave " << g.wavenum << std::endl;
+
+   }
+    for (Enemy& e : g.enemies) {
+        if (g.wavenum < 2) {
+           e.velocity = {(float)(rnd() * 2.0 - 0.5),
+                (float)(rnd() * 2.0 - 0.5),
+                0.0f};
+        }
+        if (g.wavenum == 2) {
+           e.velocity = {(float)(rnd() * 2.0),
+                (float)(rnd() * 2.0 - 0.25),
+                0.0f};
+        }
+        if (g.wavenum == 3) {
+           e.velocity = {(float)(rnd() * 2.0 + 0.5),
+                (float)(rnd() * 2.0 - 0.25),
+                0.0f};
+        }
+        if (g.wavenum >= 4) {
+           e.velocity = {(float)(rnd() * 2.0 + 0.75),
+                (float)(rnd() * 2.0 - 0.25),
+                0.0f};
         }
     }
+
 }
     
 void render()
@@ -538,18 +528,7 @@ void render()
 
     //Draw the player
     if (g.flashred < 20) {
-        if (g.flashred > 1 && g.flashred < 5) {
         glColor3f(1.0f, 0.0, 0.0);
-        }
-        if (g.flashred > 5 && g.flashred < 10) {
-        glColor3f(1.0f, 1.0f, 1.0f);
-        }
-        if (g.flashred > 10 && g.flashred < 15) {
-        glColor3f(1.0f, 0.0, 0.0);
-        }
-        if (g.flashred > 15 && g.flashred < 20) {
-        glColor3f(1.0f, 1.0f, 1.0f);
-        }
         g.flashred += 1;
 
     } else {
@@ -577,7 +556,14 @@ void render()
 
     //Draw the asteroids
     for (Enemy e : g.enemies) {
-        glColor3f(1.0f, 1.0f, 1.0f);
+        if (g.wavenum < 2)
+            glColor3f(1.0f, 1.0f, 1.0f);
+        if (g.wavenum == 2)
+            glColor4f(1.0f,1.0f, 0.0f, 0.0f);
+        if (g.wavenum == 3)
+            glColor3f(1.0f, 0.5f, 0.0f);
+        if(g.wavenum >=4)
+            glColor4f(1.0f,0.0f,0.0f,0.0f);
         glPushMatrix();
         glTranslatef(e.position.x, e.position.y, e.position.z);
         glRotatef(e.rotation, 0.0f, 0.0f, 1.0f);
