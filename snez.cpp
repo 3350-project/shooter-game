@@ -48,7 +48,7 @@ namespace snez
         ggprint10(&r, 16, 0xffffffff, "");
         ggprint10(&r, 16, 0xffffffff, "- To Go into Rudy's Feature Mode Press F4");
         ggprint10(&r, 16, 0xffffffff, "");
-        ggprint10(&r, 16, 0xffffffff, "- Press P to Pause");
+        ggprint10(&r, 16, 0xffffffff, "- Press C to see the Credits Screen");
 
     }
     void Featuremode(int xres, int yres, int Collision, int hp, int nasteroids)
