@@ -66,6 +66,7 @@ void Game::spawnWave()
         enemies.push_back(Enemy(gl.xres, gl.yres));
     }
     waveSize += 5;
+
 }
 
 void Game::reset()
@@ -79,9 +80,5 @@ void Game::reset()
 
     players.push_back(Player(gl.xres, gl.yres));
 
-    // starting 10 enemies...
-    for (int i = 0; i < 10; i++)
-    {
-        enemies.push_back(Enemy(gl.xres, gl.yres));
-    }
+    spawnWave();
 }

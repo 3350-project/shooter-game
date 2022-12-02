@@ -18,3 +18,4 @@
 #include "HelperObjects.h"
 #include "GameEntity.h"
 #include "Game.h"
+#include "Weapon.h"
