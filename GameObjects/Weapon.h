@@ -14,10 +14,10 @@ class Weapon
 {
 public:
     Weapon() {}
-    Weapon(std::string w, int m, float f, float v, int d, float l, float b) :
+    Weapon(std::string w, int m, float f, float v, int d, float l) :
         mWeaponName {w}, mMagizineSize {m}, mCurrentMagizine {m},
         mFireRate {f}, mBulletVelocity {v}, mWeaponDamage {d},
-        mBulletLifetime(l), mTimeBetweenShots(b) 
+        mBulletLifetime(l)
     {};
     std::string getWeaponName() { return mWeaponName; }
     int getMagizineSize() { return mMagizineSize; }
@@ -26,7 +26,6 @@ public:
     int getBulletVelocity() { return mBulletVelocity; }
     int getDamage() { return mWeaponDamage; }
     int getBulletLifetime() { return mBulletLifetime; }
-    int getTimeBetweenShots() { return mTimeBetweenShots; }
     void decCurrentMagizine() { mCurrentMagizine--; }
     void reloadWeapon() { mCurrentMagizine = mMagizineSize; }
 private:
@@ -37,7 +36,6 @@ private:
     float mBulletVelocity; 
     int mWeaponDamage;
     int mBulletLifetime;
-    int mTimeBetweenShots;
     std::chrono::time_point<std::chrono::steady_clock> mResetTime {};
 };
 

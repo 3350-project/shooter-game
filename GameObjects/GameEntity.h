@@ -16,7 +16,7 @@ public:
     Vector3 position;
     Vector3 velocity;
     Vector3 color;
-    float rotation;
+    double rotation;
     float colisionRadius;
     int health;
     void updatePosition();
@@ -42,7 +42,7 @@ class Player : public GameEntity
 public:
     std::string name = ""; // multiplayer
     Player(float, float);
-    void setRotation(float);
+    void setRotation(double);
     void moveUp(int);
     void moveDown(int);
     void moveLeft(int);

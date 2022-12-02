@@ -199,34 +199,17 @@ void check_mouse(XEvent *e)
     }
     //Did the mouse move?
     //Was a mouse button clicked?
-    static int savex = 0;
-    static int savey = 0;
-    //
-    static int ct=0;
+    static int savex = 100;
+    static int savey = 100;
+
     //std::cout << "m" << std::endl << std::flush;
     if (e->type == ButtonRelease) {
         return;
     }
     if (e->type == ButtonPress) {
-//         if (e->xbutton.button==1) {
-//             //Left button is down
-//             //a little time between each bullet
-//             struct timespec bt;
-//             clock_gettime(CLOCK_REALTIME, &bt);
-//             double ts = timeDiff(&g.bulletTimer, &bt);
-//             if (ts > 0.1) {
-//                 timeCopy(&g.bulletTimer, &bt);
-//                 //shoot a bullet...
-//                 if (g.bullets.size() < Game::MAX_BULLETS) {
-//                     g.bullets.push_back(Bullet(g.getMainPlayer()));
-//                     rw.getPlayerData().addToShotsFired();
-// #ifdef AUDIO
-//                     if (gl.sound == 1)
-//                         mySpeaker1.Play(shot);
-// #endif
-//                 }
-//             }
-//         }
+        if (e->xbutton.button==1) {
+            //Left button is down
+        }
         if (e->xbutton.button==3) {
             //Right button is down
         }
@@ -235,26 +218,18 @@ void check_mouse(XEvent *e)
     if (savex != e->xbutton.x || savey != e->xbutton.y) {
         Player &mainPlayer = g.getMainPlayer();
         //Mouse moved
-        int xdiff = savex - e->xbutton.x;
-        // int ydiff = savey - e->xbutton.y;
-        if (++ct < 10)
-            return;     
-        if (xdiff > 0) {
-            mainPlayer.rotation += 0.05f * (float)xdiff;
-            if (mainPlayer.rotation >= 360.0f)
-                mainPlayer.rotation -= 360.0f;
-        }
-        else if (xdiff < 0) {
-            mainPlayer.rotation += 0.05f * (float)xdiff;
-            if (mainPlayer.rotation < 0.0f)
-                mainPlayer.rotation += 360.0f;
-        }
-        x11.set_mouse_position(100,100);
-        savex = 100;
-        savey = 100;
+        int dx = mainPlayer.position.x - e->xbutton.x;
+        int dy = mainPlayer.position.y - (gl.yres - e->xbutton.y);
+
+        double rad = atan2((double)dy, (double)dx);
+        double deg = rad * 180.f / M_PI;
+        mainPlayer.setRotation(deg+90.0f);
+
+        // x11.set_mouse_position(100,100);
+        savex = e->xbutton.x;
+        savey = e->xbutton.y;
     }
 }
-
 
 int check_keys(XEvent *e)
 {
@@ -315,6 +290,9 @@ int check_keys(XEvent *e)
         case XK_minus:
             break;
         case XK_r:
+            wh.getActiveWeapon().reloadWeapon();    
+            break;
+        case XK_b:
             gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
         case XK_n:
@@ -338,7 +316,7 @@ int check_keys(XEvent *e)
         case XK_p:
             RWyatt::pauseScreen(gl.paused);
             // unlocks and shows cursor
-            x11.show_mouse_cursor(gl.paused);
+            // x11.show_mouse_cursor(gl.paused);
             break;
         case XK_F2:
             gl.Collision = snez::manage_stateF2(gl.Collision);
@@ -551,7 +529,7 @@ void physics()
         struct timespec bt;
         clock_gettime(CLOCK_REALTIME, &bt);
         double ts = timeDiff(&g.bulletTimer, &bt);
-        if (ts >= wh.getActiveWeapon().getTimeBetweenShots()) {
+        if (ts >= wh.getActiveWeapon().getFireRate()) {
             timeCopy(&g.bulletTimer, &bt);
             //shoot a bullet...
             auto newBullets = wh.fireActiveWeapon(g.getMainPlayer());
@@ -563,9 +541,6 @@ void physics()
             if (gl.sound == 1)
                 mySpeaker1.Play(shotgun);
 #endif
-            //DEBUG
-            auto wep = wh.getActiveWeapon().getWeaponName();
-            std::cout << wep << std::endl;
         }
     }
     g.cleanDead();
@@ -580,24 +555,20 @@ void physics()
    }
     for (Enemy& e : g.enemies) {
         if (g.wavenum < 2) {
-           e.velocity = {(float)(rnd() * 2.0 - 0.5),
-                (float)(rnd() * 2.0 - 0.5),
-                0.0f};
+           e.velocity.x *= 1.0;
+           e.velocity.y *= 1.0;
         }
         if (g.wavenum == 2) {
-           e.velocity = {(float)(rnd() * 2.0),
-                (float)(rnd() * 2.0 - 0.25),
-                0.0f};
+           e.velocity.x *= 1.2;
+           e.velocity.y *= 1.2;
         }
         if (g.wavenum == 3) {
-           e.velocity = {(float)(rnd() * 2.0 + 0.5),
-                (float)(rnd() * 2.0 - 0.25),
-                0.0f};
+           e.velocity.x *= 1.5;
+           e.velocity.y *= 1.5;
         }
         if (g.wavenum >= 4) {
-           e.velocity = {(float)(rnd() * 2.0 + 0.75),
-                (float)(rnd() * 2.0 - 0.25),
-                0.0f};
+           e.velocity.x *= 2.0;
+           e.velocity.y *= 2.0;
         }
     }
 
@@ -611,6 +582,10 @@ void render()
 
     // Draw score
     rw.drawScore(gl.xres, gl.yres);
+
+    // Draw weapon UI
+    RWyatt::drawWeaponUI(gl.xres, gl.yres, wh);
+
 
     //Draw the player
     if (g.flashred < 20) {

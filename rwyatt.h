@@ -4,7 +4,7 @@
  * DATE: FALL 2022
  * TEAM: 3
  * ---
- * Contains methods for drawing on screen.
+ * Contains methods for drawing on screen, weapons management, player data.
 */
 
 #include <string>
@@ -65,7 +65,7 @@ namespace RW {
         Weapon mActiveWeapon;
     public:
         WeaponHandler();
-        Weapon getActiveWeapon();
+        Weapon& getActiveWeapon();
         void setActiveWeapon(int);
         std::vector<Weapon> getAllPlayerWeapons();
         std::vector<Bullet> fireActiveWeapon(Player p);
@@ -83,6 +83,7 @@ private:
 public:
     static void pauseScreen(bool &paused);
     static void drawBorder(int xres, int yres);
+    static void drawWeaponUI(int, int, RW::WeaponHandler&);
     void drawScore(int, int);
     bool savePlayerData();
     void getSavedPlayerData();

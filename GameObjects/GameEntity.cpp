@@ -31,6 +31,7 @@ void GameEntity::hitHealth()
 
 Player::Player(float resolutionX, float resolutionY)
 {
+    rotation = 0.0f;
     position = {resolutionX / 2,
                 resolutionY / 2, 
                 0.0f};
@@ -38,7 +39,7 @@ Player::Player(float resolutionX, float resolutionY)
     health = 3;
 }
 
-void Player::setRotation(float nr) 
+void Player::setRotation(double nr) 
 {
     rotation = nr;
 }
@@ -90,7 +91,7 @@ Bullet::Bullet(Player p, Weapon w, float angleOffset)
     velocity.x = p.velocity.x + directionX * w.getBulletVelocity() + rnd() * 0.1;
     velocity.y = p.velocity.y + directionY * w.getBulletVelocity() + rnd() * 0.1;
     color = {1.0f, 1.0f, 1.0f};
-    health = 1;
+    health = w.getDamage();
     createdAt = std::chrono::steady_clock::now();
     lifetime = w.getBulletLifetime();
 }
