@@ -104,7 +104,7 @@ namespace aarcosavalos{
         glPopMatrix();
 
         ggprint16(&t, 16, 0x00ffffff, "WELCOME TO TOP GUN");
-        ggprint10(&ts, 16, 0x00ffffff, "Press 1 to start the game");
+        ggprint10(&ts, 16, 0x00ffffff, "Press i to start the game");
 
     }
 }
