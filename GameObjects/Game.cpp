@@ -50,7 +50,7 @@ void Game::cleanDead()
 
     std::erase_if(bullets, [&](Bullet b) {
         auto diff = currentTime - b.createdAt;
-        return b.health <= 0 || diff >= std::chrono::seconds(BULLET_DURATION);
+        return b.health <= 0 || diff >= std::chrono::seconds(b.lifetime);
     });
 }
 

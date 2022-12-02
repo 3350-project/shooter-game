@@ -52,8 +52,9 @@ public:
 class Bullet : public GameEntity
 {
 public:
-    Bullet(Player);
-    std::chrono::time_point<std::chrono::steady_clock> createdAt;  
+    Bullet(Player, Weapon, float);
+    std::chrono::time_point<std::chrono::steady_clock> createdAt; 
+    int lifetime {}; 
 };
 
 #endif
