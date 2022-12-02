@@ -57,5 +57,11 @@ class Game {
         void spawnWave();
         std::chrono::time_point<std::chrono::steady_clock> timeWaveReset;
 };
-
+class Image
+{
+    public:
+        int width, height;
+        unsigned char *data;
+        Image(const char*);
+};
 #endif
