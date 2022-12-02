@@ -84,6 +84,7 @@ public:
     static void pauseScreen(bool &paused);
     static void drawBorder(int xres, int yres);
     static void drawWeaponUI(int, int, RW::WeaponHandler&);
+    static bool validEnemySpawn(float, float, float, float);
     void drawScore(int, int);
     bool savePlayerData();
     void getSavedPlayerData();

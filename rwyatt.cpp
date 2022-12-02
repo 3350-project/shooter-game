@@ -65,13 +65,13 @@ void RWyatt::drawWeaponUI(int xres, int yres, RW::WeaponHandler& wh)
     r.left = 100;
     r.center = 0;
 
-    int unselected = 0x00000000;
-    int selected = 0x00ffffff;
+    int unselected = 0x00282828;
+    int selected = 0x008ec07c;
     int ammoColor = 0x00000000;
 
     Weapon weapon = wh.getActiveWeapon();
 
-    ggprint16(&r, 20, 0x00ffffff, "Available Weapons:");
+    ggprint16(&r, 20, 0x00ebdbb2, "Available Weapons:");
 
     int count = 1;
     for (Weapon w : wh.getAllPlayerWeapons()) {
@@ -84,14 +84,14 @@ void RWyatt::drawWeaponUI(int xres, int yres, RW::WeaponHandler& wh)
     }
 
     if (weapon.getCurrentMagizine() > 0.5 * weapon.getMagizineSize()) {
-        ammoColor = 0x0000ff00;
+        ammoColor = 0x00b8bb26;
     } else if (weapon.getCurrentMagizine() <= 0.5 * weapon.getMagizineSize() &&
             weapon.getCurrentMagizine() > 0.3 * weapon.getMagizineSize()) {
-        ammoColor = 0x00ffa500;
+        ammoColor = 0x00fe8019;
     } else if (weapon.getCurrentMagizine() > 0) {
-        ammoColor = 0x00ff0000;
+        ammoColor = 0x00fb4934;
     } else {
-        ammoColor = 0x00808080;
+        ammoColor = 0x00cc241d;
     }
 
     ggprint16(&r, 20, ammoColor, "Magizine: [%d / %d]", weapon.getCurrentMagizine(),
@@ -102,8 +102,19 @@ void RWyatt::drawWeaponUI(int xres, int yres, RW::WeaponHandler& wh)
         m.bot = yres - 300;
         m.left = xres / 2 - 30;
         m.center = 0;
-        ggprint16(&m, 20, 0x00ffffff, "RELOAD [R]");
+        ggprint16(&m, 20, 0x00fbf1c7, "RELOAD [R]");
     }
+}
+
+bool RWyatt::validEnemySpawn(float wX, float wY, float pX, float pY) 
+{
+    static const int EXCLUSION_RADIUS = 250;
+
+    if ((wX - pX) * (wX - pX) + 
+        (wY - pY) * (wY - pY) <= EXCLUSION_RADIUS * EXCLUSION_RADIUS) {
+            return true;
+    }
+    return false;
 }
 
 /**
@@ -137,6 +148,8 @@ bool RWyatt::savePlayerData()
          << mPlayerData.getEnemiesKilled() << " "
          << mPlayerData.getPlayerDeaths() << " "
          << mPlayerData.getTimesHit();
+
+    mPreviousPlayerData = mPlayerData;
 
     return true;
 }
@@ -182,16 +195,37 @@ void RWyatt::switchPromptSaveScore()
 
 void RWyatt::drawPromptSaveScore(int xres, int yres)
 {
-    Rect r;
-    r.bot = yres / 2.5 + 100;
-    r.left = xres / 2.5;
-    r.center = 0;
 
-    ggprint16(&r, 20, 0x00ffffff, "Current Saved Score:");
-    ggprint16(&r, 20, 0x00ffffff, "  Score: %d", mPlayerData.getScore());
-    ggprint16(&r, 20, 0x00ffffff, "  Shots Fired: %d", mPlayerData.getShotsFired());
-    ggprint16(&r, 20, 0x00ffffff, "  Enemies Killed: %d", mPlayerData.getEnemiesKilled());
-    ggprint16(&r, 20, 0x00ffffff, "Would you like to save your score? (Y/N)");
+    int xcent = xres / 2;
+    int ycent = yres / 2 + 35;
+
+    int w = 250;
+    int h = 125;
+    glColor3b(28, 28, 28);
+    glBegin(GL_QUADS);
+    glVertex2f(xcent-w, ycent-h);
+    glVertex2f(xcent-w, ycent+h);
+    glVertex2f(xcent+w, ycent+h);
+    glVertex2f(xcent+w, ycent-h);
+    glEnd();
+
+    Rect l;
+    l.bot = yres / 2.5 + 200;
+    l.left = xres / 2.5 - 100;
+    l.center = 0;
+
+    ggprint16(&l, 20, 0x00fabd2f, "Current Saved Score:");
+    ggprint16(&l, 20, 0x00ebdbb2, "    Score: %d", mPreviousPlayerData.getScore());
+    ggprint16(&l, 20, 0x00ebdbb2, "    Shots Fired: %d", mPreviousPlayerData.getShotsFired());
+    ggprint16(&l, 20, 0x00ebdbb2, "    Enemies Killed: %d", mPreviousPlayerData.getEnemiesKilled());
+    ggprint16(&l, 20, 0x00ffffff, "");
+    ggprint16(&l, 20, 0x00b8bb26, "New Score:");
+    ggprint16(&l, 20, 0x00ebdbb2, "    Score: %d", mPlayerData.getScore());
+    ggprint16(&l, 20, 0x00ebdbb2, "    Shots Fired: %d", mPlayerData.getShotsFired());
+    ggprint16(&l, 20, 0x00ebdbb2, "    Enemies Killed: %d", mPlayerData.getEnemiesKilled());
+    ggprint16(&l, 20, 0x00ffffff, "");
+    ggprint16(&l, 20, 0x00fbf1c7, "Would you like to save your new score? (Y/N)");
+
 }
 
 /**
@@ -215,7 +249,7 @@ RW::WeaponHandler::WeaponHandler()
         Weapon("Sniper", 5, 2.0, 30.0, 3, 3));
     // Machine Gun
     mPlayerWeapons.push_back(
-        Weapon("Machine Gun", 45, 0.7, 4.0, 1, 3.0));
+        Weapon("Machine Gun", 45, 0.7, 4.0, 1, 1));
 }
 
 Weapon& RW::WeaponHandler::getActiveWeapon()
@@ -250,7 +284,6 @@ std::vector<Bullet> RW::WeaponHandler::fireActiveWeapon(Player p)
 
     if (mActiveWeapon.getCurrentMagizine() == 0)
     {
-        std::cout << mActiveWeapon.getWeaponName() << " OUT OF AMMO!" << std::endl;
         return bullets;
     }
 

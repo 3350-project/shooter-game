@@ -8,6 +8,7 @@
  * make up all interactive objects in the game.
 */
 #include "GameShared.h"
+#include "../rwyatt.h"
 #include <iostream>
 
 #define rnd() (((float)rand())/(float)RAND_MAX)
@@ -63,15 +64,22 @@ void Player::moveRight(int moveSpeed)
     position.x += moveSpeed;
 }
 
-Enemy::Enemy(int resolutionX, int resolutionY)
+Enemy::Enemy(int resolutionX, int resolutionY, Player p)
 {
     colisionRadius = rnd() * 80.0 + 40.0;
 
     rotation = 0.0f;
     color = {0.8, 0.8, 0.7};
 
-    position = {random(resolutionX),
-                random(resolutionY),
+    float xPos, yPos;
+
+    do {
+        xPos = random(resolutionX);
+        yPos = random(resolutionY);
+    } while (RWyatt::validEnemySpawn(xPos, yPos, p.position.x, p.position.y));
+
+    position = {xPos,
+                yPos,
                 0.0f};
 
     velocity = {(float)(rnd() * 2.0 - 0.5),

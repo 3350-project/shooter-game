@@ -106,8 +106,6 @@ int main()
     clock_gettime(CLOCK_REALTIME, &timeStart);
     x11.set_mouse_position(100,100);
 
-    // DEBUG
-    std::cout << "Previous Saved Data: " << rw.getPreviousPlayerData().asString() << std::endl;
     // start with pistol
     wh.setActiveWeapon(1);
 
@@ -541,27 +539,24 @@ void physics()
         g.sizeasteroids += 5;
         g.spawnWave();
 
-        std::cout << rw.getPlayerData().asString() << std::endl;
         std::cout << "Now Going into Wave " << g.wavenum << std::endl;
 
+        for (Enemy& e : g.enemies) {
+            if (g.wavenum == 2) {
+                e.velocity.x *= 1.05;
+                e.velocity.y *= 1.05;
+            }
+            if (g.wavenum == 3) {
+                e.velocity.x *= 1.1;
+                e.velocity.y *= 1.1;
+
+            }
+            if (g.wavenum >= 4) {
+                e.velocity.x *= 1.15;
+                e.velocity.y *= 1.15;
+            }
+        } 
    }
-    for (Enemy& e : g.enemies) {
-        if (g.wavenum == 2) {
-           e.velocity.x *= 1.1;
-           e.velocity.y *= 1.1;
-        }
-        if (g.wavenum == 3) {
-           e.velocity.x *= 1.2;
-           e.velocity.y *= 1.2;
-
-        }
-        if (g.wavenum == 4) {
-           e.velocity.x *= 1.3;
-           e.velocity.y *= 1.3;
-
-        }
-    } 
-
 }
 
 void render()

@@ -30,13 +30,6 @@ enum EnemyType {
     Circle
 };
 
-class Enemy : public GameEntity
-{
-public:
-    EnemyType type;
-    Enemy(int, int);
-};
-
 class Player : public GameEntity
 {
 public:
@@ -47,6 +40,13 @@ public:
     void moveDown(int);
     void moveLeft(int);
     void moveRight(int);
+};
+
+class Enemy : public GameEntity
+{
+public:
+    EnemyType type;
+    Enemy(int, int, Player);
 };
 
 class Bullet : public GameEntity

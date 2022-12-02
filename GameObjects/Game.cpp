@@ -63,7 +63,7 @@ void Game::spawnWave()
     timeWaveReset = std::chrono::steady_clock::now();
     for (int i = 0; i < waveSize; i++)
     {
-        enemies.push_back(Enemy(gl.xres, gl.yres));
+        enemies.push_back(Enemy(gl.xres, gl.yres, getMainPlayer()));
     }
     waveSize += 5;
     wavenum += 1;
