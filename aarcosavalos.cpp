@@ -73,8 +73,8 @@ namespace aarcosavalos{
         glEnd();
         glDisable(GL_BLEND);
         ggprint16(&t, 16, 0x00ffffff, "WELCOME TO MY FEATURE");
-        ggprint8b(&r, 16, 0x00ffffff, "Press g to see the first feature");
-        ggprint8b(&r, 16, 0x00ffffff, "Press t to see the first feature");
+        ggprint8b(&r, 16, 0x00ffffff, "Press t to skip to the next wave");
+        ggprint8b(&r, 16, 0x00ffffff, "Press f to se a cool Easter Egg");
 
     }
     void intro_screen(int xres, int yres)
