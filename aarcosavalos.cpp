@@ -9,7 +9,7 @@
 #include "GameObjects/GameShared.h"
 namespace aarcosavalos{
 
-    Rect r, t;
+    Rect r, t, ts;
     unsigned int manage_state(unsigned int s)
     {
         s = s ^ 1;
@@ -80,16 +80,19 @@ namespace aarcosavalos{
     }
     void intro_screen(int xres, int yres)
     {
-        t.bot = yres-40;
+        t.bot = yres/2;
         t.left = xres/2.5;
         t.center = 0;
+
+        
+        ts.bot = yres/3;
+        ts.left = xres/2.25;
+        ts.center = 0;
 
         glClear(GL_COLOR_BUFFER_BIT);
         // Draw box
         glPushMatrix();
-        //glBindTexture(GL_TEXTURE_2D, gl.ferretTex);    //bind the texture
         glColor3ub(0, 0, 0);
-        //glTranslatef(gl.pos[0], gl.pos[1], 0.0f);
         glBegin(GL_QUADS);
         glVertex2f(-xres, -yres);
         glVertex2f(-xres,  yres);
@@ -101,7 +104,7 @@ namespace aarcosavalos{
         glPopMatrix();
 
         ggprint16(&t, 16, 0x00ffffff, "WELCOME TO TOP GUN");
-        ggprint16(&t, 16, 0x00ffffff, "Press 1 to start the game");
+        ggprint10(&ts, 16, 0x00ffffff, "Press i to start the game");
 
     }
 }

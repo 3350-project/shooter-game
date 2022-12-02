@@ -86,12 +86,6 @@ uint32_t /*Spearker9*/dawn = SoundBuffer::get()->addSoundEffect("./soundFiles/Da
 MusicBuffer myMusic("./soundFiles/mandoIntro.wav");
 //myMusic.Play();
 
-//This is how to call a sound effect 
-//  #ifdef AUDIO
-//  if (gl.sound == 1)
-//      mySpeaker<#>.Play(<sound_name>);
-//  #endif
-
 #endif
 
 //function prototypes
@@ -371,7 +365,7 @@ int check_keys(XEvent *e)
 
 void physics()
 {
-    if (gl.paused|| gl.HelpScr || gl.dead) {
+    if (gl.paused || gl.HelpScr || gl.dead || gl.intro) {
         return;
     }
     float d0,d1,dist, d2, d3, dist2;
@@ -554,23 +548,21 @@ void physics()
 
    }
     for (Enemy& e : g.enemies) {
-        if (g.wavenum < 2) {
-           e.velocity.x *= 1.0;
-           e.velocity.y *= 1.0;
-        }
         if (g.wavenum == 2) {
-           e.velocity.x *= 1.2;
-           e.velocity.y *= 1.2;
+           e.velocity.x *= 1.1;
+           e.velocity.y *= 1.1;
         }
         if (g.wavenum == 3) {
-           e.velocity.x *= 1.5;
-           e.velocity.y *= 1.5;
+           e.velocity.x *= 1.2;
+           e.velocity.y *= 1.2;
+
         }
-        if (g.wavenum >= 4) {
-           e.velocity.x *= 2.0;
-           e.velocity.y *= 2.0;
+        if (g.wavenum == 4) {
+           e.velocity.x *= 1.3;
+           e.velocity.y *= 1.3;
+
         }
-    }
+    } 
 
 }
 
@@ -696,20 +688,18 @@ void render()
         //aarcosavalos::Feature_mode(gl.xres, gl.yres);
         return;
     }
-    if (gl.intro)
-    {
-        gl.paused = aarcosavalos::manage_state(gl.paused);
+    if (gl.intro==1) {
         aarcosavalos::intro_screen(gl.xres, gl.yres);
         return;
-    }
+    
+    } 
+    
 }
 
 void DrawSquare()
 {
-    //glClear(GL_COLOR_BUFFER_BIT);
     // Draw box
     glPushMatrix();
-    //glBindTexture(GL_TEXTURE_2D, gl.ferretTex);    //bind the texture
     glColor3ub(0, 0, 0);
     //glTranslatef(gl.pos[0], gl.pos[1], 0.0f);
     glBegin(GL_QUADS);
