@@ -72,6 +72,8 @@ SoundSource mySpeaker6;
 SoundSource mySpeaker7;
 SoundSource mySpeaker8;
 SoundSource mySpeaker9;
+SoundSource mySpeaker10;
+SoundSource mySpeaker11;
 SoundSource gunSpeaker;
 
 uint32_t /*Spearker1*/pistol = SoundBuffer::get()->addSoundEffect("./soundFiles/9mm_pistol.wav");
@@ -83,6 +85,8 @@ uint32_t /*Spearker6*/sucess = SoundBuffer::get()->addSoundEffect("./soundFiles/
 uint32_t /*Spearker7*/failure = SoundBuffer::get()->addSoundEffect("./soundFiles/gameOver.wav");
 uint32_t /*Spearker8*/dying = SoundBuffer::get()->addSoundEffect("./soundFiles/dying.wav");
 uint32_t /*Spearker9*/dawn = SoundBuffer::get()->addSoundEffect("./soundFiles/DawnFinal24hrs.wav");
+uint32_t /*Spearker10*/reload = SoundBuffer::get()->addSoundEffect("./soundFiles/reload.wav");
+uint32_t /*Spearker11*/rifle = SoundBuffer::get()->addSoundEffect("./soundFiles/rifle.wav");
 uint32_t gunBuffer;
 
 #endif
@@ -272,6 +276,7 @@ int check_keys(XEvent *e)
         case XK_F4:
 #ifdef AUDIO
             gl.sound = managed_state_sound(gl.sound);
+            mySpeaker9.Play(dawn);
 #endif
             break;
         case XK_c:
@@ -303,7 +308,11 @@ int check_keys(XEvent *e)
         case XK_minus:
             break;
         case XK_r:
-            wh.getActiveWeapon().reloadWeapon();    
+            wh.getActiveWeapon().reloadWeapon();
+#ifdef AUDIO
+            if (gl.sound)
+                mySpeaker10.Play(reload);    
+#endif
             break;
         case XK_n:
             if (rw.getPromptSaveScore()) {
@@ -372,8 +381,8 @@ int check_keys(XEvent *e)
         case XK_2:
 	        shape = 2;	    
             wh.setActiveWeapon(2);
-            gunSpeaker = mySpeaker1;
-            gunBuffer = pistol;
+            gunSpeaker = mySpeaker11;
+            gunBuffer = rifle;
             break;
         case XK_3:
 	        shape = 3;	    

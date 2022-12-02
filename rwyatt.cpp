@@ -240,16 +240,16 @@ RW::WeaponHandler::WeaponHandler()
         Weapon("Pistol", 15, 1.5, 5.0, 1, 1));
     // Rifle
     mPlayerWeapons.push_back(
-        Weapon("Rifle", 30, 1.0, 10.0, 2, 2));
+        Weapon("Rifle", 30, 1.0, 10.0, 3, 2));
     // Shotgun
     mPlayerWeapons.push_back(
         Weapon("Shotgun", 8, 1.5, 5.0, 1, 2));
     // Sniper
     mPlayerWeapons.push_back(
-        Weapon("Sniper", 5, 2.0, 30.0, 3, 3));
+        Weapon("Sniper", 5, 2.0, 30.0, 5, 3));
     // Machine Gun
     mPlayerWeapons.push_back(
-        Weapon("Machine Gun", 45, 0.7, 4.0, 1, 1));
+        Weapon("Machine Gun", 100, 0.7, 4.0, 1, 1));
 }
 
 Weapon& RW::WeaponHandler::getActiveWeapon()
