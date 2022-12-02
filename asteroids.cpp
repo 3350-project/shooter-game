@@ -55,7 +55,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 Global gl;
 Game g = Game(gl);
 X11_wrapper x11(1280, 720, gl);
-//Image ferret("ferret.ppm"), zombie("zombie.ppm");
+Image ferret("ferret.ppm"), zombie("zombie.ppm");
 // Personal class instance
 RWyatt rw;
 RW::WeaponHandler wh;
@@ -95,6 +95,8 @@ int check_keys(XEvent *e);
 void physics();
 void render();
 void DrawSquare();
+
+int shape = 1;
 //==========================================================================
 // M A I N
 //==========================================================================
@@ -159,17 +161,28 @@ void init_opengl(void)
 
 void init_textures(void)
 {
-    // Enable texture in Opengl
+     // Enable texture in Opengl
     glEnable(GL_TEXTURE_2D);
 
+    glGenTextures(1, &gl.ferretTex);
+    int w = ferret.width;
+    int h = ferret.height;
+    glBindTexture(GL_TEXTURE_2D, gl.ferretTex);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, ferret.data);
     glBindTexture(GL_TEXTURE_2D, 0);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glGenTextures(1, &gl.zombieTex);
+    w = zombie.width;
+    h = zombie.height;
+    glBindTexture(GL_TEXTURE_2D, gl.zombieTex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, zombie.data);
     glBindTexture(GL_TEXTURE_2D, 0);
-
 }
 void normalize2d(Vector3& v)
 {
@@ -266,13 +279,18 @@ int check_keys(XEvent *e)
             if(g.newshape == 3 ) {
                 g.newshape = 0;
             }
-            break;          
+            break;
+/*
         case XK_F3:
             gl.weapon = rgordon::manage_state(gl.weapon);
             break;
-        case XK_t:
+*/
+	case XK_t:
             g.spawnWave();
-            // break;
+            break;
+	case XK_f:
+	    gl.picture = aarcosavalos::manage_state(gl.picture);
+	    break;
         case XK_Down:
             break;
         case XK_i:
@@ -283,9 +301,6 @@ int check_keys(XEvent *e)
             break;
         case XK_r:
             wh.getActiveWeapon().reloadWeapon();    
-            break;
-        case XK_b:
-            gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
         case XK_n:
             if (rw.getPromptSaveScore()) {
@@ -312,6 +327,9 @@ int check_keys(XEvent *e)
             break;
         case XK_F2:
             gl.Collision = snez::manage_stateF2(gl.Collision);
+            break;
+	case XK_F3:
+            gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
         case XK_g:
             gl.dead = 1;
@@ -343,18 +361,23 @@ int check_keys(XEvent *e)
             break;
         // Weapon Swap Keys
         case XK_1:
+	    shape = 1;	    
             wh.setActiveWeapon(1);
             break;
         case XK_2:
+	    shape = 2;	    
             wh.setActiveWeapon(2);
             break;
         case XK_3:
+	    shape = 3;	    
             wh.setActiveWeapon(3);
             break;
         case XK_4:
+	    shape = 4;	    
             wh.setActiveWeapon(4);
             break;
         case XK_5:
+	    shape = 5;	  
             wh.setActiveWeapon(5);
             break;
     }
@@ -591,14 +614,11 @@ void render()
     glPushMatrix();
     glTranslatef(mainPlayer.position.x, mainPlayer.position.y, mainPlayer.position.z);
     glRotatef(mainPlayer.rotation, 0.0f, 0.0f, 1.0f);
-    glBegin(GL_TRIANGLES);
-    glVertex2f(-12.0f, -10.0f);
-    glVertex2f(  0.0f,  20.0f);
-    glVertex2f(  0.0f,  -6.0f);
-    glVertex2f(  0.0f,  -6.0f);
-    glVertex2f(  0.0f,  20.0f);
-    glVertex2f( 12.0f, -10.0f);
-    glEnd();
+    if (shape == 1){aarcosavalos::change_shape(1);}
+    if (shape == 2){aarcosavalos::change_shape(2);}
+    if (shape == 3){aarcosavalos::change_shape(3);}
+    if (shape == 4){aarcosavalos::change_shape(4);}
+    if (shape == 5){aarcosavalos::change_shape(5);}
     glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_POINTS);
     glVertex2f(0.0f, 0.0f);
@@ -682,37 +702,44 @@ void render()
         return;
     }
     if(gl.feature) {
-        DrawSquare();
-        //aarcosavalos::Feature_mode(gl.xres, gl.yres);
+        aarcosavalos::Feature_mode(gl.xres, gl.yres);
         return;
     }
     if (gl.intro==1) {
         aarcosavalos::intro_screen(gl.xres, gl.yres);
         return;
-    
     } 
-    
+    if (gl.picture)
+    {
+	DrawSquare();
+	return;
+    }
 }
 
 void DrawSquare()
 {
+    Rect t;
+    t.bot = gl.yres/2;
+    t.left = gl.xres/2.5;
+    t.center = 0;
     // Draw box
     glPushMatrix();
     glColor3ub(0, 0, 0);
     //glTranslatef(gl.pos[0], gl.pos[1], 0.0f);
-    glBegin(GL_QUADS);
-    glVertex2f(-gl.w, -gl.w);
-    glVertex2f(-gl.w,  gl.w);
-    glVertex2f( gl.w,  gl.w);
-    glVertex2f( gl.w, -gl.w);
-    
+    glBegin(GL_QUADS);   
        glVertex2f(-gl.xres, -gl.yres);
        glVertex2f(-gl.xres,  gl.yres);
        glVertex2f( gl.xres,  gl.yres);
        glVertex2f( gl.xres, -gl.yres);
-       
     glBindTexture(GL_TEXTURE_2D, 0);
     glEnd();
     glPopMatrix();
+    ggprint16(&t, 16, 0x00ffffff, "IF YOU ARE READING THIS, IT MEANS");
+    ggprint16(&t, 16, 0x00ffffff, "I WAS NOT ABLE TO ADD A PICTURE OF A FERRET");
+    ggprint16(&t, 16, 0x00ffffff, "");
+    ggprint16(&t, 16, 0x00ffffff, "");
+    ggprint16(&t, 16, 0x00ffffff, "");
+    ggprint16(&t, 16, 0x00ffffff, "                   ( ' - ' ) ");
+	
 }
 
