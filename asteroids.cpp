@@ -10,15 +10,16 @@
 //This program is a game starting point for a 3350 project.
 
 #include <iostream>
+#include <fstream>
 #include <cstdlib>
 #include <cstring>
 #include <unistd.h>
 #include <ctime>
 #include <cmath>
 #include <X11/Xlib.h>
-//#include <X11/Xutil.h>
-//#include <GL/gl.h>
-//#include <GL/glu.h>
+#include <X11/Xutil.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
 #include <X11/keysym.h>
 #include <GL/glx.h>
 #include <math.h>
@@ -52,7 +53,7 @@ extern void timeCopy(struct timespec *dest, struct timespec *source);
 Global gl;
 Game g = Game(gl);
 X11_wrapper x11(1280, 720, gl);
-
+Image ferret("ferret.ppm"), zombie("zombie.ppm");
 // Personal class instance
 RWyatt rw;
 
@@ -71,17 +72,19 @@ uint32_t thrust = SoundBuffer::get()->addSoundEffect("./soundFiles/thrust.wav");
 
 //function prototypes
 void init_opengl(void);
+void init_textures(void);
 void check_mouse(XEvent *e);
 int check_keys(XEvent *e);
 void physics();
 void render();
-
+void DrawSquare();
 //==========================================================================
 // M A I N
 //==========================================================================
 int main()
 {
     init_opengl();
+    init_textures();
     clock_gettime(CLOCK_REALTIME, &timePause);
     clock_gettime(CLOCK_REALTIME, &timeStart);
     x11.set_mouse_position(100,100);
@@ -102,6 +105,7 @@ int main()
             physics();
             physicsCountdown -= physicsRate;
         }
+//        aarcosavalos::intro_screen();
         render();
         x11.swapBuffers();
     }
@@ -131,6 +135,33 @@ void init_opengl(void)
     initialize_fonts();
 }
 
+void init_textures(void)
+{
+    // Enable texture in Opengl
+    glEnable(GL_TEXTURE_2D);
+
+    // Ferret texture
+    glGenTextures(1, &gl.ferretTex);
+    int w = ferret.width;
+    int h = ferret.height;
+    glBindTexture(GL_TEXTURE_2D, gl.ferretTex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, 2, w, h, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, ferret.data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+    glGenTextures(1, &gl.zombieTex);
+    w = zombie.width;
+    h = zombie.height;
+    glBindTexture(GL_TEXTURE_2D, gl.zombieTex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w, h, 0, GL_RGB,
+            GL_UNSIGNED_BYTE, zombie.data);
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+}
 void normalize2d(Vector3& v)
 {
     float len = v.x * v.x + v.y * v.y;
@@ -182,7 +213,7 @@ void check_mouse(XEvent *e)
             //Right button is down
         }
     }
-    
+
     if (savex != e->xbutton.x || savey != e->xbutton.y) {
         Player &mainPlayer = g.getMainPlayer();
         //Mouse moved
@@ -261,12 +292,14 @@ int check_keys(XEvent *e)
             // break;
         case XK_Down:
             break;
+        case XK_1:
+            gl.intro = aarcosavalos::manage_state(gl.intro);
         case XK_equal:
             break;
         case XK_minus:
             break;
         case XK_r:
-	    gl.feature = aarcosavalos::manage_state(gl.feature);    
+            gl.feature = aarcosavalos::manage_state(gl.feature);    
             break;
         case XK_n:
             g.sizeasteroids += 5;
@@ -361,7 +394,7 @@ void physics()
             b.position.y -= (float)gl.yres;
         }
     }
-    
+
     // Asteroid updates
     for (Enemy& e : g.enemies) {
         e.updatePosition();
@@ -388,7 +421,7 @@ void physics()
             dist = d0 * d0 + d1 * d1;
 
             if (dist < e.colisionRadius * e.colisionRadius &&
-                dist < e.colisionRadius * g.sizeasteroids) {
+                    dist < e.colisionRadius * g.sizeasteroids) {
                 std::cout << "asteroid hit" << std::endl;
 
                 // delete enemy and bullet
@@ -421,8 +454,8 @@ void physics()
                 std::cout<< "Player has collided with asteroid" << std::endl;
 
 #ifdef AUDIO
-                    if (gl.sound)
-                        mySpeaker2.Play(explode);
+                if (gl.sound)
+                    mySpeaker2.Play(explode);
 #endif
             }
         }
@@ -482,7 +515,7 @@ void physics()
         g.spawnWave();
     }
 }
-    
+
 void render()
 {
     Player &mainPlayer = g.getMainPlayer();
@@ -498,10 +531,10 @@ void render()
         g.flashred += 1;
 
     } else {
-	    g.flashred = 20;
+        g.flashred = 20;
         glColor3f(mainPlayer.color.x, 
-                  mainPlayer.color.y,
-                  mainPlayer.color.z);
+                mainPlayer.color.y,
+                mainPlayer.color.z);
     }
     glPushMatrix();
     glTranslatef(mainPlayer.position.x, mainPlayer.position.y, mainPlayer.position.z);
@@ -562,7 +595,7 @@ void render()
         return;
     }
     if(gl.credits || g.score ==100) {
-	gl.paused = true;
+        gl.paused = true;
         show_credits(gl.xres, gl.yres);
         return;
     }
@@ -576,16 +609,50 @@ void render()
         return;
     }
 #endif
+    /*
     if(gl.intro) {
         rgordon::intro(gl.xres, gl.yres);
         return;
     }
+    */
     if(gl.weapon) {
         rgordon::weapon(gl.xres, gl.yres);
         return;
     }
     if(gl.feature) {
-	aarcosavalos::Feature_mode(gl.xres, gl.yres);
-	return;
+        DrawSquare();
+        //aarcosavalos::Feature_mode(gl.xres, gl.yres);
+        return;
+    }
+    if (gl.intro)
+    {
+        gl.paused = aarcosavalos::manage_state(gl.paused);
+        aarcosavalos::intro_screen(gl.xres, gl.yres);
+        return;
     }
 }
+
+void DrawSquare()
+{
+    //glClear(GL_COLOR_BUFFER_BIT);
+    // Draw box
+    glPushMatrix();
+    //glBindTexture(GL_TEXTURE_2D, gl.ferretTex);    //bind the texture
+    glColor3ub(0, 0, 0);
+    //glTranslatef(gl.pos[0], gl.pos[1], 0.0f);
+    glBegin(GL_QUADS);
+    glVertex2f(-gl.w, -gl.w);
+    glVertex2f(-gl.w,  gl.w);
+    glVertex2f( gl.w,  gl.w);
+    glVertex2f( gl.w, -gl.w);
+    
+       glVertex2f(-gl.xres, -gl.yres);
+       glVertex2f(-gl.xres,  gl.yres);
+       glVertex2f( gl.xres,  gl.yres);
+       glVertex2f( gl.xres, -gl.yres);
+       
+    glBindTexture(GL_TEXTURE_2D, 0);
+    glEnd();
+    glPopMatrix();
+}
+
