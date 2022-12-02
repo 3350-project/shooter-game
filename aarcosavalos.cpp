@@ -9,7 +9,7 @@
 #include "GameObjects/GameShared.h"
 namespace aarcosavalos{
 
-    Rect r, t, ts;
+    Rect r, t;
     unsigned int manage_state(unsigned int s)
     {
         s = s ^ 1;
@@ -51,7 +51,6 @@ namespace aarcosavalos{
         t.left = xres/2.5;
         t.center = 0;
 
-
         // Draw a border using a triangle strip
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
@@ -84,11 +83,6 @@ namespace aarcosavalos{
         t.left = xres/2.5;
         t.center = 0;
 
-        
-        ts.bot = yres/3;
-        ts.left = xres/2.25;
-        ts.center = 0;
-
         glClear(GL_COLOR_BUFFER_BIT);
         // Draw box
         glPushMatrix();
@@ -104,7 +98,70 @@ namespace aarcosavalos{
         glPopMatrix();
 
         ggprint16(&t, 16, 0x00ffffff, "WELCOME TO TOP GUN");
-        ggprint10(&ts, 16, 0x00ffffff, "Press i to start the game");
+        ggprint16(&t, 16, 0x00ffffff, "Press I to start the game");
+        ggprint16(&t, 16, 0x00ffffff, "WASD to move, SPACE to shoot");
+        ggprint16(&t, 16, 0x00ffffff, "1 - 5 to change weapons");
+        ggprint16(&t, 16, 0x00ffffff, "P to pause the game");
+        ggprint16(&t, 16, 0x00ffffff, "F1 to enter the help screen");
 
+    }
+     void change_shape(int num)
+    {
+        /// Pistol
+        if (num == 1)
+        {
+            glBegin(GL_TRIANGLES);
+            glVertex2f(-12.0f, -10.0f);
+            glVertex2f(  0.0f,  20.0f);
+            glVertex2f(  0.0f,  -6.0f);
+            glVertex2f(  0.0f,  -6.0f);
+            glVertex2f(  0.0f,  20.0f);
+            glVertex2f( 12.0f, -10.0f);
+            glEnd();
+        }
+        // Rifle
+        if (num == 2)
+        {
+            glBegin(GL_TRIANGLES);
+            glVertex2f(-12.0f, -20.0f);
+            glVertex2f(  0.0f,  20.0f);
+            glVertex2f(  0.0f,  -6.0f);
+            glVertex2f(  0.0f,  -6.0f);
+            glVertex2f(  0.0f,  20.0f);
+            glVertex2f( 12.0f, -20.0f);
+            glEnd();
+        }
+        // Shotgun
+        if (num == 3)
+        {
+            glBegin(GL_QUADS);
+            glVertex2f( 12.0f,  10.0f);
+            glVertex2f( 12.0f, -10.0f);
+            glVertex2f(-12.0f,  10.0f);
+            glVertex2f(-12.0f, -10.0f);
+            glEnd();
+        }
+        // Sniper
+        if (num == 4)
+        {
+            glBegin(GL_TRIANGLES);
+            glVertex2f(-12.0f, -40.0f);
+            glVertex2f(  0.0f,  40.0f);
+            glVertex2f(  0.0f, -10.0f);
+            glVertex2f(  0.0f, -10.0f);
+            glVertex2f(  0.0f,  40.0f);
+            glVertex2f( 12.0f, -20.0f);
+            glEnd();
+        }
+        // Machine Gun
+        if (num == 5)
+        {
+            glBegin(GL_QUADS);
+            glVertex2f( 12.0f,  40.0f);
+            glVertex2f( 12.0f, -40.0f);
+            glVertex2f(-12.0f,  40.0f);
+            glVertex2f(-12.0f, -40.0f);
+            glEnd();
+        }
     }
 }
