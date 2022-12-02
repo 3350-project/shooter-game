@@ -48,7 +48,7 @@ namespace snez
         ggprint10(&r, 16, 0xffffffff, "");
         ggprint10(&r, 16, 0xffffffff, "- To Go into Rudy's Feature Mode Press F4");
         ggprint10(&r, 16, 0xffffffff, "");
-        ggprint10(&r, 16, 0xffffffff, "- To Go into Reid's Save Feature Press F8");
+        ggprint10(&r, 16, 0xffffffff, "- To Go into Reid's Save Feature Press F9");
         ggprint10(&r, 16, 0xffffffff, "");
         ggprint10(&r, 16, 0xffffffff, "- MOVEMENT - WASD");
         ggprint10(&r, 16, 0xffffffff, "");
